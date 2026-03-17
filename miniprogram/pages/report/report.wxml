@@ -1,0 +1,92 @@
+<!--report.wxml-->
+<view class="container">
+  <view class="header-card">
+    <view class="header-content">
+      <text class="org-name">{{report.org_name}}</text>
+      <text class="report-date">{{report.eval_date}}</text>
+    </view>
+    <view class="score-section">
+      <view class="score-wrapper">
+        <text class="total-score">{{report.total_score}}</text>
+        <text class="score-label">分</text>
+      </view>
+    </view>
+    <view class="level-badge {{report.maturity_level === 'A级' ? 'gold' : (report.maturity_level === 'B级' ? 'silver' : (report.maturity_level === 'C级' ? 'bronze' : 'iron'))}}">
+      {{report.maturity_level}}
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">
+      <view class="section-icon">📊</view>
+      维度评分
+    </view>
+    <view class="dimension-list">
+      <view class="dimension-item" wx:for="{{report.dimensions}}" wx:key="name">
+        <view class="dim-header">
+          <text class="dim-name">{{item.name}}</text>
+          <text class="dim-score {{item.score >= 80 ? 'high' : (item.score >= 60 ? 'mid' : 'low')}}">{{item.score}}</text>
+        </view>
+        <view class="score-bar">
+          <view class="score-fill {{item.score >= 80 ? 'high' : (item.score >= 60 ? 'mid' : 'low')}}" style="width: {{item.score}}%"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="section" wx:if="{{report.p0_issues.length > 0 || report.p1_issues.length > 0}}">
+    <view class="section-title">
+      <view class="section-icon">⚠️</view>
+      问题诊断
+    </view>
+    
+    <view class="issue-card p0" wx:if="{{report.p0_issues && report.p0_issues.length > 0}}">
+      <view class="issue-level">P0 - 关键缺失</view>
+      <view class="issue-content">
+        <view class="issue-item" wx:for="{{report.p0_issues}}" wx:key="title">
+          <text class="issue-title">{{item.title}}</text>
+          <text class="issue-content">{{item.problem}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="issue-card p1" wx:if="{{report.p1_issues && report.p1_issues.length > 0}}">
+      <view class="issue-level">P1 - 优化机会</view>
+      <view class="issue-content">
+        <view class="issue-item" wx:for="{{report.p1_issues}}" wx:key="title">
+          <text class="issue-title">{{item.title}}</text>
+          <text class="issue-content">{{item.problem}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="section" wx:if="{{report.suggestions && report.suggestions.length > 0}}">
+    <view class="section-title">
+      <view class="section-icon">💡</view>
+      改进建议
+    </view>
+    <view class="suggestion-list">
+      <view class="suggestion-item" wx:for="{{report.suggestions}}" wx:key="index">
+        <text class="suggestion-title">{{item.title}}</text>
+        <text class="suggestion-content">{{item.content}}</text>
+        <view class="citation-block" wx:if="{{item.source}}">
+          <text class="citation-source">{{item.source}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="actions">
+    <button class="btn-primary">
+      <text class="btn-icon">📄</text>
+      查看完整报告
+    </button>
+    <button class="btn-secondary">
+      <text class="btn-icon">📤</text>
+      分享报告
+    </button>
+  </view>
+  
+  <view class="footer-spacing"></view>
+</view>

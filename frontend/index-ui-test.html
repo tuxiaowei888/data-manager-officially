@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI测试 - index页面改造</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ui-common.css">
+    <style>
+        .container-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-glass {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-glass h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .header-glass p {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .header-info-glass {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 12px;
+            border-left: 3px solid var(--tech-accent);
+        }
+
+        .step-indicator-glass {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .step-indicator-glass::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+
+        .step-indicator-glass .progress-line-glass {
+            position: absolute;
+            top: 18px;
+            left: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--tech-accent), var(--tech-secondary));
+            z-index: 2;
+            transition: width 0.5s ease;
+            width: 17%;
+        }
+
+        .step-glass {
+            text-align: center;
+            position: relative;
+            z-index: 3;
+            flex: 1;
+        }
+
+        .step-circle-glass {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .step-glass.active .step-circle-glass {
+            background: var(--tech-accent);
+            border-color: var(--tech-accent);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.15);
+        }
+
+        .step-glass.completed .step-circle-glass {
+            background: #10B981;
+            border-color: #10B981;
+            color: white;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .step-label-glass {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .step-glass.active .step-label-glass {
+            color: white;
+            font-weight: 600;
+        }
+
+        .step-glass.completed .step-label-glass {
+            color: #10B981;
+        }
+
+        .progress-section-glass {
+            margin-bottom: 32px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+        }
+
+        .progress-header-glass {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-label-glass {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-value-glass {
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tech-accent);
+        }
+
+        .progress-segmented-glass {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .progress-node-glass {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .progress-node-glass.completed {
+            background: #10B981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .progress-node-glass.active {
+            background: var(--tech-accent);
+            animation: node-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes node-pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .form-section-glass {
+            display: block;
+        }
+
+        .section-title-glass {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            border-left: 4px solid var(--tech-accent);
+            letter-spacing: -0.3px;
+        }
+
+        .section-desc-glass {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 24px;
+            padding-left: 20px;
+        }
+
+        .form-question-glass {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-left: 3px solid var(--tech-accent);
+            transition: all 0.3s ease;
+        }
+
+        .form-question-glass:hover {
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .question-label-glass {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: block;
+        }
+
+        .form-control-glass {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .form-control-glass:focus {
+            border-color: var(--tech-accent);
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .form-control-glass::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-check-glass {
+            margin-bottom: 8px;
+        }
+
+        .form-check-input-glass {
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .form-check-input-glass:checked {
+            background-color: var(--tech-accent);
+            border-color: var(--tech-accent);
+        }
+
+        .form-check-input-glass:focus {
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
+        }
+
+        .form-check-label-glass {
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        .nav-bar-glass {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-item-glass {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item-glass:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--tech-accent);
+        }
+
+        .nav-item-glass.primary {
+            background: rgba(0, 210, 255, 0.2);
+            border-color: rgba(0, 210, 255, 0.4);
+            color: white;
+        }
+
+        .nav-item-glass.primary:hover {
+            background: rgba(0, 210, 255, 0.4);
+            border-color: var(--tech-accent);
+        }
+
+        .nav-item-glass.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #EF4444;
+        }
+
+        @media (max-width: 768px) {
+            .container-main {
+                padding: 40px 20px;
+            }
+
+            .step-indicator-glass {
+                padding: 0;
+            }
+
+            .step-indicator-glass::before {
+                left: 18px;
+                right: 18px;
+            }
+
+            .step-indicator-glass .progress-line-glass {
+                left: 18px;
+            }
+
+            .step-circle-glass {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .step-label-glass {
+                font-size: 10px;
+            }
+
+            .form-question-glass {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="container-main">
+        <div class="nav-bar-glass">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 13px; color: var(--text-secondary);">
+                    <i class="bi bi-person-circle"></i>
+                    游客
+                </span>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="#" class="nav-item-glass primary">
+                    <i class="bi bi-clock-history"></i> 历史报告
+                </a>
+                <a href="#" class="nav-item-glass">
+                    <i class="bi bi-box-arrow-in-right"></i> 登录
+                </a>
+            </div>
+        </div>
+
+        <div class="header-glass">
+            <h1>
+                <i class="bi bi-pie-chart-fill"></i> 数维·数据资产管家 - 数据要素资产化深度调研表
+            </h1>
+            <p>Shuwei Data Element Assetization Deep Survey</p>
+            <div class="header-info-glass">
+                <small style="color: var(--text-secondary);">
+                    <i class="bi bi-info-circle me-1"></i>
+                    填写完成后，系统将基于<b style="color: var(--tech-accent);">数维·智规融合引擎 v1.0</b>，自动生成包含成熟度评分、诊断结果、转化路径、价值预测的专业报告
+                </small>
+            </div>
+        </div>
+
+        <div class="glass-section">
+            <div class="step-indicator-glass">
+                <div class="progress-line-glass"></div>
+                <div class="step-glass active" data-step="1">
+                    <div class="step-circle-glass">1</div>
+                    <div class="step-label-glass">机构画像</div>
+                </div>
+                <div class="step-glass" data-step="2">
+                    <div class="step-circle-glass">2</div>
+                    <div class="step-label-glass">合规安全</div>
+                </div>
+                <div class="step-glass" data-step="3">
+                    <div class="step-circle-glass">3</div>
+                    <div class="step-label-glass">数据资源</div>
+                </div>
+                <div class="step-glass" data-step="4">
+                    <div class="step-circle-glass">4</div>
+                    <div class="step-label-glass">确权成本</div>
+                </div>
+                <div class="step-glass" data-step="5">
+                    <div class="step-circle-glass">5</div>
+                    <div class="step-label-glass">价值需求</div>
+                </div>
+                <div class="step-glass" data-step="6">
+                    <div class="step-circle-glass">6</div>
+                    <div class="step-label-glass">联系信息</div>
+                </div>
+            </div>
+
+            <div class="progress-section-glass">
+                <div class="progress-header-glass">
+                    <span class="progress-label-glass"><i class="bi bi-bar-chart me-1"></i>填写进度</span>
+                    <span class="progress-value-glass">17%</span>
+                </div>
+                <div class="progress-segmented-glass">
+                    <div class="progress-node-glass active"></div>
+                    <div class="progress-node-glass"></div>
+                    <div class="progress-node-glass"></div>
+                    <div class="progress-node-glass"></div>
+                    <div class="progress-node-glass"></div>
+                    <div class="progress-node-glass"></div>
+                </div>
+            </div>
+
+            <div class="form-section-glass">
+                <h2 class="section-title-glass">
+                    <i class="bi bi-building"></i> 第一部分：机构基础画像
+                </h2>
+                <p class="section-desc-glass">
+                    用于确定行业基准、政策匹配度及企业规模系数。<span style="color: #EF4444;">*</span> 号为必填项
+                </p>
+
+                <div class="form-question-glass">
+                    <label class="question-label-glass">
+                        1.1 机构名称 <span style="color: #EF4444;">*</span>
+                    </label>
+                    <input type="text" class="form-control-glass" placeholder="请填写机构全称">
+                </div>
+
+                <div class="form-question-glass">
+                    <label class="question-label-glass">
+                        1.2 机构类型 <span style="color: #EF4444;">*</span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="form-check-glass">
+                            <input class="form-check-input-glass" type="radio" name="org_type">
+                            <label class="form-check-label-glass">企业机构</label>
+                        </div>
+                        <div class="form-check-glass">
+                            <input class="form-check-input-glass" type="radio" name="org_type">
+                            <label class="form-check-label-glass">政府机构</label>
+                        </div>
+                        <div class="form-check-glass">
+                            <input class="form-check-input-glass" type="radio" name="org_type">
+                            <label class="form-check-label-glass">事业单位</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-question-glass">
+                    <label class="question-label-glass">
+                        1.3 在册人员规模 <span style="color: #EF4444;">*</span>
+                    </label>
+                    <select class="form-control-glass">
+                        <option value="">请选择</option>
+                        <option value="50 人及以下">50 人及以下</option>
+                        <option value="51-100 人">51-100 人</option>
+                        <option value="101-500 人">101-500 人</option>
+                        <option value="500 人以上">500 人以上</option>
+                    </select>
+                </div>
+
+                <div class="button-group" style="margin-top: 30px;">
+                    <button class="glass-button secondary">
+                        <i class="bi bi-arrow-left"></i> 上一步
+                    </button>
+                    <button class="glass-button primary" style="margin-left: auto;">
+                        下一步 <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="ui-particles.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticleBackground('particles-canvas', {
+                particleColor: '0, 210, 255',
+                particleCount: 80,
+                lineDistance: 150
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+{
+  "rules": [
+    {
+      "dimension_code": "D1_COMPLIANCE",
+      "rule_name": "数据来源合法性",
+      "logic_expression": "data_source_legal == 1",
+      "weight": 0.15,
+      "risk_threshold": 0.8,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D1_COMPLIANCE",
+      "rule_name": "隐私脱敏合规性",
+      "logic_expression": "privacy_anonymization == 1",
+      "weight": 0.15,
+      "risk_threshold": 0.8,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D1_COMPLIANCE",
+      "rule_name": "授权链条完整性",
+      "logic_expression": "authorization_chain_complete == 1",
+      "weight": 0.10,
+      "risk_threshold": 0.7,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D2_QUALITY",
+      "rule_name": "数据完整性",
+      "logic_expression": "data_completeness_score",
+      "weight": 0.12,
+      "risk_threshold": 0.75,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D2_QUALITY",
+      "rule_name": "数据准确性",
+      "logic_expression": "data_accuracy_score",
+      "weight": 0.12,
+      "risk_threshold": 0.75,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D2_QUALITY",
+      "rule_name": "数据及时性",
+      "logic_expression": "data_timeliness_score",
+      "weight": 0.08,
+      "risk_threshold": 0.7,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D3_VALUE",
+      "rule_name": "场景覆盖度",
+      "logic_expression": "scenario_coverage_score",
+      "weight": 0.10,
+      "risk_threshold": 0.6,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D3_VALUE",
+      "rule_name": "收益预估合理性",
+      "logic_expression": "revenue_estimation_score",
+      "weight": 0.08,
+      "risk_threshold": 0.6,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D3_VALUE",
+      "rule_name": "成本节约效果",
+      "logic_expression": "cost_saving_score",
+      "weight": 0.07,
+      "risk_threshold": 0.6,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D4_MANAGEMENT",
+      "rule_name": "制度健全性",
+      "logic_expression": "policy_completeness_score",
+      "weight": 0.08,
+      "risk_threshold": 0.7,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D4_MANAGEMENT",
+      "rule_name": "人员配置充足性",
+      "logic_expression": "staff_allocation_score",
+      "weight": 0.06,
+      "risk_threshold": 0.65,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D4_MANAGEMENT",
+      "rule_name": "审计记录规范性",
+      "logic_expression": "audit_record_score",
+      "weight": 0.06,
+      "risk_threshold": 0.7,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D5_CIRCULATION",
+      "rule_name": "数据标准化程度",
+      "logic_expression": "data_standardization_score",
+      "weight": 0.08,
+      "risk_threshold": 0.65,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D5_CIRCULATION",
+      "rule_name": "接口可用性",
+      "logic_expression": "api_availability_score",
+      "weight": 0.07,
+      "risk_threshold": 0.7,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D5_CIRCULATION",
+      "rule_name": "交易历史记录",
+      "logic_expression": "transaction_history_score",
+      "weight": 0.05,
+      "risk_threshold": 0.6,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D6_POTENTIAL",
+      "rule_name": "数据稀缺性",
+      "logic_expression": "data_scarcity_score",
+      "weight": 0.07,
+      "risk_threshold": 0.5,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D6_POTENTIAL",
+      "rule_name": "可衍生性",
+      "logic_expression": "derivability_score",
+      "weight": 0.06,
+      "risk_threshold": 0.5,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    },
+    {
+      "dimension_code": "D6_POTENTIAL",
+      "rule_name": "政策契合度",
+      "logic_expression": "policy_alignment_score",
+      "weight": 0.06,
+      "risk_threshold": 0.6,
+      "is_active": true,
+      "source_type": "manual",
+      "version": 1,
+      "ai_prompt_context": null
+    }
+  ]
+}

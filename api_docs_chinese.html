@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - API 文档</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .api-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .api-section-header {
+            background: #f5f5f5;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .api-section-header:hover {
+            background: #fafafa;
+        }
+        .api-section-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .api-section-header .badge {
+            background: #1890ff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .api-list {
+            display: none;
+        }
+        .api-list.show {
+            display: block;
+        }
+        .api-item {
+            border-bottom: 1px solid #e8e8e8;
+            padding: 15px 20px;
+            transition: background 0.2s;
+        }
+        .api-item:hover {
+            background: #fafafa;
+        }
+        .api-item:last-child {
+            border-bottom: none;
+        }
+        .api-method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 10px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .method-get {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        .method-post {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .method-put {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        .method-delete {
+            background: #fff1f0;
+            color: #f5222d;
+        }
+        .api-path {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 14px;
+            color: #333;
+        }
+        .api-description {
+            margin-top: 8px;
+            color: #666;
+            font-size: 13px;
+        }
+        .api-details {
+            margin-top: 12px;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .api-details h4 {
+            margin: 0 0 8px 0;
+            color: #333;
+        }
+        .api-details ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .api-details li {
+            margin-bottom: 4px;
+            color: #666;
+        }
+        .try-btn {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .try-btn:hover {
+            background: #40a9ff;
+        }
+        .arrow {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #999;
+            transition: transform 0.3s;
+        }
+        .arrow.up {
+            transform: rotate(180deg);
+        }
+        .info-box {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #0050b3;
+        }
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .info-box li {
+            margin-bottom: 5px;
+            color: #0050b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 数维数据管家系统 - API 文档</h1>
+        <p>SaaS 化数据资产评价系统 V1.0 | 完整接口说明</p>
+    </div>
+
+    <div class="container">
+        <div class="info-box">
+            <h3>💡 使用说明</h3>
+            <ul>
+                <li>点击分类标题可以展开/收起接口列表</li>
+                <li>每个接口都标注了 HTTP 方法（GET、POST、PUT、DELETE）</li>
+                <li>点击 "在线测试" 按钮可以直接测试接口（需配合 Postman 等工具）</li>
+                <li>所有接口的详细说明都在下方列出</li>
+            </ul>
+        </div>
+
+        <div id="api-container">
+            <!-- API 列表将通过 JavaScript 动态加载 -->
+        </div>
+    </div>
+
+    <script>
+        // API 数据结构
+        const apiData = [
+            {
+                category: "规则管理",
+                badge: "6 个接口",
+                apis: [
+                    {
+                        method: "GET",
+                        path: "/api/v1/rules",
+                        title: "获取所有规则",
+                        description: "返回所有规则配置（包括未启用的）",
+                        params: "无参数",
+                        response: "规则列表（JSON 数组）"
+                    },
+                    {
+                        method: "GET",
+                        path: "/api/v1/rules/active",
+                        title: "获取活跃规则",
+                        description: "仅返回已启用的规则（is_active=True）",
+                        params: "无参数",
+                        response: "活跃规则列表"
+                    },
+                    {
+                        method: "GET",
+                        path: "/api/v1/rules/{rule_id}",
+                        title: "获取规则详情",
+                        description: "根据 ID 查询单个规则的详细信息",
+                        params: "rule_id: 规则 ID（路径参数）",
+                        response: "规则详细信息"
+                    },
+                    {
+                        method: "POST",
+                        path: "/api/v1/rules",
+                        title: "创建新规则",
+                        description: "管理员可以添加新的评价规则",
+                        params: "dimension_code, rule_name, logic_expression, weight 等",
+                        response: "创建的规则信息"
+                    },
+                    {
+                        method: "PUT",
+                        path: "/api/v1/rules/{rule_id}",
+                        title: "更新规则",
+                        description: "修改现有规则的配置",
+                        params: "rule_id（路径参数）+ 要更新的字段",
+                        response: "更新后的规则信息"
+                    },
+                    {
+                        method: "DELETE",
+                        path: "/api/v1/rules/{rule_id}",
+                        title: "删除规则",
+                        description: "删除指定的规则",
+                        params: "rule_id: 规则 ID",
+                        response: "删除结果"
+                    }
+                ]
+            },
+            {
+                category: "评价服务",
+                badge: "2 个接口",
+                apis: [
+                    {
+                        method: "POST",
+                        path: "/api/v1/evaluation",
+                        title: "创建评价",
+                        description: "用户提交数据后，系统自动计算得分并生成报告",
+                        params: "user_id（可选）, form_data（表单数据）",
+                        response: "评价报告 ID、总分、成熟度等级"
+                    },
+                    {
+                        method: "GET",
+                        path: "/api/v1/evaluation/{report_id}",
+                        title: "获取评价结果",
+                        description: "根据报告 ID 查询评价结果",
+                        params: "report_id: 报告 ID",
+                        response: "完整的评价结果"
+                    }
+                ]
+            },
+            {
+                category: "知识管理",
+                badge: "3 个接口",
+                apis: [
+                    {
+                        method: "GET",
+                        path: "/api/v1/knowledge",
+                        title: "获取知识文档",
+                        description: "查询所有知识文档",
+                        params: "可选参数：doc_type, tags",
+                        response: "知识文档列表"
+                    },
+                    {
+                        method: "POST",
+                        path: "/api/v1/knowledge",
+                        title: "添加知识文档",
+                        description: "上传新的政策文档到知识库",
+                        params: "doc_type, title, content, tags 等",
+                        response: "创建的文档信息"
+                    },
+                    {
+                        method: "GET",
+                        path: "/api/v1/knowledge/search",
+                        title: "搜索知识文档",
+                        description: "根据关键词搜索知识文档",
+                        params: "keyword: 搜索关键词",
+                        response: "匹配的文档列表"
+                    }
+                ]
+            },
+            {
+                category: "报告服务",
+                badge: "2 个接口",
+                apis: [
+                    {
+                        method: "GET",
+                        path: "/api/v1/reports/{evaluation_id}",
+                        title: "生成评价报告",
+                        description: "根据评价结果生成完整的分析报告",
+                        params: "evaluation_id: 评价 ID",
+                        response: "完整的分析报告"
+                    },
+                    {
+                        method: "GET",
+                        path: "/api/v1/reports/{evaluation_id}/export",
+                        title: "导出报告",
+                        description: "导出报告为 PDF 或 Word 格式",
+                        params: "evaluation_id, format（pdf/docx）",
+                        response: "文件下载"
+                    }
+                ]
+            },
+            {
+                category: "AI 规则生成（V2.0）",
+                badge: "3 个接口",
+                apis: [
+                    {
+                        method: "POST",
+                        path: "/api/v1/rules/ai-generate",
+                        title: "AI 生成规则",
+                        description: "上传政策文档，AI 自动解析并生成规则",
+                        params: "file: PDF 政策文档",
+                        response: "生成的规则（V2.0 功能）"
+                    },
+                    {
+                        method: "POST",
+                        path: "/api/v1/rules/ai-batch-generate",
+                        title: "批量 AI 生成",
+                        description: "批量上传文档并生成规则",
+                        params: "files: 多个 PDF 文档",
+                        response: "生成的规则列表（V2.0 功能）"
+                    },
+                    {
+                        method: "GET",
+                        path: "/api/v1/rules/ai-status",
+                        title: "查询 AI 状态",
+                        description: "查看 AI 生成规则的进度",
+                        params: "task_id: 任务 ID",
+                        response: "任务状态（V2.0 功能）"
+                    }
+                ]
+            }
+        ];
+
+        // 渲染 API 列表
+        function renderAPIs() {
+            const container = document.getElementById('api-container');
+            let html = '';
+
+            apiData.forEach((section, sectionIndex) => {
+                html += `
+                    <div class="api-section">
+                        <div class="api-section-header" onclick="toggleSection(${sectionIndex})">
+                            <h2>${section.category}</h2>
+                            <div>
+                                <span class="badge">${section.badge}</span>
+                                <span class="arrow" id="arrow-${sectionIndex}"></span>
+                            </div>
+                        </div>
+                        <div class="api-list" id="section-${sectionIndex}">
+                `;
+
+                section.apis.forEach(api => {
+                    html += `
+                        <div class="api-item">
+                            <div>
+                                <span class="api-method method-${api.method.toLowerCase()}">${api.method}</span>
+                                <span class="api-path">${api.path}</span>
+                            </div>
+                            <div class="api-description">
+                                <strong>${api.title}</strong>：${api.description}
+                            </div>
+                            <div class="api-details">
+                                <h4>📋 参数说明</h4>
+                                <ul>
+                                    <li><strong>请求参数：</strong>${api.params}</li>
+                                    <li><strong>返回结果：</strong>${api.response}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 展开/收起分类
+        function toggleSection(index) {
+            const section = document.getElementById(`section-${index}`);
+            const arrow = document.getElementById(`arrow-${index}`);
+            section.classList.toggle('show');
+            arrow.classList.toggle('up');
+        }
+
+        // 页面加载完成后渲染
+        window.onload = function() {
+            renderAPIs();
+            // 默认展开第一个分类
+            toggleSection(0);
+        };
+    </script>
+</body>
+</html>

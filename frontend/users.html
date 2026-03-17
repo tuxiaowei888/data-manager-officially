@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - 用户管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1B3A57;
+            --primary-dark: #0F4C81;
+            --primary-light: #2E5A7C;
+            --tech-accent: #00D2FF;
+            --tech-secondary: #4ECDC4;
+            --success-color: #2ECC71;
+            --danger-color: #FF6B6B;
+            --warning-color: #FF9F43;
+            --bg-primary: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-dark: #0B1120;
+            --text-primary: #1B3A57;
+            --text-secondary: #5A6C7D;
+            --text-disabled: #99A8B8;
+            --border-light: #E8EDF2;
+            --gradient-brand: linear-gradient(135deg, #1B3A57 0%, #00D2FF 100%);
+            --font-family-zh: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
+            --font-family-num: "Roboto Mono", "DIN Alternate", "SF Mono", monospace;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-family-zh);
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-light);
+            padding: 20px 0;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-logo h1 {
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sidebar-logo i {
+            color: var(--tech-accent);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background: rgba(0, 210, 255, 0.08);
+            color: var(--tech-accent);
+            border-left: 3px solid var(--tech-accent);
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .page-title i {
+            color: var(--tech-accent);
+            margin-right: 10px;
+        }
+        
+        .btn-primary-custom {
+            background: var(--gradient-brand);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(27, 58, 87, 0.3);
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .stat-value {
+            font-family: var(--font-family-num);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-value.tech { color: var(--tech-accent); }
+        .stat-value.success { color: var(--success-color); }
+        .stat-value.warning { color: var(--warning-color); }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .table-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 13px;
+            width: 200px;
+        }
+        
+        .search-box i {
+            color: var(--text-disabled);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-bottom: none;
+            position: relative;
+        }
+
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--tech-accent);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.2s ease;
+        }
+        
+        .data-table tr:hover td {
+            background: rgba(0, 210, 255, 0.03);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .user-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .user-badge.admin {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .user-badge.client {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--tech-accent);
+        }
+        
+        .user-badge.vip {
+            background: rgba(255, 159, 67, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .user-badge.normal {
+            background: rgba(153, 168, 184, 0.1);
+            color: var(--text-disabled);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-badge.inactive {
+            background: rgba(153, 168, 184, 0.1);
+            color: var(--text-disabled);
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--tech-accent);
+            color: var(--tech-accent);
+        }
+        
+        .action-btn.danger:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .action-btn.success {
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .action-btn.warning {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 17, 32, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--tech-accent);
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-disabled);
+            margin-bottom: 16px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            border-top-color: var(--tech-accent);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin"><i class="bi bi-speedometer2"></i> 仪表盘</a></li>
+            <li><a href="/rules"><i class="bi bi-sliders"></i> 规则库管理</a></li>
+            <li><a href="/knowledge"><i class="bi bi-book"></i> 知识库管理</a></li>
+            <li><a href="/ai-config"><i class="bi bi-robot"></i> AI配置管理</a></li>
+            <li><a href="/customers"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
+            <li><a href="/reports"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
+            <li><a href="/users" class="active"><i class="bi bi-people"></i> 用户管理</a></li>
+            <li><a href="/config"><i class="bi bi-gear"></i> VIP配置</a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登录</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title"><i class="bi bi-people"></i>用户管理</h1>
+            <button class="btn-primary-custom" onclick="openModal()">
+                <i class="bi bi-plus-lg"></i> 新建用户
+            </button>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">用户总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value success" id="activeUsers">0</div>
+                <div class="stat-label">活跃用户</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning" id="vipUsers">0</div>
+                <div class="stat-label">VIP用户</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value tech" id="adminUsers">0</div>
+                <div class="stat-label">管理员</div>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="table-header">
+                <span class="table-title">用户列表</span>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="搜索用户..." id="searchInput" oninput="filterUsers()">
+                </div>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>类型</th>
+                        <th>VIP</th>
+                        <th>状态</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            <div class="loading-spinner"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">新建用户</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="username" required placeholder="请输入用户名">
+                    </div>
+                    
+                    <div class="form-group" id="passwordGroup">
+                        <label class="form-label">密码</label>
+                        <input type="password" class="form-control" id="password" placeholder="请输入密码">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">邮箱</label>
+                        <input type="email" class="form-control" id="email" placeholder="请输入邮箱">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">手机号</label>
+                        <input type="text" class="form-control" id="phone" placeholder="请输入手机号">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">用户类型</label>
+                        <select class="form-control" id="userType">
+                            <option value="client">普通用户</option>
+                            <option value="admin">管理员</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn-primary-custom" onclick="saveUser()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allUsers = [];
+        
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            
+            if (!token || !userInfo) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            try {
+                const user = JSON.parse(userInfo);
+                if (user.user_type !== 'admin') {
+                    alert('无权限访问：此页面仅限管理员使用');
+                    window.location.href = '/survey';
+                    return false;
+                }
+            } catch (e) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        async function loadUsers() {
+            if (!checkAuth()) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/v1/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('加载失败');
+                
+                allUsers = await response.json();
+                updateStats();
+                renderUsers(allUsers);
+            } catch (error) {
+                document.getElementById('usersTableBody').innerHTML = `
+                    <tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--danger-color);">
+                        加载失败，请刷新重试
+                    </td></tr>
+                `;
+            }
+        }
+        
+        function updateStats() {
+            const total = allUsers.length;
+            const active = allUsers.filter(u => u.is_active).length;
+            const vip = allUsers.filter(u => u.is_vip).length;
+            const admin = allUsers.filter(u => u.user_type === 'admin').length;
+            
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('activeUsers').textContent = active;
+            document.getElementById('vipUsers').textContent = vip;
+            document.getElementById('adminUsers').textContent = admin;
+        }
+        
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <i class="bi bi-people"></i>
+                            <p>暂无用户数据</p>
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email || '-'}</td>
+                    <td><span class="user-badge ${user.user_type}">${user.user_type === 'admin' ? '管理员' : '普通用户'}</span></td>
+                    <td>
+                        ${user.is_vip 
+                            ? `<span class="user-badge vip">VIP</span><br><small style="color: var(--text-disabled);">到期: ${user.vip_expire_date || '永久'}</small>` 
+                            : '<span class="user-badge normal">普通</span>'}
+                    </td>
+                    <td><span class="status-badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? '正常' : '禁用'}</span></td>
+                    <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}</td>
+                    <td>
+                        <button class="action-btn" onclick="editUser(${user.id})" title="编辑">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        ${user.user_type !== 'admin' ? `
+                            <button class="action-btn ${user.is_vip ? 'warning' : 'success'}" 
+                                    onclick="toggleVip(${user.id}, ${user.is_vip})" 
+                                    title="${user.is_vip ? '取消VIP' : '开通VIP'}">
+                                <i class="bi bi-${user.is_vip ? 'star-fill' : 'star'}"></i>
+                            </button>
+                        ` : ''}
+                        <button class="action-btn" onclick="toggleUserStatus(${user.id}, ${user.is_active})" title="${user.is_active ? '禁用' : '启用'}">
+                            <i class="bi bi-${user.is_active ? 'toggle-on' : 'toggle-off'}"></i>
+                        </button>
+                        <button class="action-btn danger" onclick="deleteUser(${user.id})" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function filterUsers() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allUsers.filter(u => 
+                u.username.toLowerCase().includes(keyword) ||
+                (u.email && u.email.toLowerCase().includes(keyword))
+            );
+            renderUsers(filtered);
+        }
+        
+        function openModal() {
+            document.getElementById('modalTitle').textContent = '新建用户';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('passwordGroup').style.display = 'block';
+            document.getElementById('password').required = true;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+        
+        function editUser(id) {
+            const user = allUsers.find(u => u.id === id);
+            if (!user) return;
+            
+            document.getElementById('modalTitle').textContent = '编辑用户';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('username').value = user.username;
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('userType').value = user.user_type;
+            document.getElementById('passwordGroup').style.display = 'none';
+            document.getElementById('password').required = false;
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        async function saveUser() {
+            const token = localStorage.getItem('token');
+            const userId = document.getElementById('userId').value;
+            
+            const data = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value || null,
+                phone: document.getElementById('phone').value || null,
+                user_type: document.getElementById('userType').value
+            };
+            
+            if (!userId) {
+                data.password = document.getElementById('password').value;
+            }
+            
+            try {
+                const url = userId ? `/api/v1/users/${userId}` : '/api/v1/users';
+                const method = userId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '保存失败');
+                }
+                
+                closeModal();
+                loadUsers();
+            } catch (error) {
+                alert('保存失败：' + error.message);
+            }
+        }
+        
+        async function deleteUser(id) {
+            if (!confirm('确定要删除这个用户吗？')) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                await fetch(`/api/v1/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                loadUsers();
+            } catch (error) {
+                alert('删除失败');
+            }
+        }
+        
+        async function toggleVip(userId, isVip) {
+            const token = localStorage.getItem('token');
+            
+            if (isVip) {
+                if (!confirm('确定要取消该用户的VIP吗？')) return;
+                
+                try {
+                    await fetch(`/api/v1/users/${userId}/vip`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    loadUsers();
+                } catch (error) {
+                    alert('操作失败');
+                }
+            } else {
+                const days = prompt('请输入VIP天数（默认30天）：', '30');
+                if (!days) return;
+                
+                try {
+                    await fetch(`/api/v1/users/${userId}/vip`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ days: parseInt(days) })
+                    });
+                    
+                    loadUsers();
+                } catch (error) {
+                    alert('操作失败');
+                }
+            }
+        }
+        
+        async function toggleUserStatus(userId, isActive) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                await fetch(`/api/v1/users/${userId}/toggle`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                loadUsers();
+            } catch (error) {
+                alert('操作失败');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login';
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>
