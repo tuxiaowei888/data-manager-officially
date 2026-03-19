@@ -160,109 +160,245 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 ```
 数维数据管家系统/
-├── api/                    # API 路由层
-│   ├── auth.py            # 认证授权
-│   ├── evaluation.py      # 评价服务
-│   ├── rules.py           # 规则管理
-│   ├── knowledge.py       # 知识库
-│   ├── reports.py         # 报告服务
-│   ├── users.py           # 用户管理
-│   ├── customers.py       # 客户管理
-│   ├── channel.py         # 渠道管理
-│   └── config.py          # 系统配置
-├── config/                # 配置文件
-│   └── database.py        # 数据库配置
-├── data/                  # 数据文件
-│   └── seed_rules_v1.json # 种子规则
-├── database/              # 数据库相关
-│   └── backup/            # 备份文件
-├── frontend/              # 前端页面
-│   ├── login*.html        # 登录页面（多个版本）
-│   ├── home.html          # 首页
-│   ├── index.html         # 调研表单
-│   ├── report.html        # 报告展示
-│   ├── admin.html         # 管理后台
-│   ├── customers.html     # 客户管理
-│   ├── knowledge.html     # 知识库
-│   └── ui-*.css/js        # UI 组件
-├── miniprogram/           # 微信小程序
-│   ├── pages/             # 小程序页面
-│   └── app.js/json/wxss   # 小程序配置
-├── models/                # 数据库模型
-│   ├── user.py
-│   ├── evaluation_result.py
-│   ├── knowledge_doc.py
-│   ├── rule_config.py
-│   └── ...
-├── schemas/               # Pydantic 模型
-├── scripts/               # 工具脚本
-│   ├── init_db.py         # 数据库初始化
-│   └── create_admin.py    # 创建管理员
-├── services/              # 业务服务层
-│   ├── evaluation.py      # 评价服务
-│   ├── rule_calculator.py # 规则计算器
-│   ├── policy_retriever.py# 策略检索器
-│   ├── report_generator.py# 报告生成器
-│   ├── vector_store.py    # 向量存储
-│   └── ai_service.py      # AI 服务
-├── tests/                 # 测试文件
-├── .trae/skills/          # Trae AI Skills
-├── main.py                # 应用入口
-├── requirements.txt       # 项目依赖
-└── .env.example           # 环境变量示例
+├── api/                          # API 路由层（12个模块）
+│   ├── auth.py                  # 认证授权（登录/注册/Token）
+│   ├── evaluation.py            # 评价服务（核心评估引擎）
+│   ├── rules.py                 # 规则管理（31条规则CRUD）
+│   ├── knowledge.py             # 知识库文档管理
+│   ├── knowledge_category.py    # 知识库分类管理
+│   ├── reports.py               # 报告生成与查询
+│   ├── users.py                 # 用户管理
+│   ├── customers.py             # 客户管理
+│   ├── channel.py               # 渠道与推荐码管理
+│   ├── config.py                # 系统配置
+│   ├── ai_config.py             # AI服务配置
+│   └── ai_rules.py              # AI规则生成
+│
+├── config/                       # 配置文件
+│   ├── database.py              # 数据库连接配置
+│   └── logging_config.py        # 日志配置
+│
+├── data/                         # 数据文件
+│   └── seed_rules_v1.json       # 31条种子规则
+│
+├── database/                     # 数据库相关
+│   └── backup/                  # 备份脚本
+│
+├── frontend/                     # 前端页面（HTML/JS/CSS）
+│   ├── login*.html              # 登录页面（多版本）
+│   ├── home.html                # 用户首页
+│   ├── index.html               # 调研表单（核心）
+│   ├── report.html              # 评估报告展示
+│   ├── admin.html               # 管理后台
+│   ├── customers.html           # 客户管理
+│   ├── knowledge.html           # 知识库管理
+│   ├── rules.html               # 规则库管理
+│   ├── users.html               # 用户管理
+│   ├── ai_config.html           # AI配置
+│   └── ui-*.css/js              # UI组件库
+│
+├── miniprogram/                  # 微信小程序
+│   ├── pages/                   # 小程序页面
+│   │   ├── index/               # 首页
+│   │   ├── form/                # 表单填写
+│   │   ├── report/              # 报告查看
+│   │   └── profile/             # 个人中心
+│   ├── app.js                   # 小程序入口
+│   ├── app.json                 # 小程序配置
+│   └── app.wxss                 # 小程序样式
+│
+├── models/                       # 数据库模型（SQLAlchemy）
+│   ├── user.py                  # 用户模型
+│   ├── evaluation_result.py     # 评估结果
+│   ├── rule_config.py           # 规则配置（核心）
+│   ├── knowledge_doc.py         # 知识文档
+│   ├── knowledge_category.py    # 知识分类
+│   ├── channel.py               # 渠道模型
+│   ├── ai_config.py             # AI配置模型
+│   └── system_config.py         # 系统配置
+│
+├── schemas/                      # Pydantic模型（数据验证）
+│   ├── auth.py
+│   └── channel.py
+│
+├── scripts/                      # 工具脚本
+│   ├── init_db.py               # 数据库初始化
+│   ├── full_init_db.py          # 完整初始化（含规则）
+│   └── create_admin.py          # 创建管理员账号
+│
+├── services/                     # 业务服务层（核心逻辑）
+│   ├── evaluation.py            # 评价服务（主引擎）
+│   ├── rule_calculator.py       # 规则计算器
+│   ├── report_generator.py      # 报告生成器
+│   ├── policy_retriever.py      # 策略检索器
+│   ├── ai_service.py            # AI服务集成
+│   ├── vector_store.py          # 向量存储（ChromaDB）
+│   ├── pdf_service.py           # PDF生成服务
+│   └── vip_service.py           # VIP服务
+│
+├── tests/                        # 测试文件
+│
+├── .trae/skills/                 # Trae AI Skills
+│   ├── gitee代码上传/
+│   ├── github代码上传/
+│   └── ...（其他skills）
+│
+├── main.py                       # FastAPI主应用入口
+├── requirements.txt              # Python依赖（20+包）
+├── .env.example                  # 环境变量模板
+└── README.md                     # 本文件
 ```
 
-## 🔌 API 接口
+## 🔌 API 接口（12个模块，60+接口）
 
-### 认证服务
+### 🔐 认证服务 `/api/v1/auth`
 ```
-POST /api/v1/auth/login           # 用户登录
-POST /api/v1/auth/register        # 用户注册
-GET  /api/v1/auth/me              # 获取当前用户
-```
-
-### 评价服务
-```
-POST /api/v1/evaluation/evaluate         # 执行评估
-GET  /api/v1/evaluation/{id}             # 获取评估结果
-GET  /api/v1/evaluation/user/{user_id}/history  # 历史记录
-POST /api/v1/evaluation/{id}/report      # 生成报告
+POST   /login                     # 用户登录
+POST   /register                  # 用户注册
+GET    /me                        # 获取当前用户信息
+PUT    /me                        # 更新当前用户信息
+POST   /change-password           # 修改密码
 ```
 
-### 规则管理
+### 📊 评价服务 `/api/v1/evaluation`
 ```
-GET    /api/v1/rules              # 获取所有规则
-GET    /api/v1/rules/active       # 获取活跃规则
-POST   /api/v1/rules              # 创建规则
-PUT    /api/v1/rules/{id}         # 更新规则
-DELETE /api/v1/rules/{id}         # 删除规则
-```
-
-### 知识库
-```
-GET    /api/v1/knowledge          # 获取文档列表
-POST   /api/v1/knowledge          # 创建文档
-GET    /api/v1/knowledge/search   # 语义搜索
-PUT    /api/v1/knowledge/{id}     # 更新文档
-DELETE /api/v1/knowledge/{id}     # 删除文档
+POST   /evaluate                  # 执行评估（核心）
+GET    /{id}                      # 获取评估结果详情
+GET    /user/{user_id}/history    # 获取用户历史记录
+POST   /{id}/report               # 生成评估报告
+DELETE /{id}                      # 删除评估记录
 ```
 
-### 用户管理
+### 📋 规则管理 `/api/v1/rules`
 ```
-GET    /api/v1/users              # 获取用户列表
-GET    /api/v1/users/{id}         # 获取用户详情
-PUT    /api/v1/users/{id}         # 更新用户
-DELETE /api/v1/users/{id}         # 删除用户
+GET    /                          # 获取所有规则
+GET    /active                    # 获取活跃规则
+GET    /dimensions                # 获取维度列表
+POST   /                          # 创建规则
+PUT    /{id}                      # 更新规则
+DELETE /{id}                      # 删除规则
+POST   /{id}/toggle               # 启用/禁用规则
+POST   /batch-import              # 批量导入规则
+```
+
+### 📚 知识库 `/api/v1/knowledge`
+```
+GET    /                          # 获取文档列表
+POST   /                          # 创建文档
+GET    /{id}                      # 获取文档详情
+PUT    /{id}                      # 更新文档
+DELETE /{id}                      # 删除文档
+GET    /search                    # 语义搜索（向量检索）
+POST   /{id}/vectorize            # 文档向量化
+```
+
+### 📁 知识分类 `/api/v1/knowledge-categories`
+```
+GET    /                          # 获取分类列表
+POST   /                          # 创建分类
+PUT    /{id}                      # 更新分类
+DELETE /{id}                      # 删除分类
+```
+
+### 👥 用户管理 `/api/v1/users`
+```
+GET    /                          # 获取用户列表
+GET    /{id}                      # 获取用户详情
+PUT    /{id}                      # 更新用户信息
+DELETE /{id}                      # 删除用户
+PUT    /{id}/role                 # 修改用户角色
+```
+
+### 🏢 客户管理 `/api/v1/customers`
+```
+GET    /                          # 获取客户列表
+POST   /                          # 创建客户
+GET    /{id}                      # 获取客户详情
+PUT    /{id}                      # 更新客户信息
+DELETE /{id}                      # 删除客户
+```
+
+### 🔗 渠道管理 `/api/v1/channels`
+```
+GET    /                          # 获取渠道列表
+POST   /                          # 创建渠道
+GET    /{id}                      # 获取渠道详情
+PUT    /{id}                      # 更新渠道
+DELETE /{id}                      # 删除渠道
+POST   /{id}/generate-code        # 生成推荐码
+GET    /stats                     # 渠道统计
+```
+
+### 📄 报告服务 `/api/v1/reports`
+```
+GET    /                          # 获取报告列表
+GET    /{id}                      # 获取报告详情
+POST   /{id}/export/pdf           # 导出PDF
+POST   /{id}/export/word          # 导出Word
+POST   /{id}/send                 # 发送报告
+```
+
+### ⚙️ 系统配置 `/api/v1/config`
+```
+GET    /                          # 获取系统配置
+PUT    /                          # 更新系统配置
+GET    /version                   # 获取版本信息
+```
+
+### 🤖 AI配置 `/api/v1/ai-config`
+```
+GET    /                          # 获取AI配置列表
+POST   /                          # 创建AI配置
+GET    /{id}                      # 获取配置详情
+PUT    /{id}                      # 更新配置
+DELETE /{id}                      # 删除配置
+POST   /test                      # 测试AI连接
+GET    /providers                 # 获取支持的厂商列表
+```
+
+### 🤖 AI规则 `/api/v1/ai-rules`
+```
+POST   /generate                  # AI生成规则
+POST   /optimize                  # AI优化规则
+POST   /explain                   # AI解释规则
 ```
 
 ## 🛠️ 技术栈
 
-- **后端**: FastAPI + SQLAlchemy + Pydantic
-- **数据库**: MySQL + ChromaDB（向量数据库）
-- **前端**: HTML5 + CSS3 + JavaScript（原生）
-- **小程序**: 微信小程序
-- **AI**: Sentence-Transformers（文本向量化）
-- **部署**: Docker + Nginx（推荐）
+### 核心框架
+- **后端框架**: FastAPI 0.104.1（高性能异步Web框架）
+- **ORM**: SQLAlchemy 2.0.23（数据库操作）
+- **数据验证**: Pydantic 2.5.0（类型校验）
+- **认证**: PyJWT 2.8.0 + Passlib（密码哈希）
+
+### 数据库
+- **关系数据库**: MySQL 5.7+（业务数据）
+- **向量数据库**: ChromaDB 0.4.22（知识库语义检索）
+- **连接驱动**: PyMySQL 1.1.0
+
+### AI与数据处理
+- **文本向量化**: Sentence-Transformers 2.2.2
+- **Token计算**: Tiktoken 0.5.2
+- **HTTP客户端**: HTTPX 0.25.2
+- **数据计算**: Pandas 2.1.3 + NumPy
+- **规则计算**: SimpleEval 0.9.13（安全表达式求值）
+
+### 报告生成
+- **PDF生成**: XHTML2PDF 0.2.17 + ReportLab 4.0.7
+- **Word文档**: Python-Docx 1.1.0
+- **Excel处理**: OpenPyXL 3.1.2
+- **PDF解析**: PyPDF2 3.0.1
+
+### 前端
+- **Web前端**: HTML5 + CSS3 + JavaScript（原生）
+- **小程序**: 微信小程序（原生开发）
+- **UI组件**: 自定义CSS组件库
+
+### 部署与运维
+- **Web服务器**: Nginx（反向代理）
+- **进程管理**: Uvicorn 0.24.0（ASGI服务器）
+- **云服务**: 腾讯云（推荐配置）
+- **容器化**: Docker（可选）
 
 ## 📊 数据库备份与恢复
 
@@ -276,25 +412,33 @@ database/backup/恢复数据库.bat
 
 ## 🗺️ 开发路线
 
-- [x] Phase 1: 核心评估功能
-- [x] Phase 1.5: 前端表单与报告页面
-- [x] Phase 2: 报告持久化与历史查询
-- [x] Phase 3: 知识库与规则库管理
-- [x] Phase 4: 用户认证与权限管理
-- [x] Phase 5: 微信小程序端
-- [ ] Phase 6: AI 智能分析增强
-- [ ] Phase 7: 云端部署与运维
+### 已完成 ✅
+
+| 阶段 | 功能 | 状态 |
+|------|------|------|
+| Phase 1 | 核心评估引擎（8维度31规则） | ✅ |
+| Phase 2 | 前端表单与报告页面 | ✅ |
+| Phase 3 | 报告持久化与历史查询 | ✅ |
+| Phase 4 | 知识库与规则库管理 | ✅ |
+| Phase 5 | 用户认证与权限管理（JWT） | ✅ |
+| Phase 6 | 微信小程序端 | ✅ |
+| Phase 7 | AI服务集成（多厂商支持） | ✅ |
+
+### 进行中 🚧
+
+| 阶段 | 功能 | 状态 |
+|------|------|------|
+| Phase 8 | 云端部署与运维 | 🚧 |
+| Phase 9 | 数据分析仪表盘 | 📋 |
+| Phase 10 | 企业版功能（多租户） | 📋 |
 
 ## 📚 文档索引
 
-| 文档 | 说明 |
-|------|------|
-| [使用指南.md](使用指南.md) | 系统使用指南 |
-| [开发路线图.md](开发路线图.md) | 开发规划与进度 |
-| [UI 设计规范.md](UI 设计规范.md) | UI/UX 设计规范 |
-| [项目结构说明.md](项目结构说明.md) | 项目结构详解 |
-| [项目完整分析报告.md](项目完整分析报告.md) | 项目分析报告 |
-| [功能架构图.md](功能架构图.md) | 系统架构说明 |
+| 文档 | 说明 | 状态 |
+|------|------|------|
+| [使用指南.md](使用指南.md) | 系统使用指南 | ✅ 最新 |
+| [UI 设计规范.md](UI 设计规范.md) | UI/UX 设计规范 | ✅ 最新 |
+| [功能架构图.md](功能架构图.md) | 系统架构说明 | ✅ 参考 |
 
 ## ☁️ 部署建议
 
