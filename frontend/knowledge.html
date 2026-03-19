@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - 知识库管�?/title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1B3A57;
+            --primary-dark: #0F4C81;
+            --primary-light: #2E5A7C;
+            --tech-accent: #00D2FF;
+            --tech-secondary: #4ECDC4;
+            --success-color: #2ECC71;
+            --danger-color: #FF6B6B;
+            --warning-color: #FF9F43;
+            --bg-primary: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-dark: #0B1120;
+            --text-primary: #1B3A57;
+            --text-secondary: #5A6C7D;
+            --text-disabled: #99A8B8;
+            --border-light: #E8EDF2;
+            --gradient-brand: linear-gradient(135deg, #1B3A57 0%, #00D2FF 100%);
+            --font-family-zh: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
+            --font-family-num: "Roboto Mono", "DIN Alternate", "SF Mono", monospace;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-family-zh);
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-light);
+            padding: 20px 0;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-logo h1 {
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sidebar-logo i {
+            color: var(--tech-accent);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background: rgba(0, 210, 255, 0.08);
+            color: var(--tech-accent);
+            border-left: 3px solid var(--tech-accent);
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .page-title i {
+            color: var(--tech-accent);
+            margin-right: 10px;
+        }
+        
+        .btn-primary-custom {
+            background: var(--gradient-brand);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(27, 58, 87, 0.3);
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .stat-value {
+            font-family: var(--font-family-num);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-value.tech { color: var(--tech-accent); }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .table-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 13px;
+            width: 200px;
+        }
+        
+        .search-box i {
+            color: var(--text-disabled);
+        }
+        
+        .doc-list {
+            padding: 0;
+        }
+        
+        .doc-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+        
+        .doc-item:hover {
+            background: rgba(0, 210, 255, 0.03);
+        }
+        
+        .doc-item:last-child {
+            border-bottom: none;
+        }
+        
+        .doc-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(0, 210, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        
+        .doc-icon i {
+            font-size: 22px;
+            color: var(--tech-accent);
+        }
+        
+        .doc-info {
+            flex: 1;
+        }
+        
+        .doc-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .doc-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 16px;
+        }
+        
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--tech-accent);
+            color: var(--tech-accent);
+        }
+        
+        .action-btn.danger:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 17, 32, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        #viewModal .modal-content {
+            width: 90%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: hidden;
+        }
+        
+        .modal-header {
+            padding: 16px 16px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        #viewModal .modal-body {
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 300px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        #viewContent {
+            width: 100%;
+            display: block;
+            line-height: 1.8;
+            font-size: 15px;
+            color: var(--text-primary);
+            text-align: justify;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--tech-accent);
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .modal-footer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-disabled);
+            margin-bottom: 16px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            border-top-color: var(--tech-accent);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border-light);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg-primary);
+        }
+        
+        .upload-area:hover {
+            border-color: var(--tech-accent);
+            background: rgba(0, 210, 255, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--tech-accent);
+            background: rgba(0, 210, 255, 0.1);
+        }
+        
+        .doc-type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .doc-type-badge.policy { background: rgba(255, 107, 107, 0.1); color: var(--danger-color); }
+        .doc-type-badge.standard { background: rgba(0, 210, 255, 0.1); color: var(--tech-accent); }
+        .doc-type-badge.guide { background: rgba(46, 204, 113, 0.1); color: var(--success-color); }
+        .doc-type-badge.case { background: rgba(255, 159, 67, 0.1); color: var(--warning-color); }
+        .doc-type-badge.other { background: rgba(153, 168, 184, 0.1); color: var(--text-disabled); }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            margin: 2px 8px;
+        }
+        
+        .category-item:hover {
+            background: rgba(0, 210, 255, 0.05);
+        }
+        
+        .category-item.active {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--tech-accent);
+        }
+        
+        .category-item i {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        .category-item.active i {
+            color: var(--tech-accent);
+        }
+        
+        .category-item span {
+            flex: 1;
+            font-size: 13px;
+        }
+        
+        .category-item .count {
+            font-size: 11px;
+            color: var(--text-disabled);
+            background: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
+            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
+            <li><a href="/knowledge.html" class="active"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
+            <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
+            <li><a href="/reports.html"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
+            <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
+            <li><a href="/config.html"><i class="bi bi-gear"></i> VIP配置</a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title"><i class="bi bi-book"></i>知识库管�?/h1>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-secondary" onclick="vectorizeAllDocs()" id="vectorizeBtn">
+                    <i class="bi bi-database-fill-gear"></i> 批量向量�?                </button>
+                <button class="btn-primary-custom" onclick="openModal()">
+                    <i class="bi bi-plus-lg"></i> 新建文档
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDocs">0</div>
+                <div class="stat-label">文档总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value tech" id="totalChars">0</div>
+                <div class="stat-label">总字符数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value success" id="totalCategories">0</div>
+                <div class="stat-label">目录分类</div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 20px;">
+            <!-- 左侧目录分类 -->
+            <div class="content-card" style="width: 240px; flex-shrink: 0;">
+                <div class="table-header">
+                    <span class="table-title">目录分类</span>
+                </div>
+                <div id="categoryList" style="padding: 8px 0;">
+                    <div class="category-item active" onclick="selectCategory(null)">
+                        <i class="bi bi-folder2-open"></i>
+                        <span>全部文档</span>
+                        <span class="count" id="allCount">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧文档列表 -->
+            <div class="content-card" style="flex: 1;">
+                <div class="table-header">
+                    <span class="table-title" id="docListTitle">文档列表</span>
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="搜索文档..." id="searchInput" oninput="filterDocs()">
+                    </div>
+                </div>
+                
+                <div class="doc-list" id="docList">
+                    <div style="text-align: center; padding: 40px;">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" style="width: 650px;">
+            <div class="modal-header">
+                <h3 class="modal-title">新建文档</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="docForm">
+                    <div class="form-group">
+                        <label class="form-label">文档标题 <span style="color: var(--danger-color);">*</span></label>
+                        <input type="text" class="form-control" id="docTitle" required placeholder="请输入文档标�?>
+                    </div>
+                    
+                    <div class="form-row" style="display: flex; gap: 16px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">目录分类</label>
+                            <select class="form-control" id="categoryId">
+                                <option value="">请选择分类</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">来源</label>
+                            <input type="text" class="form-control" id="docSource" placeholder="如：国务院、工信部�?>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">文档内容</label>
+                        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                            <i class="bi bi-cloud-upload" style="font-size: 32px; color: var(--text-disabled);"></i>
+                            <p style="margin: 8px 0 0; color: var(--text-secondary);">点击上传文件或拖拽文件到此处</p>
+                            <p style="font-size: 12px; color: var(--text-disabled);">支持 .txt, .md, .doc, .docx, .pdf 格式</p>
+                            <input type="file" id="fileInput" accept=".txt,.md,.doc,.docx,.pdf" style="display: none;" onchange="handleFileUpload(event)">
+                        </div>
+                        <div id="fileInfo" style="display: none; margin-top: 12px; padding: 12px; background: var(--bg-primary); border-radius: 8px;">
+                            <span id="fileName" style="color: var(--text-primary);"></span>
+                            <button type="button" onclick="clearFile()" style="float: right; background: none; border: none; color: var(--danger-color); cursor: pointer;">
+                                <i class="bi bi-x-circle"></i> 移除
+                            </button>
+                        </div>
+                        <div style="text-align: center; color: var(--text-disabled); margin: 12px 0;">�?或者手动输�?�?/div>
+                        <textarea class="form-control" id="docContent" rows="8" placeholder="请输入文档内容，支持政策法规、行业规范等文本..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn-primary-custom" onclick="saveDoc()">保存文档</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="viewTitle">文档详情</h3>
+                <button class="modal-close" onclick="closeViewModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="viewContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary-custom" onclick="closeViewModal()">
+                    <i class="bi bi-x-lg"></i> 关闭
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allDocs = [];
+        let allCategories = [];
+        let currentCategoryId = null;
+        
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            
+            if (!token || !userInfo) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            try {
+                const user = JSON.parse(userInfo);
+                if (user.user_type !== 'admin') {
+                    alert('无权限访问：此页面仅限管理员使用');
+                    window.location.href = '/survey';
+                    return false;
+                }
+            } catch (e) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        async function loadCategories() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/v1/knowledge-categories', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('加载分类失败');
+                
+                allCategories = await response.json();
+                renderCategories();
+                updateCategorySelect();
+            } catch (error) {
+                console.error('加载分类失败:', error);
+            }
+        }
+        
+        function renderCategories() {
+            const container = document.getElementById('categoryList');
+            
+            let html = `
+                <div class="category-item ${currentCategoryId === null ? 'active' : ''}" onclick="selectCategory(null)">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>全部文档</span>
+                    <span class="count" id="allCount">${allDocs.length}</span>
+                </div>
+            `;
+            
+            allCategories.forEach(cat => {
+                const count = allDocs.filter(d => d.category_id === cat.id).length;
+                html += `
+                    <div class="category-item ${currentCategoryId === cat.id ? 'active' : ''}" onclick="selectCategory(${cat.id})">
+                        <i class="${cat.icon || 'bi bi-folder'}"></i>
+                        <span>${cat.name}</span>
+                        <span class="count">${count}</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('totalCategories').textContent = allCategories.length;
+        }
+        
+        function updateCategorySelect() {
+            const select = document.getElementById('categoryId');
+            select.innerHTML = '<option value="">请选择分类</option>';
+            
+            allCategories.forEach(cat => {
+                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+            });
+        }
+        
+        function selectCategory(categoryId) {
+            currentCategoryId = categoryId;
+            
+            // 更新选中状�?            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // 更新标题
+            if (categoryId === null) {
+                document.getElementById('docListTitle').textContent = '文档列表';
+            } else {
+                const cat = allCategories.find(c => c.id === categoryId);
+                document.getElementById('docListTitle').textContent = cat ? cat.name : '文档列表';
+            }
+            
+            filterDocs();
+        }
+        
+        async function loadDocs() {
+            if (!checkAuth()) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/v1/knowledge', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('加载失败');
+                
+                allDocs = await response.json();
+                updateStats();
+                renderCategories(); // 更新分类计数
+                renderDocs(allDocs);
+            } catch (error) {
+                document.getElementById('docList').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--danger-color);">
+                        加载失败，请刷新重试
+                    </div>
+                `;
+            }
+        }
+        
+        function updateStats() {
+            const total = allDocs.length;
+            const chars = allDocs.reduce((sum, d) => sum + (d.content?.length || 0), 0);
+            
+            document.getElementById('totalDocs').textContent = total;
+            document.getElementById('totalChars').textContent = chars.toLocaleString();
+        }
+        
+        function renderDocs(docs) {
+            const container = document.getElementById('docList');
+            
+            if (docs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <p>暂无文档数据</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = docs.map(doc => `
+                <div class="doc-item">
+                    <div class="doc-icon">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">${doc.title}</div>
+                        <div class="doc-meta">
+                            ${doc.category_id ? `<span class="doc-type-badge">${getCategoryName(doc.category_id)}</span>` : ''}
+                            ${doc.source ? `<span><i class="bi bi-link-45deg"></i> ${doc.source}</span>` : ''}
+                            <span><i class="bi bi-text-paragraph"></i> ${(doc.content?.length || 0).toLocaleString()} 字符</span>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <button class="action-btn" onclick="viewDoc(${doc.id})" title="查看">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="action-btn danger" onclick="deleteDoc(${doc.id})" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function filterDocs() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = allDocs;
+            
+            // 按目录分类筛�?            if (currentCategoryId !== null) {
+                filtered = filtered.filter(d => d.category_id === currentCategoryId);
+            }
+            
+            // 按关键词筛�?            if (keyword) {
+                filtered = filtered.filter(d => 
+                    d.title.toLowerCase().includes(keyword) ||
+                    (d.content && d.content.toLowerCase().includes(keyword))
+                );
+            }
+            
+            renderDocs(filtered);
+        }
+        
+        function openModal() {
+            document.getElementById('docForm').reset();
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+        
+        let uploadedFileName = '';
+        let uploadedFile = null;
+        
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            uploadedFileName = file.name;
+            uploadedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileInfo').style.display = 'block';
+            
+            const ext = file.name.toLowerCase().split('.').pop();
+            
+            if (ext === 'txt' || ext === 'md') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('docContent').value = e.target.result;
+                };
+                reader.readAsText(file);
+            } else {
+                document.getElementById('docContent').value = '';
+                document.getElementById('docContent').placeholder = 'PDF/Word文件将在保存时由服务器解析，请直接点�?保存文档"';
+            }
+        }
+        
+        function clearFile() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            uploadedFileName = '';
+            uploadedFile = null;
+            document.getElementById('docContent').placeholder = '请输入文档内容，支持政策法规、行业规范等文本...';
+        }
+        
+        function getCategoryName(categoryId) {
+            const cat = allCategories.find(c => c.id === categoryId);
+            return cat ? cat.name : '未分�?;
+        }
+        
+        async function viewDoc(id) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`/api/v1/knowledge/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('获取文档失败');
+                
+                const doc = await response.json();
+                
+                document.getElementById('viewTitle').textContent = doc.title;
+                let content = (doc.content || '无内�?).replace(/\n\s*\n/g, '\n\n');
+                document.getElementById('viewContent').innerHTML = content.replace(/\n/g, '<br>');
+                document.getElementById('viewModal').classList.add('active');
+            } catch (error) {
+                alert('获取文档详情失败�? + error.message);
+            }
+        }
+        
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.remove('active');
+        }
+        
+        async function saveDoc() {
+            const token = localStorage.getItem('token');
+            
+            const title = document.getElementById('docTitle').value;
+            const content = document.getElementById('docContent').value;
+            const source = document.getElementById('docSource').value;
+            const categoryId = document.getElementById('categoryId').value;
+            
+            if (!title) {
+                alert('请填写文档标�?);
+                return;
+            }
+            
+            const ext = uploadedFileName ? uploadedFileName.toLowerCase().split('.').pop() : '';
+            
+            if (uploadedFile && (ext === 'pdf' || ext === 'doc' || ext === 'docx')) {
+                const formData = new FormData();
+                formData.append('file', uploadedFile);
+                
+                const params = new URLSearchParams();
+                params.append('title', title);
+                if (categoryId) params.append('category_id', categoryId);
+                if (source) params.append('doc_type', source);
+                
+                try {
+                    const response = await fetch(`/api/v1/knowledge/upload?${params.toString()}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.detail || '上传失败');
+                    }
+                    
+                    closeModal();
+                    await loadDocs();
+                    alert('保存成功');
+                } catch (error) {
+                    alert('保存失败�? + error.message);
+                }
+                return;
+            }
+            
+            if (!content) {
+                alert('请填写文档内容或上传文件');
+                return;
+            }
+            
+            const data = {
+                title: title,
+                content: content,
+                source: source,
+                category_id: categoryId ? parseInt(categoryId) : null
+            };
+            
+            try {
+                const response = await fetch('/api/v1/knowledge', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) throw new Error('保存失败');
+                
+                closeModal();
+                await loadDocs();
+                alert('保存成功');
+            } catch (error) {
+                alert('保存失败�? + error.message);
+            }
+        }
+        
+        async function deleteDoc(id) {
+            if (!confirm('确定要删除这篇文档吗�?)) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`/api/v1/knowledge/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert('删除失败�? + (error.detail || '未知错误'));
+                    return;
+                }
+                
+                allDocs = allDocs.filter(d => d.id !== id);
+                renderDocs(currentCategoryId !== null ? allDocs.filter(d => d.category_id === currentCategoryId) : allDocs);
+                updateStats();
+                renderCategories();
+                alert('删除成功');
+            } catch (error) {
+                alert('删除失败�? + error.message);
+            }
+        }
+        
+        async function vectorizeAllDocs() {
+            if (!confirm('确定要批量向量化所有文档吗？\n\n这可能需要一些时间，取决于文档数量�?)) return;
+            
+            const token = localStorage.getItem('token');
+            const btn = document.getElementById('vectorizeBtn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 启动�?..';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/v1/knowledge/vectorize-all', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.is_running) {
+                    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 处理�?0%...';
+                    await pollVectorizeProgress(btn, originalText);
+                } else if (result.status === 'warning') {
+                    if (result.data && result.data.is_running) {
+                        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 处理�?..';
+                        await pollVectorizeProgress(btn, originalText);
+                    } else {
+                        alert(result.message || '处理失败');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                } else {
+                    alert(result.message || '处理失败');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                alert('批量向量化失败：' + error.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        async function pollVectorizeProgress(btn, originalText) {
+            const token = localStorage.getItem('token');
+            
+            while (true) {
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    const response = await fetch('/api/v1/knowledge/vectorize-status', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    const status = await response.json();
+                    
+                    if (status.is_running) {
+                        const progress = status.progress || 0;
+                        btn.innerHTML = `<i class="bi bi-hourglass-split"></i> 处理�?${progress}% (${status.processed}/${status.total})`;
+                    } else if (status.completed) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        
+                        if (status.error) {
+                            alert(`向量化过程中发生错误�?{status.error}`);
+                        } else {
+                            alert(`批量向量化完成！\n\n总计: ${status.total}\n成功: ${status.success}\n失败: ${status.fail}\n跳过: ${status.skipped}`);
+                        }
+                        break;
+                    } else {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        break;
+                    }
+                } catch (error) {
+                    console.error('获取进度失败:', error);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    alert('获取进度失败�? + error.message);
+                    break;
+                }
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login';
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCategories();
+            await loadDocs();
+            renderCategories(); // 文档加载后更新分类计�?            
+            // 拖拽上传支持
+            const uploadArea = document.getElementById('uploadArea');
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    document.getElementById('fileInput').files = e.dataTransfer.files;
+                    handleFileUpload({ target: { files: [file] } });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

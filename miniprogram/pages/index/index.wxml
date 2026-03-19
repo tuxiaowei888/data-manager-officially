@@ -1,0 +1,78 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 未登录状态 -->
+  <view wx:if="{{!hasLogin}}" class="login-section">
+    <view class="logo-section">
+      <view class="logo-wrapper">
+        <view class="logo-icon">
+          <text class="logo-text">数维</text>
+        </view>
+        <view class="logo-glow"></view>
+      </view>
+      <text class="title">数维数据管家</text>
+      <text class="subtitle">企业数据资产价值评估专家</text>
+    </view>
+    
+    <view class="login-form">
+      <view class="input-group">
+        <input class="input" placeholder="请输入用户名" bindinput="inputUsername" />
+      </view>
+      <view class="input-group">
+        <input class="input" type="password" placeholder="请输入密码" bindinput="inputPassword" />
+      </view>
+      <button class="btn-primary" bindtap="handleLogin">
+        <text class="btn-text">登录</text>
+      </button>
+    </view>
+  </view>
+  
+  <!-- 已登录状态 -->
+  <view wx:else class="home-section">
+    <view class="welcome-card">
+      <text class="welcome-text">欢迎回来</text>
+      <text class="welcome-sub">{{userInfo.username}}</text>
+      <text class="vip-badge" wx:if="{{userInfo.is_vip}}">VIP会员</text>
+    </view>
+    
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-num">{{stats.evalCount}}</text>
+        <text class="stat-label">评估次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{stats.reportCount}}</text>
+        <text class="stat-label">报告数量</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{stats.remaining}}</text>
+        <text class="stat-label">剩余次数</text>
+      </view>
+    </view>
+    
+    <button class="btn-start" bindtap="startEvaluate">
+      <text class="btn-icon">✨</text>
+      <text class="btn-start-text">开始评估</text>
+    </button>
+    
+    <view class="recent-reports" wx:if="{{recentReports.length > 0}}">
+      <text class="section-title">最近报告</text>
+      <view class="report-list">
+        <view class="report-item" wx:for="{{recentReports}}" wx:key="id" bindtap="viewReport" data-id="{{item.id}}">
+          <view class="report-info">
+            <text class="report-org">{{item.org_name}}</text>
+            <text class="report-meta">{{item.created_at}}</text>
+          </view>
+          <view class="report-right">
+            <text class="report-score {{item.total_score >= 80 ? 'high' : (item.total_score >= 60 ? 'mid' : 'low')}}">{{item.total_score}}</text>
+            <text class="report-arrow">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view wx:else class="empty-state">
+      <text class="empty-icon">📊</text>
+      <text class="empty-text">暂无评估记录</text>
+    </view>
+  </view>
+</view>

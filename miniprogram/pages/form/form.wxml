@@ -1,0 +1,180 @@
+<!--form.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">数据资产评估</text>
+    <text class="step">第 {{currentStep}} / {{totalSteps}} 步</text>
+  </view>
+  
+  <view class="progress-bar">
+    <view class="progress-fill" style="width: {{currentStep / totalSteps * 100}}%"></view>
+  </view>
+  
+  <scroll-view class="form-content" scroll-y>
+    <!-- Step 1: 企业基本信息 -->
+    <view wx:if="{{currentStep === 1}}" class="step-content">
+      <text class="step-title">企业基本信息</text>
+      
+      <view class="form-item">
+        <text class="label">企业名称 *</text>
+        <input class="input" placeholder="请输入企业全称" model:value="{{formData.org_name}}" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">统一社会信用代码</text>
+        <input class="input" placeholder="请输入信用代码" model:value="{{formData.org_code}}" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">所属行业</text>
+        <picker mode="selector" range="{{industries}}" bindchange="bindIndustryChange">
+          <view class="picker">
+            {{formData.industry || '请选择行业'}}
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-item">
+        <text class="label">企业规模</text>
+        <picker mode="selector" range="{{companySizes}}" bindchange="bindSizeChange">
+          <view class="picker">
+            {{formData.company_size || '请选择规模'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+    
+    <!-- Step 2: 数据资源情况 -->
+    <view wx:if="{{currentStep === 2}}" class="step-content">
+      <text class="step-title">数据资源情况</text>
+      
+      <view class="form-item">
+        <text class="label">数据类型（可多选）</text>
+        <checkbox-group bindchange="bindDataTypesChange">
+          <label class="checkbox-item" wx:for="{{dataTypes}}" wx:key="value">
+            <checkbox value="{{item.value}}" checked="{{formData.data_types && formData.data_types.includes(item.value)}}"/>
+            <text>{{item.label}}</text>
+          </label>
+        </checkbox-group>
+      </view>
+      
+      <view class="form-item">
+        <text class="label">数据存储量（TB）</text>
+        <input class="input" type="digit" placeholder="请输入存储量" model:value="{{formData.data_volume}}" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">数据更新时间</text>
+        <picker mode="date" bindchange="bindUpdateTimeChange">
+          <view class="picker">
+            {{formData.update_frequency || '请选择更新频率'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+    
+    <!-- Step 3: 合规性评估 -->
+    <view wx:if="{{currentStep === 3}}" class="step-content">
+      <text class="step-title">合规性评估</text>
+      
+      <view class="form-item">
+        <text class="label">数据来源合法性</text>
+        <radio-group bindchange="bindCompliance1Change">
+          <label class="radio-item" wx:for="{{yesNoOptions}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{formData.compliance_source === item.value}}"/>
+            <text>{{item.label}}</text>
+          </label>
+        </radio-group>
+      </view>
+      
+      <view class="form-item">
+        <text class="label">是否有隐私脱敏</text>
+        <radio-group bindchange="bindCompliance2Change">
+          <label class="radio-item" wx:for="{{yesNoOptions}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{formData.compliance_privacy === item.value}}"/>
+            <text>{{item.label}}</text>
+          </label>
+        </radio-group>
+      </view>
+      
+      <view class="form-item">
+        <text class="label">授权链条是否完整</text>
+        <radio-group bindchange="bindCompliance3Change">
+          <label class="radio-item" wx:for="{{yesNoOptions}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{formData.compliance_auth === item.value}}"/>
+            <text>{{item.label}}</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+    
+    <!-- Step 4: 数据质量 -->
+    <view wx:if="{{currentStep === 4}}" class="step-content">
+      <text class="step-title">数据质量评估</text>
+      
+      <view class="form-item">
+        <text class="label">数据完整性</text>
+        <slider min="0" max="100" show-value bindchange="bindQuality1Change" value="{{formData.quality_completeness || 0}}"/>
+      </view>
+      
+      <view class="form-item">
+        <text class="label">数据准确性</text>
+        <slider min="0" max="100" show-value bindchange="bindQuality2Change" value="{{formData.quality_accuracy || 0}}"/>
+      </view>
+      
+      <view class="form-item">
+        <text class="label">数据及时性</text>
+        <slider min="0" max="100" show-value bindchange="bindQuality3Change" value="{{formData.quality_timeliness || 0}}"/>
+      </view>
+    </view>
+    
+    <!-- Step 5: 价值评估 -->
+    <view wx:if="{{currentStep === 5}}" class="step-content">
+      <text class="step-title">价值评估</text>
+      
+      <view class="form-item">
+        <text class="label">应用场景数量</text>
+        <input class="input" type="number" placeholder="请输入场景数量" model:value="{{formData.scenario_count}}" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">年收益预估（万元）</text>
+        <input class="input" type="digit" placeholder="请输入年收益" model:value="{{formData.annual_revenue}}" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">成本节约（万元）</text>
+        <input class="input" type="digit" placeholder="请输入成本节约" model:value="{{formData.cost_saving}}" />
+      </view>
+    </view>
+    
+    <!-- Step 6: 确认提交 -->
+    <view wx:if="{{currentStep === 6}}" class="step-content">
+      <text class="step-title">确认提交</text>
+      
+      <view class="summary-card">
+        <view class="summary-item">
+          <text class="summary-label">企业名称：</text>
+          <text class="summary-value">{{formData.org_name || '-'}}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">所属行业：</text>
+          <text class="summary-value">{{formData.industry || '-'}}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">企业规模：</text>
+          <text class="summary-value">{{formData.company_size || '-'}}</text>
+        </view>
+      </view>
+      
+      <view class="notice">
+        <text class="notice-text">提交后将开始评估，请确保信息填写准确</text>
+      </view>
+    </view>
+  </scroll-view>
+  
+  <view class="footer">
+    <button class="btn-secondary" wx:if="{{currentStep > 1}}" bindtap="prevStep">上一步</button>
+    <button class="btn-primary" wx:if="{{currentStep < totalSteps}}" bindtap="nextStep">下一步</button>
+    <button class="btn-primary" wx:if="{{currentStep === totalSteps}}" bindtap="submitForm" loading="{{submitting}}">提交评估</button>
+  </view>
+</view>

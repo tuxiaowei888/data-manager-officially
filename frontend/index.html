@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - 数据资产化深度调�?/title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1B3A57;
+            --primary-dark: #0F4C81;
+            --primary-light: #2E5A7C;
+            --tech-accent: #00D2FF;
+            --tech-secondary: #4ECDC4;
+            --success-color: #2ECC71;
+            --success-light: #58D68D;
+            --danger-color: #FF6B6B;
+            --warning-color: #FF9F43;
+            --danger-light: #FFB3B3;
+            --bg-primary: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-dark: #0B1120;
+            --text-primary: #1B3A57;
+            --text-secondary: #5A6C7D;
+            --text-disabled: #99A8B8;
+            --border-light: #E8EDF2;
+            --border-focus: #1B3A57;
+            --gradient-brand: linear-gradient(135deg, #1B3A57 0%, #00D2FF 100%);
+            --gradient-tech: linear-gradient(135deg, #00D2FF 0%, #4ECDC4 100%);
+            --font-family-zh: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
+            --font-family-num: "Roboto Mono", "DIN Alternate", "SF Mono", monospace;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family-zh);
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .header-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-brand);
+        }
+        
+        .header-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 26px;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-title i {
+            color: var(--tech-accent);
+            margin-right: 12px;
+        }
+        
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        .header-info {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(0, 210, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--tech-accent);
+        }
+        
+        .header-info i {
+            color: var(--tech-accent);
+        }
+        
+        .form-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            position: relative;
+            padding: 0 20px;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: var(--border-light);
+            z-index: 1;
+        }
+        
+        .step-indicator .progress-line {
+            position: absolute;
+            top: 18px;
+            left: 40px;
+            height: 2px;
+            background: var(--gradient-brand);
+            z-index: 2;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 3;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-light);
+            color: var(--text-disabled);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(27, 58, 87, 0.15);
+        }
+        
+        .step.completed .step-circle {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
+        }
+        
+        .step.completed .step-circle i {
+            font-size: 16px;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: var(--text-disabled);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .step.completed .step-label {
+            color: var(--success-color);
+        }
+        
+        .progress-section {
+            margin-bottom: 32px;
+            padding: 16px 20px;
+            background: rgba(27, 58, 87, 0.03);
+            border-radius: 12px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .progress-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .progress-value {
+            font-family: var(--font-family-num);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .progress-segmented {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        
+        .progress-node {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-light);
+            transition: all 0.3s ease;
+        }
+        
+        .progress-node.completed {
+            background: var(--success-color);
+            box-shadow: 0 0 6px rgba(46, 204, 113, 0.3);
+        }
+        
+        .progress-node.active {
+            background: var(--tech-accent);
+            animation: node-pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes node-pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            border-left: 4px solid var(--tech-accent);
+            letter-spacing: -0.3px;
+        }
+        
+        .section-title i {
+            color: var(--tech-accent);
+            margin-right: 10px;
+        }
+        
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 24px;
+            padding-left: 20px;
+        }
+        
+        .form-question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border-left: 3px solid var(--tech-accent);
+            transition: all 0.3s ease;
+        }
+        
+        .form-question:hover {
+            background: rgba(0, 210, 255, 0.03);
+        }
+        
+        .form-question:focus-within {
+            border-left-color: var(--primary-color);
+            background: rgba(27, 58, 87, 0.02);
+        }
+        
+        .question-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: block;
+        }
+        
+        .required-mark {
+            color: var(--danger-color);
+            margin-left: 4px;
+        }
+        
+        .form-control, .form-select {
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(27, 58, 87, 0.1);
+            outline: none;
+        }
+        
+        ::placeholder {
+            color: var(--text-disabled);
+            opacity: 1;
+        }
+        
+        .form-control:focus::placeholder {
+            color: transparent;
+        }
+        
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+            cursor: pointer;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(27, 58, 87, 0.15);
+        }
+        
+        .form-check-label {
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        
+        .form-check {
+            margin-bottom: 8px;
+        }
+        
+        .btn-custom {
+            padding: 12px 28px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .btn-custom:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary-custom {
+            background: var(--gradient-brand);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(27, 58, 87, 0.25);
+        }
+        
+        .btn-primary-custom:hover {
+            box-shadow: 0 6px 20px rgba(27, 58, 87, 0.35);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-secondary-custom {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+        
+        .btn-secondary-custom:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--border-focus);
+        }
+        
+        .btn-success-custom {
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-success-custom:hover {
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-success-custom::after {
+            content: " �?;
+            display: inline-block;
+        }
+        
+        .input-group-text {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .form-range {
+            height: 8px;
+        }
+        
+        .form-range::-webkit-slider-thumb {
+            background: var(--primary-color);
+            box-shadow: 0 2px 6px rgba(27, 58, 87, 0.3);
+        }
+        
+        .form-range::-webkit-slider-runnable-track {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+        
+        .badge {
+            font-family: var(--font-family-num);
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        
+        .badge.bg-primary {
+            background: var(--primary-color) !important;
+        }
+        
+        .other-input-wrapper {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 210, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--tech-accent);
+        }
+        
+        .other-input-wrapper input,
+        .other-input-wrapper textarea {
+            border: 1px dashed var(--tech-accent);
+            background: var(--bg-card);
+        }
+        
+        .other-input-wrapper input:focus,
+        .other-input-wrapper textarea:focus {
+            border-style: solid;
+            border-color: var(--primary-color);
+        }
+        
+        .other-input-label {
+            font-size: 12px;
+            color: var(--tech-accent);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--border-light) 25%,
+                var(--bg-card) 50%,
+                var(--border-light) 75%
+            );
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 8px;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 17, 32, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .engine-breathing {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(0, 210, 255, 0.4) 0%, 
+                transparent 70%);
+            animation: engine-breathe 2s ease-in-out infinite;
+            margin-bottom: 24px;
+        }
+        
+        @keyframes engine-breathe {
+            0%, 100% { transform: scale(0.95); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .loading-subtext {
+            color: var(--tech-accent);
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        
+        .nav-vip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #FF9F43 0%, #F7931A 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .nav-vip-badge i {
+            font-size: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 24px 20px;
+            }
+            
+            .form-container {
+                padding: 24px 20px;
+            }
+            
+            .step-indicator {
+                padding: 0;
+            }
+            
+            .step-indicator::before {
+                left: 18px;
+                right: 18px;
+            }
+            
+            .step-indicator .progress-line {
+                left: 18px;
+            }
+            
+            .step-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+            
+            .step-label {
+                font-size: 10px;
+            }
+            
+            .form-question {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 900px;">
+        <!-- 顶部导航 -->
+        <div class="d-flex justify-content-between align-items-center mb-3" style="padding: 0 10px;">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 13px; color: var(--text-secondary);">
+                    <i class="bi bi-person-circle"></i>
+                    <span id="navUserName">游客</span>
+                </span>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/history.html" class="btn btn-sm" style="background: rgba(0, 210, 255, 0.1); color: var(--tech-accent); border: 1px solid rgba(0, 210, 255, 0.3); font-size: 12px;">
+                    <i class="bi bi-clock-history"></i> 历史报告
+                </a>
+                <button id="navLogoutBtn" onclick="handleLogout()" class="btn btn-sm" style="display: none; background: rgba(255, 107, 107, 0.1); color: var(--danger-color); border: 1px solid rgba(255, 107, 107, 0.3); font-size: 12px;">
+                    <i class="bi bi-box-arrow-right"></i> 退�?                </button>
+                <a id="navLoginBtn" href="/login.html" class="btn btn-sm" style="background: rgba(27, 58, 87, 0.1); color: var(--primary-color); border: 1px solid var(--border-light); font-size: 12px;">
+                    <i class="bi bi-box-arrow-in-right"></i> 登录
+                </a>
+            </div>
+        </div>
+        
+        <div class="header-section text-center">
+            <h1 class="header-title">
+                <i class="bi bi-pie-chart-fill"></i>数维·数据资产管家 - 数据要素资产化深度调研表
+            </h1>
+            <p class="header-subtitle">
+                Shuwei Data Element Assetization Deep Survey
+            </p>
+            <div class="header-info">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    填写完成后，系统将基�?b>数维·智规融合引擎 v1.0</b>，自动生成包含成熟度评分、诊断结果、转化路径、价值预测的专业报告
+                </small>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="step-indicator">
+                <div class="progress-line" id="progress-line"></div>
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">机构画像</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">合规安全</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">数据资源</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">确权成本</div>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">价值需�?/div>
+                </div>
+                <div class="step" data-step="6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">联系信息</div>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label"><i class="bi bi-bar-chart me-1"></i>填写进度</span>
+                    <span class="progress-value" id="progress-text">17%</span>
+                </div>
+                <div class="progress-segmented" id="progress-segments">
+                    <div class="progress-node active"></div>
+                    <div class="progress-node"></div>
+                    <div class="progress-node"></div>
+                    <div class="progress-node"></div>
+                    <div class="progress-node"></div>
+                    <div class="progress-node"></div>
+                </div>
+            </div>
+
+            <form id="surveyForm">
+                <div class="form-section active" data-section="1">
+                    <h2 class="section-title">
+                        <i class="bi bi-building"></i>第一部分：机构基础画像
+                    </h2>
+                    <p class="section-desc">
+                        用于确定行业基准、政策匹配度及企业规模系数�?span class="text-danger">*</span> 号为必填�?                    </p>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.1 机构名称 <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" name="org_name" required placeholder="请填写机构全�?>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.2 机构类型 <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="企业机构" required>
+                                <label class="form-check-label">企业机构</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="政府机构">
+                                <label class="form-check-label">政府机构</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="事业单位">
+                                <label class="form-check-label">事业单位</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="科研院所">
+                                <label class="form-check-label">科研院所</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="高校">
+                                <label class="form-check-label">高校</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="社会组织">
+                                <label class="form-check-label">社会组织</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="org_type" value="其他" id="org_type_other" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none mt-2">
+                                <input type="text" class="form-control" name="org_type_other" placeholder="请填写其他机构类�?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.3 在册人员规模 <span class="required-mark">*</span>
+                        </label>
+                        <select class="form-select" name="staff_size" required>
+                            <option value="">请选择</option>
+                            <option value="50 人及以下">50 人及以下</option>
+                            <option value="51-100 �?>51-100 �?/option>
+                            <option value="101-500 �?>101-500 �?/option>
+                            <option value="500 人以�?>500 人以�?/option>
+                        </select>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.4 注册�?运营�?<span class="required-mark">*</span>
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select" name="province" id="province" required onchange="updateCities()">
+                                    <option value="">请选择省份</option>
+                                    <option value="四川�?>四川�?/option>
+                                    <option value="重庆�?>重庆�?/option>
+                                    <option value="北京�?>北京�?/option>
+                                    <option value="天津�?>天津�?/option>
+                                    <option value="河北�?>河北�?/option>
+                                    <option value="山西�?>山西�?/option>
+                                    <option value="内蒙古自治区">内蒙古自治区</option>
+                                    <option value="辽宁�?>辽宁�?/option>
+                                    <option value="吉林�?>吉林�?/option>
+                                    <option value="黑龙江省">黑龙江省</option>
+                                    <option value="上海�?>上海�?/option>
+                                    <option value="江苏�?>江苏�?/option>
+                                    <option value="浙江�?>浙江�?/option>
+                                    <option value="安徽�?>安徽�?/option>
+                                    <option value="福建�?>福建�?/option>
+                                    <option value="江西�?>江西�?/option>
+                                    <option value="山东�?>山东�?/option>
+                                    <option value="河南�?>河南�?/option>
+                                    <option value="湖北�?>湖北�?/option>
+                                    <option value="湖南�?>湖南�?/option>
+                                    <option value="广东�?>广东�?/option>
+                                    <option value="广西壮族自治�?>广西壮族自治�?/option>
+                                    <option value="海南�?>海南�?/option>
+                                    <option value="贵州�?>贵州�?/option>
+                                    <option value="云南�?>云南�?/option>
+                                    <option value="西藏自治�?>西藏自治�?/option>
+                                    <option value="陕西�?>陕西�?/option>
+                                    <option value="甘肃�?>甘肃�?/option>
+                                    <option value="青海�?>青海�?/option>
+                                    <option value="宁夏回族自治�?>宁夏回族自治�?/option>
+                                    <option value="新疆维吾尔自治区">新疆维吾尔自治区</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select" name="city" id="city" required disabled>
+                                    <option value="">请先选择省份</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.5 是否设有专门的数据管理部门？ <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="has_data_dept" value="�? required onchange="toggleDeptInput()">
+                                <label class="form-check-label">�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="has_data_dept" value="�? onchange="toggleDeptInput()">
+                                <label class="form-check-label">�?/label>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control mt-2" name="dept_name" id="dept_name" placeholder="若有，请填写部门名称" disabled>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.6 现有知识产权存量 <span class="required-mark">*</span>
+                        </label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" name="ip_trademark" placeholder="商标 (�?" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" name="ip_patent" placeholder="专利 (�?" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" name="ip_copyright" placeholder="软著 (�?" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" name="ip_work" placeholder="作品著作�?(�?" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            1.7 年营收规�?(企业�?
+                        </label>
+                        <select class="form-select" name="revenue">
+                            <option value="">请选择</option>
+                            <option value="<5000 �?><5000 �?/option>
+                            <option value="5000 �?-2 �?>5000 �?-2 �?/option>
+                            <option value="2 �?-10 �?>2 �?-10 �?/option>
+                            <option value=">10 �?>&gt;10 �?/option>
+                            <option value="不适用">不适用</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section" data-section="2">
+                    <h2 class="section-title">
+                        <i class="bi bi-shield-check"></i>第二部分：合规与安全底座
+                    </h2>
+                    <p class="section-desc">
+                        对应报告维度：合规�?(30%)。此部分决定是否存在"一票否�?风险�?                    </p>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.1 数据主要来源 <span class="required-mark">*</span> (多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_source" value="内部系统">
+                                <label class="form-check-label">内部系统 (数据�?文件服务�?</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_source" value="用户自主提供">
+                                <label class="form-check-label">用户自主提供</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_source" value="公共数据授权">
+                                <label class="form-check-label">公共数据授权</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_source" value="外部采购">
+                                <label class="form-check-label">外部采购/合作共享</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_source" value="爬虫采集">
+                                <label class="form-check-label">爬虫/公开采集</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_source" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none mt-2">
+                                <input type="text" class="form-control" name="data_source_other" placeholder="请填写其他数据来�?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.2 用户授权情况 <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_auth" value="有明确隐私协议且单独同意" required>
+                                <label class="form-check-label">有明确隐私协议且单独同意</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_auth" value="有概括性协�?>
+                                <label class="form-check-label">有概括性协�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_auth" value="无明确协�?>
+                                <label class="form-check-label">无明确协�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_auth" value="不涉及个人数�?>
+                                <label class="form-check-label">不涉及个人数�?/label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.3 敏感数据处理方式 <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sensitive_data" value="已脱�?匿名�?(不可复原)" required>
+                                <label class="form-check-label">已脱�?匿名�?(不可复原)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sensitive_data" value="加密存储">
+                                <label class="form-check-label">加密存储</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sensitive_data" value="明文存储">
+                                <label class="form-check-label">明文存储</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sensitive_data" value="未涉及敏感数�?>
+                                <label class="form-check-label">未涉及敏感数�?/label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.4 是否采用数据加密技术？ <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_encrypt" value="�?(传输/存储均加�?" required>
+                                <label class="form-check-label">�?(传输/存储均加�?</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_encrypt" value="部分加密">
+                                <label class="form-check-label">部分加密</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_encrypt" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.5 数据安全认证情况
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="security_cert" value="DSMM 三级">
+                                <label class="form-check-label">DSMM 三级</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="security_cert" value="ISO27001">
+                                <label class="form-check-label">ISO27001</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="security_cert" value="等保三级">
+                                <label class="form-check-label">等保三级</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="security_cert" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="security_cert" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none mt-2">
+                                <input type="text" class="form-control" name="security_cert_other" placeholder="请填写其他安全认�?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.6 是否建立专门数据管理制度�?<span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_policy" value="�?(有正式发�?" required>
+                                <label class="form-check-label">�?(有正式发�?</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_policy" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            2.7 历史合规事件
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compliance_history" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compliance_history" value="有过整改记录">
+                                <label class="form-check-label">有过整改记录</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compliance_history" value="有过行政处罚">
+                                <label class="form-check-label">有过行政处罚</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section" data-section="3">
+                    <h2 class="section-title">
+                        <i class="bi bi-database"></i>第三部分：数据资源与治理质量
+                    </h2>
+                    <p class="section-desc">
+                        对应报告维度：治理质�?(20%)。用于计�?质量系数"及匹配应用场景�?                    </p>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.1 拥有的数据资源类�?<span class="required-mark">*</span> (多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_type" value="核心运营数据" required>
+                                <label class="form-check-label">核心运营数据 (研发/生产/供应�?设备�?</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_type" value="用户与市场数�?>
+                                <label class="form-check-label">用户与市场数�?(行为/会员/交易/画像�?</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_type" value="科研与公共服务数�?>
+                                <label class="form-check-label">科研与公共服务数�?(实验/交�?医疗/环境监测�?</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_type" value="技术开发数�?>
+                                <label class="form-check-label">技术开发数�?(代码/算法/标注/文档�?</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_type" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none mt-2">
+                                <input type="text" class="form-control" name="data_type_other" placeholder="请填写其他数据资源类�?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.2 数据创新成果形�?<span class="required-mark">*</span> (多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="结构化数据集" required>
+                                <label class="form-check-label">结构化数据集</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="数据算法模型">
+                                <label class="form-check-label">数据算法模型</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="数据产品 (API/报告)">
+                                <label class="form-check-label">数据产品 (API/报告)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="研究报告">
+                                <label class="form-check-label">研究报告</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="数字 IP/可视化内�?>
+                                <label class="form-check-label">数字 IP/可视化内�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="数据合规认证">
+                                <label class="form-check-label">数据合规认证</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_product" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none mt-2">
+                                <input type="text" class="form-control" name="data_product_other" placeholder="请填写其他数据产品形�?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.3 数据存储位置
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="storage_location" value="自有服务�? onchange="toggleCloudProviderInput()">
+                                <label class="form-check-label">自有服务�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="storage_location" value="云存�? onchange="toggleCloudProviderInput()">
+                                <label class="form-check-label">云存�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="storage_location" value="混合存储" onchange="toggleCloudProviderInput()">
+                                <label class="form-check-label">混合存储</label>
+                            </div>
+                            <input type="text" class="form-control d-inline-block" style="width: 150px;" name="cloud_provider" id="cloud_provider" placeholder="服务商名�? disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.4 主要数据格式
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_format" value="Excel/CSV">
+                                <label class="form-check-label">Excel/CSV</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_format" value="JSON/XML">
+                                <label class="form-check-label">JSON/XML</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_format" value="关系型数据库">
+                                <label class="form-check-label">关系型数据库</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_format" value="图形数据�?>
+                                <label class="form-check-label">图形数据�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="data_format" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none" data-for="data_format_other">
+                                <div class="other-input-label">
+                                    <i class="bi bi-pencil"></i> 请填写其他数据格�?                                </div>
+                                <input type="text" class="form-control" name="data_format_other" placeholder="例如：NoSQL数据库、时序数据库�?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.5 数据量级 <span class="required-mark">*</span>
+                        </label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">数据条数�?/label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_records" value="<10 �? required>
+                                    <label class="form-check-label">&lt;10 �?/label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_records" value="10 �?-100 �?>
+                                    <label class="form-check-label">10 �?-100 �?/label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_records" value="100 �?-1000 �?>
+                                    <label class="form-check-label">100 �?-1000 �?/label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_records" value="1000 �?-1 �?>
+                                    <label class="form-check-label">1000 �?-1 �?/label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_records" value=">1 �?>
+                                    <label class="form-check-label">&gt;1 �?/label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label fw-bold">数据大小�?/label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_size" value="<1GB" required>
+                                    <label class="form-check-label">&lt;1GB</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_size" value="1GB-10GB">
+                                    <label class="form-check-label">1GB-10GB</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_size" value="10GB-100GB">
+                                    <label class="form-check-label">10GB-100GB</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_size" value="100GB-1TB">
+                                    <label class="form-check-label">100GB-1TB</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_size" value="1TB-10TB">
+                                    <label class="form-check-label">1TB-10TB</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="data_volume_size" value=">10TB">
+                                    <label class="form-check-label">&gt;10TB</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.6 数据更新频率 <span class="required-mark">*</span>
+                        </label>
+                        <select class="form-select" name="update_frequency" required>
+                            <option value="">请选择</option>
+                            <option value="实时">实时</option>
+                            <option value="天级">天级</option>
+                            <option value="周级">周级</option>
+                            <option value="月级">月级</option>
+                            <option value="静态一次�?>静态一次�?/option>
+                        </select>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.7 关键字段完整性估�?<span class="required-mark">*</span>
+                        </label>
+                        <input type="range" class="form-range" name="completeness" min="0" max="100" step="5" required oninput="updateCompletenessValue(this.value)">
+                        <div class="text-center mt-2">
+                            <span class="badge fs-6" id="completeness_badge" style="font-family: var(--font-family-num); transition: all 0.3s ease;">当前值：<span id="completeness_value">50%</span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            3.8 主要应用场景 <span class="required-mark">*</span> (多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="精准营销" required>
+                                <label class="form-check-label">精准营销</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="风险控制">
+                                <label class="form-check-label">风险控制</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="产品优化">
+                                <label class="form-check-label">产品优化</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="政府决策">
+                                <label class="form-check-label">政府决策</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="模型训练">
+                                <label class="form-check-label">模型训练</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="交易流�?>
+                                <label class="form-check-label">交易流�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="application_scenario" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none" data-for="application_scenario_other">
+                                <div class="other-input-label">
+                                    <i class="bi bi-pencil"></i> 请填写其他应用场�?                                </div>
+                                <input type="text" class="form-control" name="application_scenario_other" placeholder="例如：智能推荐、预测分析等">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section" data-section="4">
+                    <h2 class="section-title">
+                        <i class="bi bi-file-earmark-check"></i>第四部分：确权现状与成本计量
+                    </h2>
+                    <p class="section-desc">
+                        对应报告维度：确�?(20%) + 成本 (10%)。判�?双轨�?可行性及入表障碍�?                    </p>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            4.1 对数据要素概念了解程�?                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_concept" value="非常了解">
+                                <label class="form-check-label">非常了解</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_concept" value="基本了解">
+                                <label class="form-check-label">基本了解</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="data_concept" value="不了�?>
+                                <label class="form-check-label">不了�?/label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            4.2 现有数据权属凭证 <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="rights_cert" value="�? required>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="rights_cert" value="政府授权运营�?>
+                                <label class="form-check-label">政府授权运营�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="rights_cert" value="数据资产登记证书">
+                                <label class="form-check-label">数据资产登记证书</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="rights_cert" value="数据知识产权登记证书">
+                                <label class="form-check-label">数据知识产权登记证书</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="rights_cert" value="著作权证">
+                                <label class="form-check-label">著作权证</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="rights_cert" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none" data-for="rights_cert_other">
+                                <div class="other-input-label">
+                                    <i class="bi bi-pencil"></i> 请填写其他权属凭�?                                </div>
+                                <input type="text" class="form-control" name="rights_cert_other" placeholder="例如：数据交易凭证、平台认证等">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            4.3 智力成果独创性自�?<span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="originality" value="�?(有核心算�?模型/独特加工)" required>
+                                <label class="form-check-label">�?(有核心算�?模型/独特加工)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="originality" value="�?(有整理汇�?">
+                                <label class="form-check-label">�?(有整理汇�?</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="originality" value="�?(原始数据为主)">
+                                <label class="form-check-label">�?(原始数据为主)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            4.4 成本核算现状 <span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="cost_accounting" value="有独立项目核�? required>
+                                <label class="form-check-label">有独立项目核�?(能精确分摊人�?硬件)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="cost_accounting" value="有部分分�?>
+                                <label class="form-check-label">有部分分�?(粗略估算)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="cost_accounting" value="完全混合">
+                                <label class="form-check-label">完全混合 (无法拆分)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            4.5 �?3 年数据相关投入估�?<span class="required-mark">*</span>
+                        </label>
+                        <div class="input-group" style="max-width: 300px;">
+                            <input type="number" class="form-control" name="cost_input" required placeholder="请输入金�?>
+                            <span class="input-group-text">万元</span>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            4.6 是否有数据商业化计划/实践�?<span class="required-mark">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="commercial_plan" value="�?(已有实践)" required>
+                                <label class="form-check-label">�?(已有实践)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="commercial_plan" value="�?(有计�?">
+                                <label class="form-check-label">�?(有计�?</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="commercial_plan" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section" data-section="5">
+                    <h2 class="section-title">
+                        <i class="bi bi-graph-up-arrow"></i>第五部分：价值预期与服务需�?                    </h2>
+                    <p class="section-desc">
+                        对应报告维度：价值与应用 (20%) �?深度咨询方案�?                    </p>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            5.1 数据资产化的核心目的 <span class="required-mark">*</span> (多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="资产入表" required>
+                                <label class="form-check-label">资产入表 (优化报表)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="融资贷款">
+                                <label class="form-check-label">融资贷款 (质押授信)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="交易流�?>
+                                <label class="form-check-label">交易流�?(变现营收)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="作价入股">
+                                <label class="form-check-label">作价入股 (投资出资)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="项目申报">
+                                <label class="form-check-label">项目申报 (获取补贴)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="知识产权保护">
+                                <label class="form-check-label">知识产权保护</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="asset_purpose" value="丰富机构资质">
+                                <label class="form-check-label">丰富机构资质</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            5.2 商业化过程中的主要痛�?(多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pain_points" value="法律合规风险">
+                                <label class="form-check-label">法律合规风险</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pain_points" value="数据定价困难">
+                                <label class="form-check-label">数据定价困难</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pain_points" value="市场需求不确定">
+                                <label class="form-check-label">市场需求不确定</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pain_points" value="缺乏合作渠道">
+                                <label class="form-check-label">缺乏合作渠道</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pain_points" value="缺乏专业人才">
+                                <label class="form-check-label">缺乏专业人才</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pain_points" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none" data-for="pain_points_other">
+                                <div class="other-input-label">
+                                    <i class="bi bi-pencil"></i> 请填写其他痛�?                                </div>
+                                <input type="text" class="form-control" name="pain_points_other" placeholder="例如：技术门槛高、投入产出比不确定等">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            5.3 预期年营收贡�?(若资产化)
+                        </label>
+                        <div class="input-group" style="max-width: 300px;">
+                            <input type="number" class="form-control" name="expected_revenue" placeholder="请输入金�?>
+                            <span class="input-group-text">万元</span>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            5.4 希望获得的服�?<span class="required-mark">*</span> (多�?
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="登记代理服务" required>
+                                <label class="form-check-label">登记代理服务 (双证申请)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="数据合规评估">
+                                <label class="form-check-label">数据合规评估</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="数据价值评�?>
+                                <label class="form-check-label">数据价值评�?/label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="入表辅导">
+                                <label class="form-check-label">入表辅导 (成本/审计)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="法律咨询服务">
+                                <label class="form-check-label">法律咨询服务</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="商业合作对接">
+                                <label class="form-check-label">商业合作对接</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="融资对接服务">
+                                <label class="form-check-label">融资对接服务</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="培训/宣讲认证">
+                                <label class="form-check-label">培训/宣讲认证</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="needed_services" value="其他" onchange="toggleOtherInput(this)">
+                                <label class="form-check-label">其他</label>
+                            </div>
+                            <div class="other-input-wrapper d-none" data-for="needed_services_other">
+                                <div class="other-input-label">
+                                    <i class="bi bi-pencil"></i> 请填写其他服务需�?                                </div>
+                                <input type="text" class="form-control" name="needed_services_other" placeholder="例如：数据治理咨询、数据安全评估等">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            5.5 是否愿意参加数据要素宣讲/培训�?                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="training_willing" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="training_willing" value="�?>
+                                <label class="form-check-label">�?/label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section" data-section="6">
+                    <h2 class="section-title">
+                        <i class="bi bi-person-lines-fill"></i>第六部分：联系信息与下一�?                    </h2>
+                    <p class="section-desc">
+                        用于接收报告及专家回访�?                    </p>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            6.1 联系人姓�?<span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" name="contact_name" required placeholder="请填写姓�?>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            6.2 职务
+                        </label>
+                        <input type="text" class="form-control" name="contact_position" placeholder="请填写职�?>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            6.3 联系电话 <span class="required-mark">*</span>
+                        </label>
+                        <input type="tel" class="form-control" name="contact_phone" required placeholder="请填写手机号�? pattern="[0-9]{11}">
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            6.4 电子邮箱
+                        </label>
+                        <input type="email" class="form-control" name="contact_email" placeholder="example@email.com">
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            6.5 期望服务时间
+                        </label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="service_time" value="1 个月�?>
+                                <label class="form-check-label">1 个月�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="service_time" value="3 个月�?>
+                                <label class="form-check-label">3 个月�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="service_time" value="半年�?>
+                                <label class="form-check-label">半年�?/label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="service_time" value="仅做了解">
+                                <label class="form-check-label">仅做了解</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-question">
+                        <label class="question-label">
+                            6.6 特别关注�?备注
+                        </label>
+                        <textarea class="form-control" name="remarks" rows="3" placeholder="您最希望解决的具体问�?></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-secondary-custom btn-custom" id="prevBtn" style="display: none;">
+                        <i class="bi bi-arrow-left"></i> 上一�?                    </button>
+                    <button type="button" class="btn btn-primary-custom btn-custom ms-auto" id="nextBtn">
+                        下一�?<i class="bi bi-arrow-right"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success-custom btn-custom ms-auto" id="submitBtn" style="display: none;">
+                        <i class="bi bi-check-circle"></i> 提交生成报告
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="engine-breathing"></div>
+        <div class="loading-text">智规分析引擎正在分析您的数据...</div>
+        <div class="loading-subtext">正在调用智规融合引擎 v1.0</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/frontend/form.js"></script>
+    <script>
+        // 所有表单逻辑�?form.js 统一处理
+        // 包括：toggleOtherInput, updateCities, toggleDeptInput, toggleCloudProviderInput �?        
+        // 更新完整性数值显示（带颜色渐变）
+        window.updateCompletenessValue = function(value) {
+            const valueSpan = document.getElementById('completeness_value');
+            const badge = document.getElementById('completeness_badge');
+            
+            valueSpan.textContent = value + '%';
+            
+            // 根据值计算颜色（从红色到绿色渐变�?            let color, bgColor;
+            if (value < 30) {
+                // 红色�?- 低完整�?                color = '#FF6B6B';
+                bgColor = 'rgba(255, 107, 107, 0.15)';
+            } else if (value < 50) {
+                // 橙色�?- 较低完整�?                color = '#FF9F43';
+                bgColor = 'rgba(255, 159, 67, 0.15)';
+            } else if (value < 70) {
+                // 黄色�?- 中等完整�?                color = '#F1C40F';
+                bgColor = 'rgba(241, 196, 15, 0.15)';
+            } else if (value < 85) {
+                // 青色�?- 较高完整�?                color = '#00D2FF';
+                bgColor = 'rgba(0, 210, 255, 0.15)';
+            } else {
+                // 绿色�?- 高完整�?                color = '#2ECC71';
+                bgColor = 'rgba(46, 204, 113, 0.15)';
+            }
+            
+            badge.style.background = bgColor;
+            badge.style.color = color;
+            badge.style.border = `1px solid ${color}`;
+        };
+        
+        // 初始化完整性显�?        document.addEventListener('DOMContentLoaded', function() {
+            updateCompletenessValue(50);
+            checkNavAuth();
+        });
+        
+        // 检查导航栏登录状�?        function checkNavAuth() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            
+            const navUserName = document.getElementById('navUserName');
+            const navLoginBtn = document.getElementById('navLoginBtn');
+            const navLogoutBtn = document.getElementById('navLogoutBtn');
+            
+            if (token && userInfo) {
+                try {
+                    const user = JSON.parse(userInfo);
+                    navUserName.textContent = user.username;
+                    navLoginBtn.style.display = 'none';
+                    navLogoutBtn.style.display = 'inline-block';
+                    
+                    // 显示VIP状�?                    showVipStatus(user);
+                } catch(e) {
+                    navUserName.textContent = '游客';
+                }
+            } else {
+                navUserName.textContent = '游客';
+                navLoginBtn.style.display = 'inline-block';
+                navLogoutBtn.style.display = 'none';
+            }
+            
+            // 异步刷新用户信息
+            refreshUserInfoAsync();
+        }
+        
+        function showVipStatus(user) {
+            const navUserName = document.getElementById('navUserName');
+            const existingBadge = document.getElementById('navVipBadge');
+            if (existingBadge) existingBadge.remove();
+            
+            if (user.is_vip) {
+                const vipBadge = document.createElement('span');
+                vipBadge.id = 'navVipBadge';
+                vipBadge.className = 'nav-vip-badge';
+                vipBadge.innerHTML = '<i class="bi bi-star-fill"></i> VIP';
+                navUserName.parentNode.appendChild(vipBadge);
+            }
+        }
+        
+        async function refreshUserInfoAsync() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            try {
+                const response = await fetch('/api/v1/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    const user = result.data;
+                    localStorage.setItem('userInfo', JSON.stringify(user));
+                    showVipStatus(user);
+                }
+            } catch(e) {
+                console.error('刷新用户信息失败:', e);
+            }
+        }
+        
+        // 处理退出登�?        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('reportData');
+            window.location.reload();
+        }
+        
+        // 所有表单逻辑�?form.js 统一处理
+        // 包括：validateCurrentStep, showValidationErrors, updateProgress, updateStepIndicator, updateButtons �?    </script>
+</body>
+</html>

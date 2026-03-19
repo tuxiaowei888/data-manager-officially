@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - 规则库管�?/title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1B3A57;
+            --primary-dark: #0F4C81;
+            --primary-light: #2E5A7C;
+            --tech-accent: #00D2FF;
+            --tech-secondary: #4ECDC4;
+            --success-color: #2ECC71;
+            --danger-color: #FF6B6B;
+            --warning-color: #FF9F43;
+            --bg-primary: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-dark: #0B1120;
+            --text-primary: #1B3A57;
+            --text-secondary: #5A6C7D;
+            --text-disabled: #99A8B8;
+            --border-light: #E8EDF2;
+            --gradient-brand: linear-gradient(135deg, #1B3A57 0%, #00D2FF 100%);
+            --font-family-zh: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
+            --font-family-num: "Roboto Mono", "DIN Alternate", "SF Mono", monospace;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-family-zh);
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-light);
+            padding: 20px 0;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-logo h1 {
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sidebar-logo i {
+            color: var(--tech-accent);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background: rgba(0, 210, 255, 0.08);
+            color: var(--tech-accent);
+            border-left: 3px solid var(--tech-accent);
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .page-title i {
+            color: var(--tech-accent);
+            margin-right: 10px;
+        }
+        
+        .btn-primary-custom {
+            background: var(--gradient-brand);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(27, 58, 87, 0.3);
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .stat-value {
+            font-family: var(--font-family-num);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-value.tech { color: var(--tech-accent); }
+        .stat-value.success { color: var(--success-color); }
+        .stat-value.warning { color: var(--warning-color); }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #1B3A57 0%, #2E5A7C 100%);
+            border-radius: 16px;
+            padding: 30px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .welcome-content h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-content p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .quick-action-btn {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+        
+        .quick-action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: #fff;
+        }
+        
+        .action-card-admin {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            text-decoration: none;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s;
+            display: block;
+        }
+        
+        .action-card-admin:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(27, 58, 87, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .action-icon-admin {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1B3A57 0%, #00D2FF 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+        
+        .action-card-admin .action-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .action-card-admin .action-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .user-info {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .dashboard-container {
+            padding: 0;
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, #1B3A57 0%, #2E5A7C 50%, #00D2FF 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-text h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-text p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .welcome-decoration {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .welcome-decoration .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+        
+        .welcome-decoration .c1 {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            right: 0;
+            top: -50px;
+        }
+        
+        .welcome-decoration .c2 {
+            width: 100px;
+            height: 100px;
+            background: #00D2FF;
+            right: 180px;
+            top: -30px;
+        }
+        
+        .welcome-decoration .c3 {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            right: 100px;
+            bottom: -20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card-mini {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card-mini:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card-mini::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .stat-card-mini.gradient-1::before { background: linear-gradient(180deg, #667eea, #764ba2); }
+        .stat-card-mini.gradient-2::before { background: linear-gradient(180deg, #f093fb, #f5576c); }
+        .stat-card-mini.gradient-3::before { background: linear-gradient(180deg, #4facfe, #00f2fe); }
+        .stat-card-mini.gradient-4::before { background: linear-gradient(180deg, #43e97b, #38f9d7); }
+        
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .gradient-1 .stat-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .gradient-2 .stat-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .gradient-3 .stat-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .gradient-4 .stat-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        
+        .stat-info .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1B3A57;
+            line-height: 1.2;
+        }
+        
+        .stat-info .stat-label {
+            font-size: 14px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .chart-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1B3A57;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-body {
+            margin-top: 20px;
+            height: 250px;
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .welcome-text h1 {
+                font-size: 24px;
+            }
+        }
+        
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .table-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 13px;
+            width: 200px;
+        }
+        
+        .search-box i {
+            color: var(--text-disabled);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-bottom: none;
+            position: relative;
+        }
+
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--tech-accent);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.2s ease;
+        }
+        
+        .data-table tr:hover td {
+            background: rgba(0, 210, 255, 0.03);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .dimension-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .dimension-badge.compliance { background: rgba(255, 107, 107, 0.1); color: #FF6B6B; }
+        .dimension-badge.quality { background: rgba(0, 210, 255, 0.1); color: #00D2FF; }
+        .dimension-badge.value { background: rgba(69, 183, 209, 0.1); color: #45B7D1; }
+        .dimension-badge.management { background: rgba(150, 206, 180, 0.1); color: #96CEB4; }
+        .dimension-badge.circulation { background: rgba(255, 234, 167, 0.1); color: #D4A574; }
+        .dimension-badge.potential { background: rgba(221, 160, 221, 0.1); color: #DDA0DD; }
+        .dimension-badge.rights { background: rgba(46, 204, 113, 0.1); color: #2ECC71; }
+        .dimension-badge.cost { background: rgba(27, 58, 87, 0.1); color: #1B3A57; }
+        
+        .status-toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: var(--border-light);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .status-toggle.active {
+            background: var(--success-color);
+        }
+        
+        .status-toggle::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            top: 3px;
+            left: 3px;
+            transition: all 0.2s ease;
+        }
+        
+        .status-toggle.active::after {
+            left: 23px;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--tech-accent);
+            color: var(--tech-accent);
+        }
+        
+        .action-btn.danger:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 17, 32, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--tech-accent);
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-disabled);
+            margin-bottom: 16px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            border-top-color: var(--tech-accent);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin.html" id="menuDashboard"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
+            <li><a href="/rules.html" id="menuRules"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
+            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
+            <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
+            <li><a href="/reports.html"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
+            <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
+            <li><a href="/config.html"><i class="bi bi-gear"></i> VIP配置</a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title" id="pageTitle"><i class="bi bi-speedometer2"></i> <span>仪表�?/span></h1>
+        </div>
+        
+        <div id="dashboardContent"></div>
+    </div>
+    
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">新建规则</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="ruleForm">
+                    <input type="hidden" id="ruleId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">规则名称</label>
+                        <input type="text" class="form-control" id="ruleName" required placeholder="请输入规则名�?>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">所属维�?/label>
+                        <select class="form-control" id="dimensionCode" required>
+                            <option value="C">合规与安�?/option>
+                            <option value="Q">数据质量</option>
+                            <option value="V">价值评�?/option>
+                            <option value="O">权属确认</option>
+                            <option value="S">成本计量</option>
+                            <option value="M">管理体系</option>
+                            <option value="L">流通能�?/option>
+                            <option value="P">发展潜力</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">逻辑表达�?/label>
+                        <textarea class="form-control" id="logicExpression" rows="3" placeholder="例如：data_source == '爬虫采集'"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">权重 (0-100)</label>
+                        <input type="number" class="form-control" id="weight" min="0" max="100" value="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">风险阈�?(0-100)</label>
+                        <input type="number" class="form-control" id="riskThreshold" min="0" max="100" value="1" step="0.1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn-primary-custom" onclick="saveRule()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        let allRules = [];
+        
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            
+            if (!token || !userInfo) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        async function loadRules() {
+            if (!checkAuth()) return;
+            
+            const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            
+            if (user.user_type !== 'admin') {
+                window.location.href = '/home';
+                return;
+            }
+            
+            document.getElementById('pageTitle').innerHTML = '<i class="bi bi-sliders"></i> <span>规则库管�?/span>';
+            document.getElementById('menuRules').classList.add('active');
+            renderRulesPage();
+        }
+        
+        function renderDashboard() {
+            const container = document.getElementById('dashboardContent');
+            container.innerHTML = `
+                <div class="welcome-section">
+                    <div class="welcome-text">
+                        <h1>欢迎回来�?span id="welcomeName">管理�?/span></h1>
+                        <p>今天�?<span id="todayDate"></span></p>
+                    </div>
+                    <div class="welcome-decoration">
+                        <div class="circle c1"></div>
+                        <div class="circle c2"></div>
+                        <div class="circle c3"></div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card-mini gradient-1">
+                        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statTotalCustomers">0</div>
+                            <div class="stat-label">总客户数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-mini gradient-2">
+                        <div class="stat-icon"><i class="bi bi-gem"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statVipCustomers">0</div>
+                            <div class="stat-label">VIP客户</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-mini gradient-3">
+                        <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statTodayActive">0</div>
+                            <div class="stat-label">今日活跃</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-mini gradient-4">
+                        <div class="stat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statWeekActive">0</div>
+                            <div class="stat-label">本周活跃</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="bi bi-pie-chart"></i> 评分分布</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="scoreChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="bi bi-bar-chart-steps"></i> 风险等级</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadDashboardStats();
+        }
+        
+        function renderRulesPage() {
+            const container = document.getElementById('dashboardContent');
+            const token = localStorage.getItem('token');
+            
+            container.innerHTML = `
+                <div class="page-breadcrumb">
+                    <span>规则库管�?/span>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalRules">0</div>
+                        <div class="stat-label">规则总数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value success" id="activeRules">0</div>
+                        <div class="stat-label">已启�?/div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value tech" id="inactiveRules">0</div>
+                        <div class="stat-label">已禁�?/div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="table-header">
+                        <span class="table-title">规则列表</span>
+                        <button class="btn-primary-custom" onclick="openModal()">
+                            <i class="bi bi-plus-lg"></i> 新建规则
+                        </button>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>规则名称</th>
+                                <th>维度</th>
+                                <th>权重</th>
+                                <th>风险阈�?/th>
+                                <th>状�?/th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rulesTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px;">
+                                    <div class="loading-spinner"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            loadRulesData();
+        }
+        
+        async function loadRulesData() {
+            const token = localStorage.getItem('token');
+            console.log('loadRulesData called, token:', token ? 'exists' : 'null');
+            
+            try {
+                const response = await fetch('/api/v1/rules', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) throw new Error('加载失败');
+                
+                const result = await response.json();
+                console.log('Rules data:', result);
+                allRules = result.data || result;
+                updateStats();
+                renderRules(allRules);
+            } catch (error) {
+                console.error('Error loading rules:', error);
+                const tableBody = document.getElementById('rulesTableBody');
+                if (tableBody) {
+                    tableBody.innerHTML = `
+                        <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger-color);">
+                            加载失败: ${error.message}
+                        </td></tr>
+                    `;
+                }
+            }
+        }
+        
+        async function loadDashboardStats() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            
+            const welcomeName = document.getElementById('welcomeName');
+            if (welcomeName) {
+                welcomeName.textContent = user.username || '管理�?;
+            }
+            
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            const todayDate = document.getElementById('todayDate');
+            if (todayDate) {
+                todayDate.textContent = today.toLocaleDateString('zh-CN', options);
+            }
+            
+            try {
+                const response = await fetch('/api/v1/customers/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) return;
+                
+                const stats = await response.json();
+                
+                const statTotal = document.getElementById('statTotalCustomers');
+                const statVip = document.getElementById('statVipCustomers');
+                const statToday = document.getElementById('statTodayActive');
+                const statWeek = document.getElementById('statWeekActive');
+                
+                if (statTotal) statTotal.textContent = stats.total_customers || 0;
+                if (statVip) statVip.textContent = stats.vip_customers || 0;
+                if (statToday) statToday.textContent = stats.active_today || 0;
+                if (statWeek) statWeek.textContent = stats.active_week || 0;
+                
+                loadDashboardCharts();
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+        
+        async function loadDashboardCharts() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/v1/customers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) return;
+                
+                const result = await response.json();
+                const customers = result.data || result;
+                
+                const scoreRanges = { '0-30': 0, '31-50': 0, '51-70': 0, '71-90': 0, '91-100': 0 };
+                const riskLevels = { 'P0': 0, 'P1': 0, 'P2': 0 };
+                
+                customers.forEach(customer => {
+                    if (customer.avg_score) {
+                        if (customer.avg_score <= 30) scoreRanges['0-30']++;
+                        else if (customer.avg_score <= 50) scoreRanges['31-50']++;
+                        else if (customer.avg_score <= 70) scoreRanges['51-70']++;
+                        else if (customer.avg_score <= 90) scoreRanges['71-90']++;
+                        else scoreRanges['91-100']++;
+                    }
+                    if (customer.risk_level) {
+                        riskLevels[customer.risk_level] = (riskLevels[customer.risk_level] || 0) + 1;
+                    }
+                });
+                
+                new Chart(document.getElementById('scoreChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['0-30', '31-50', '51-70', '71-90', '91-100'],
+                        datasets: [{
+                            label: '客户数量',
+                            data: Object.values(scoreRanges),
+                            backgroundColor: 'rgba(27, 58, 87, 0.8)',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+                
+                new Chart(document.getElementById('riskChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['P0(高风�?', 'P1(中风�?', 'P2(低风�?'],
+                        datasets: [{
+                            data: [riskLevels['P0'], riskLevels['P1'], riskLevels['P2']],
+                            backgroundColor: ['#FF6B6B', '#FF9F43', '#2ECC71']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            } catch (error) {
+                console.error('加载图表失败:', error);
+            }
+        }
+        
+        function updateStats() {
+            const total = allRules.length;
+            const active = allRules.filter(r => r.is_active).length;
+            
+            document.getElementById('totalRules').textContent = total;
+            document.getElementById('activeRules').textContent = active;
+            document.getElementById('inactiveRules').textContent = total - active;
+        }
+        
+        function renderRules(rules) {
+            const tbody = document.getElementById('rulesTableBody');
+            
+            if (rules.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>暂无规则数据</p>
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = rules.map(rule => `
+                <tr>
+                    <td>${rule.id}</td>
+                    <td>${rule.rule_name}</td>
+                    <td><span class="dimension-badge ${getDimensionClass(rule.dimension_code)}">${getDimensionName(rule.dimension_code)}</span></td>
+                    <td>${rule.weight}%</td>
+                    <td>${rule.risk_threshold}</td>
+                    <td>
+                        <div class="status-toggle ${rule.is_active ? 'active' : ''}" 
+                             onclick="toggleRule(${rule.id}, ${rule.is_active})"></div>
+                    </td>
+                    <td>
+                        <button class="action-btn" onclick="editRule(${rule.id})" title="编辑">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="action-btn danger" onclick="deleteRule(${rule.id})" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function getDimensionName(code) {
+            const mapping = {
+                'C': '合规与安�?,
+                'CO': '合规与安�?,
+                'Q': '数据质量',
+                'V': '价值评�?,
+                'O': '权属确认',
+                'M': '管理体系',
+                'L': '流通能�?,
+                'P': '发展潜力',
+                'G': '治理质量',
+                'R': '确权与权�?,
+                'S': '成本计量',
+                'D': '数据治理'
+            };
+            return mapping[code] || code;
+        }
+        
+        function getDimensionClass(code) {
+            const mapping = {
+                'C': 'compliance',
+                'CO': 'compliance',
+                'Q': 'quality',
+                'V': 'value',
+                'O': 'rights',
+                'M': 'management',
+                'L': 'circulation',
+                'P': 'potential',
+                'G': 'quality',
+                'R': 'rights',
+                'S': 'cost',
+                'D': 'management'
+            };
+            return mapping[code] || 'compliance';
+        }
+        
+        function filterRules() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allRules.filter(r => 
+                r.rule_name.toLowerCase().includes(keyword) ||
+                r.dimension_code.toLowerCase().includes(keyword)
+            );
+            renderRules(filtered);
+        }
+        
+        function openModal() {
+            document.getElementById('modalTitle').textContent = '新建规则';
+            document.getElementById('ruleForm').reset();
+            document.getElementById('ruleId').value = '';
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+        
+        function editRule(id) {
+            const rule = allRules.find(r => r.id === id);
+            if (!rule) return;
+            
+            document.getElementById('modalTitle').textContent = '编辑规则';
+            document.getElementById('ruleId').value = rule.id;
+            document.getElementById('ruleName').value = rule.rule_name || '';
+            document.getElementById('dimensionCode').value = rule.dimension_code || 'C';
+            document.getElementById('logicExpression').value = rule.logic_expression || '';
+            document.getElementById('weight').value = rule.weight || 10;
+            document.getElementById('riskThreshold').value = rule.risk_threshold || 60;
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        async function saveRule() {
+            const token = localStorage.getItem('token');
+            const ruleId = document.getElementById('ruleId').value;
+            
+            const data = {
+                rule_name: document.getElementById('ruleName').value,
+                dimension_code: document.getElementById('dimensionCode').value,
+                logic_expression: document.getElementById('logicExpression').value,
+                weight: parseFloat(document.getElementById('weight').value) || 10,
+                risk_threshold: parseFloat(document.getElementById('riskThreshold').value) || 1,
+                is_active: true
+            };
+            
+            try {
+                const url = ruleId ? `/api/v1/rules/${ruleId}` : '/api/v1/rules';
+                const method = ruleId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) throw new Error('保存失败');
+                
+                closeModal();
+                loadRules();
+            } catch (error) {
+                alert('保存失败�? + error.message);
+            }
+        }
+        
+        async function toggleRule(id, currentStatus) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                await fetch(`/api/v1/rules/${id}/toggle`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                loadRules();
+            } catch (error) {
+                alert('操作失败');
+            }
+        }
+        
+        async function deleteRule(id) {
+            if (!confirm('确定要删除这条规则吗�?)) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                await fetch(`/api/v1/rules/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                loadRules();
+            } catch (error) {
+                alert('删除失败');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login';
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadRules);
+    </script>
+</body>
+</html>

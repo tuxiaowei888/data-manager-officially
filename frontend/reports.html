@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - 报告管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1B3A57;
+            --primary-dark: #0F4C81;
+            --tech-accent: #00D2FF;
+            --success-color: #2ECC71;
+            --danger-color: #FF6B6B;
+            --warning-color: #FF9F43;
+            --bg-primary: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --text-primary: #1B3A57;
+            --text-secondary: #5A6C7D;
+            --text-disabled: #99A8B8;
+            --border-light: #E8EDF2;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-light);
+            padding: 20px 0;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-logo h1 {
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sidebar-logo i { color: var(--tech-accent); }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background: rgba(0, 210, 255, 0.08);
+            color: var(--tech-accent);
+            border-left: 3px solid var(--tech-accent);
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-title i { color: var(--tech-accent); }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-value.tech { color: var(--tech-accent); }
+        .stat-value.success { color: var(--success-color); }
+        .stat-value.warning { color: var(--warning-color); }
+        .stat-value.danger { color: var(--danger-color); }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .filter-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 24px;
+        }
+        
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-title i { color: var(--tech-accent); }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .filter-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .filter-input, .filter-select {
+            padding: 10px 14px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 13px;
+            min-width: 160px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--tech-accent);
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--tech-accent) 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-light);
+        }
+        
+        .btn-export {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .table-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-bottom: none;
+            position: relative;
+        }
+
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--tech-accent);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            transition: background 0.2s ease;
+        }
+        
+        .data-table tr:hover td { 
+            background: rgba(0, 210, 255, 0.03); 
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .org-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .customer-info {
+            font-size: 12px;
+            color: var(--text-disabled);
+            margin-top: 2px;
+        }
+        
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .score-high { background: rgba(46, 204, 113, 0.1); color: var(--success-color); }
+        .score-mid { background: rgba(255, 159, 67, 0.1); color: var(--warning-color); }
+        .score-low { background: rgba(255, 107, 107, 0.1); color: var(--danger-color); }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .risk-high { background: rgba(255, 107, 107, 0.1); color: var(--danger-color); }
+        .risk-medium { background: rgba(255, 159, 67, 0.1); color: var(--warning-color); }
+        .risk-low { background: rgba(46, 204, 113, 0.1); color: var(--success-color); }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--tech-accent);
+            color: var(--tech-accent);
+        }
+        
+        .action-btn.danger:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .action-dropdown-menu {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            left: auto;
+            margin-bottom: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
+            display: none;
+            min-width: 130px;
+            z-index: 100;
+        }
+        
+        .action-dropdown-menu.show { display: block; }
+        
+        .action-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        
+        .action-dropdown-item:hover {
+            background: var(--bg-primary);
+        }
+        
+        .action-dropdown-item i {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .page-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-btn.active {
+            background: var(--tech-accent);
+            color: white;
+            border-color: var(--tech-accent);
+        }
+        
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-disabled);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 17, 32, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .detail-section {
+            margin-bottom: 24px;
+        }
+        
+        .detail-section:last-child { margin-bottom: 0; }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i { color: var(--tech-accent); }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .detail-item {
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .dimension-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .dimension-name {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .dimension-score {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .export-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            min-width: 150px;
+            z-index: 10;
+        }
+        
+        .export-menu.show { display: block; }
+        
+        .export-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .export-menu-item:hover {
+            background: var(--bg-primary);
+        }
+        
+        .export-menu-item i {
+            color: var(--text-secondary);
+        }
+        
+        .selected-actions {
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .selected-actions.show { display: flex; }
+        
+        .selected-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            border-top-color: var(--tech-accent);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
+            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
+            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
+            <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
+            <li><a href="/reports.html" class="active"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
+            <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
+            <li><a href="/config.html"><i class="bi bi-gear"></i> VIP配置</a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title"><i class="bi bi-file-earmark-text"></i>报告管理</h1>
+            <div class="export-dropdown">
+                <button class="btn-export" onclick="toggleExportMenu()">
+                    <i class="bi bi-download"></i> 导出报告
+                </button>
+                <div class="export-menu" id="exportMenu">
+                    <div class="export-menu-item" onclick="exportSelected('json')">
+                        <i class="bi bi-filetype-json"></i> 导出JSON
+                    </div>
+                    <div class="export-menu-item" onclick="exportSelected('excel')">
+                        <i class="bi bi-filetype-xlsx"></i> 导出Excel
+                    </div>
+                    <div class="export-menu-item" onclick="exportSelected('pdf')">
+                        <i class="bi bi-filetype-pdf"></i> 导出PDF
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">报告总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value success" id="statHigh">0</div>
+                <div class="stat-label">高分报告 (�?0)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning" id="statMid">0</div>
+                <div class="stat-label">中分报告 (60-79)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger" id="statLow">0</div>
+                <div class="stat-label">低分报告 (&lt;60)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value tech" id="statToday">0</div>
+                <div class="stat-label">今日新增</div>
+            </div>
+        </div>
+        
+        <div class="filter-card">
+            <div class="filter-title"><i class="bi bi-funnel"></i> 筛选条�?/div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">企业名称</label>
+                    <input type="text" class="filter-input" id="filterOrgName" placeholder="输入企业名称">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">客户用户�?/label>
+                    <input type="text" class="filter-input" id="filterUsername" placeholder="输入用户�?>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">评分范围</label>
+                    <select class="filter-select" id="filterScore">
+                        <option value="">全部</option>
+                        <option value="high">高分 (�?0)</option>
+                        <option value="mid">中分 (60-79)</option>
+                        <option value="low">低分 (&lt;60)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">风险等级</label>
+                    <select class="filter-select" id="filterRisk">
+                        <option value="">全部</option>
+                        <option value="P0">高风�?/option>
+                        <option value="P1">中风�?/option>
+                        <option value="P2">低风�?/option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">评估时间</label>
+                    <select class="filter-select" id="filterTime">
+                        <option value="">全部</option>
+                        <option value="today">今日</option>
+                        <option value="week">�?�?/option>
+                        <option value="month">�?0�?/option>
+                        <option value="quarter">�?0�?/option>
+                    </select>
+                </div>
+                <button class="btn-primary-custom" onclick="searchReports()">
+                    <i class="bi bi-search"></i> 搜索
+                </button>
+                <button class="btn-secondary" onclick="resetFilters()">重置</button>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="table-header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <span class="table-title">报告列表</span>
+                    <div class="selected-actions" id="selectedActions">
+                        <span class="selected-count">已选择 <span id="selectedCount">0</span> �?/span>
+                        <button class="btn-secondary" onclick="clearSelection()">取消选择</button>
+                    </div>
+                </div>
+                <div class="page-info" id="pageInfo">�?0 条记�?/div>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;"></th>
+                        <th>企业信息</th>
+                        <th>客户</th>
+                        <th>评分</th>
+                        <th>风险等级</th>
+                        <th>评估时间</th>
+                        <th style="width: 120px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="loading-spinner"></div>
+                                <p>加载�?..</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="pagination">
+                <div class="page-info" id="pageRange">�?0-0 �?/div>
+                <div class="page-buttons" id="pageButtons"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 报告详情模态框 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">报告详情</div>
+                <button class="modal-close" onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body" id="detailContent"></div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeDetailModal()">关闭</button>
+                <div class="export-dropdown">
+                    <button class="btn-primary-custom" onclick="toggleModalExportMenu()">
+                        <i class="bi bi-download"></i> 导出此报�?                    </button>
+                    <div class="export-menu" id="modalExportMenu" style="bottom: 100%; top: auto; right: 0; left: auto;">
+                        <div class="export-menu-item" onclick="exportCurrentReportFormat('json')">
+                            <i class="bi bi-filetype-json"></i> 导出JSON
+                        </div>
+                        <div class="export-menu-item" onclick="exportCurrentReportFormat('excel')">
+                            <i class="bi bi-filetype-xlsx"></i> 导出Excel
+                        </div>
+                        <div class="export-menu-item" onclick="exportCurrentReportFormat('pdf')">
+                            <i class="bi bi-filetype-pdf"></i> 导出PDF
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allReports = [];
+        let filteredReports = [];
+        let selectedIds = new Set();
+        let currentPage = 1;
+        let pageSize = 20;
+        let currentReportId = null;
+        
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            if (!token || !userInfo) {
+                window.location.href = '/login';
+                return false;
+            }
+            try {
+                const user = JSON.parse(userInfo);
+                if (user.user_type !== 'admin') {
+                    alert('无权限访�?);
+                    window.location.href = '/survey';
+                    return false;
+                }
+            } catch (e) {
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+        
+        async function loadReports() {
+            if (!checkAuth()) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/v1/reports', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('加载失败');
+                
+                allReports = await response.json();
+                filteredReports = [...allReports];
+                updateStats();
+                renderTable();
+            } catch (e) {
+                document.getElementById('reportTableBody').innerHTML = `
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <p>加载失败，请刷新重试</p>
+                        </div>
+                    </td></tr>
+                `;
+            }
+        }
+        
+        function updateStats() {
+            const total = allReports.length;
+            const high = allReports.filter(r => r.total_score >= 80).length;
+            const mid = allReports.filter(r => r.total_score >= 60 && r.total_score < 80).length;
+            const low = allReports.filter(r => r.total_score < 60).length;
+            
+            const today = new Date().toDateString();
+            const todayCount = allReports.filter(r => new Date(r.created_at).toDateString() === today).length;
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statHigh').textContent = high;
+            document.getElementById('statMid').textContent = mid;
+            document.getElementById('statLow').textContent = low;
+            document.getElementById('statToday').textContent = todayCount;
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('reportTableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredReports.slice(start, end);
+            
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>暂无报告数据</p>
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = pageData.map(r => `
+                <tr>
+                    <td>
+                        <input type="checkbox" 
+                               ${selectedIds.has(r.id) ? 'checked' : ''} 
+                               onchange="toggleSelect(${r.id})">
+                    </td>
+                    <td>
+                        <div class="org-name">${r.org_name || '未命名企�?}</div>
+                    </td>
+                    <td>
+                        <div>${r.username || '-'}</div>
+                        <div class="customer-info">${r.user_email || ''}</div>
+                    </td>
+                    <td>
+                        <span class="score-badge ${getScoreClass(r.total_score)}">${r.total_score}</span>
+                    </td>
+                    <td>
+                        <span class="risk-badge ${getRiskClass(r.risk_level)}">${getRiskText(r.risk_level)}</span>
+                    </td>
+                    <td>${r.created_at || '-'}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewDetail(${r.id})" title="查看详情">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <div class="action-dropdown">
+                            <button class="action-btn" onclick="toggleActionDropdown(event, ${r.id})" title="导出">
+                                <i class="bi bi-download"></i>
+                            </button>
+                            <div class="action-dropdown-menu" id="dropdown-${r.id}">
+                                <div class="action-dropdown-item" onclick="exportReportFormat(${r.id}, 'json')">
+                                    <i class="bi bi-filetype-json"></i> 导出JSON
+                                </div>
+                                <div class="action-dropdown-item" onclick="exportReportFormat(${r.id}, 'excel')">
+                                    <i class="bi bi-filetype-xlsx"></i> 导出Excel
+                                </div>
+                                <div class="action-dropdown-item" onclick="exportReportFormat(${r.id}, 'pdf')">
+                                    <i class="bi bi-filetype-pdf"></i> 导出PDF
+                                </div>
+                            </div>
+                        </div>
+                        <button class="action-btn danger" onclick="deleteReport(${r.id}, '${r.org_name || '未命名企�?}')" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const total = filteredReports.length;
+            const totalPages = Math.ceil(total / pageSize);
+            const start = (currentPage - 1) * pageSize + 1;
+            const end = Math.min(currentPage * pageSize, total);
+            
+            document.getElementById('pageInfo').textContent = `�?${total} 条记录`;
+            document.getElementById('pageRange').textContent = `�?${start}-${end} 条`;
+            
+            let buttonsHtml = '';
+            buttonsHtml += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i>
+            </button>`;
+            
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                buttonsHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            buttonsHtml += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                <i class="bi bi-chevron-right"></i>
+            </button>`;
+            
+            document.getElementById('pageButtons').innerHTML = buttonsHtml;
+        }
+        
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredReports.length / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+        
+        function getScoreClass(score) {
+            if (score >= 80) return 'score-high';
+            if (score >= 60) return 'score-mid';
+            return 'score-low';
+        }
+        
+        function getRiskClass(level) {
+            if (level === 'P0') return 'risk-high';
+            if (level === 'P1') return 'risk-medium';
+            return 'risk-low';
+        }
+        
+        function getRiskText(level) {
+            const map = { 'P0': '高风�?, 'P1': '中风�?, 'P2': '低风�? };
+            return map[level] || level;
+        }
+        
+        function searchReports() {
+            const orgName = document.getElementById('filterOrgName').value.toLowerCase();
+            const username = document.getElementById('filterUsername').value.toLowerCase();
+            const scoreRange = document.getElementById('filterScore').value;
+            const riskLevel = document.getElementById('filterRisk').value;
+            const timeRange = document.getElementById('filterTime').value;
+            
+            filteredReports = allReports.filter(r => {
+                if (orgName && !(r.org_name || '').toLowerCase().includes(orgName)) return false;
+                if (username && !(r.username || '').toLowerCase().includes(username)) return false;
+                
+                if (scoreRange === 'high' && r.total_score < 80) return false;
+                if (scoreRange === 'mid' && (r.total_score < 60 || r.total_score >= 80)) return false;
+                if (scoreRange === 'low' && r.total_score >= 60) return false;
+                
+                if (riskLevel && r.risk_level !== riskLevel) return false;
+                
+                if (timeRange) {
+                    const reportDate = new Date(r.created_at);
+                    const now = new Date();
+                    const days = (now - reportDate) / (1000 * 60 * 60 * 24);
+                    
+                    if (timeRange === 'today' && days > 1) return false;
+                    if (timeRange === 'week' && days > 7) return false;
+                    if (timeRange === 'month' && days > 30) return false;
+                    if (timeRange === 'quarter' && days > 90) return false;
+                }
+                
+                return true;
+            });
+            
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function resetFilters() {
+            document.getElementById('filterOrgName').value = '';
+            document.getElementById('filterUsername').value = '';
+            document.getElementById('filterScore').value = '';
+            document.getElementById('filterRisk').value = '';
+            document.getElementById('filterTime').value = '';
+            filteredReports = [...allReports];
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            
+            filteredReports.slice(start, end).forEach(r => {
+                if (checked) {
+                    selectedIds.add(r.id);
+                } else {
+                    selectedIds.delete(r.id);
+                }
+            });
+            
+            updateSelectedUI();
+            renderTable();
+        }
+        
+        function toggleSelect(id) {
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+            } else {
+                selectedIds.add(id);
+            }
+            updateSelectedUI();
+        }
+        
+        function updateSelectedUI() {
+            const count = selectedIds.size;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('selectedActions').classList.toggle('show', count > 0);
+        }
+        
+        function clearSelection() {
+            selectedIds.clear();
+            document.getElementById('selectAll').checked = false;
+            updateSelectedUI();
+            renderTable();
+        }
+        
+        async function viewDetail(reportId) {
+            currentReportId = reportId;
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`/api/v1/reports/${reportId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('加载失败');
+                
+                const report = await response.json();
+                
+                let html = `
+                    <div class="detail-section">
+                        <div class="section-title"><i class="bi bi-building"></i> 企业信息</div>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">企业名称</div>
+                                <div class="detail-value">${report.org_name || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">评估时间</div>
+                                <div class="detail-value">${report.created_at || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">总分</div>
+                                <div class="detail-value" style="font-size: 24px; font-weight: 700; ${report.total_score >= 80 ? 'color: var(--success-color);' : report.total_score >= 60 ? 'color: var(--warning-color);' : 'color: var(--danger-color);'}">${report.total_score}�?/div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">风险等级</div>
+                                <div class="detail-value">${getRiskText(report.risk_level)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                if (report.detail && report.detail.dimensions) {
+                    html += `
+                        <div class="detail-section">
+                            <div class="section-title"><i class="bi bi-pie-chart"></i> 维度评分</div>
+                            ${report.detail.dimensions.map(d => `
+                                <div class="dimension-item">
+                                    <span class="dimension-name">${d.name}</span>
+                                    <span class="dimension-score ${getScoreClass(d.score)}">${d.score}�?/span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('detailContent').innerHTML = html;
+                document.getElementById('detailModal').classList.add('active');
+            } catch (e) {
+                alert('加载报告详情失败');
+            }
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+        
+        function toggleExportMenu() {
+            document.getElementById('exportMenu').classList.toggle('show');
+        }
+        
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.export-dropdown')) {
+                document.getElementById('exportMenu').classList.remove('show');
+                const modalMenu = document.getElementById('modalExportMenu');
+                if (modalMenu) modalMenu.classList.remove('show');
+            }
+            document.querySelectorAll('.action-dropdown-menu.show').forEach(menu => {
+                if (!e.target.closest('.action-dropdown')) {
+                    menu.classList.remove('show');
+                }
+            });
+        });
+        
+        function toggleActionDropdown(event, reportId) {
+            event.stopPropagation();
+            document.querySelectorAll('.action-dropdown-menu.show').forEach(menu => {
+                if (menu.id !== `dropdown-${reportId}`) {
+                    menu.classList.remove('show');
+                }
+            });
+            document.getElementById(`dropdown-${reportId}`).classList.toggle('show');
+        }
+        
+        async function exportSelected(format) {
+            if (selectedIds.size === 0) {
+                alert('请先选择要导出的报告');
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            const ids = Array.from(selectedIds).join(',');
+            
+            try {
+                const response = await fetch(`/api/v1/reports/export?ids=${ids}&format=${format}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('导出失败');
+                
+                const blob = await response.blob();
+                
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = `reports_export.${format === 'excel' ? 'xlsx' : format === 'pdf' ? 'pdf' : 'json'}`;
+                if (contentDisposition) {
+                    let match = contentDisposition.match(/filename\*="?UTF-8''([^"]+)"?/i);
+                    if (match && match[1]) {
+                        filename = decodeURIComponent(match[1]);
+                    } else {
+                        match = contentDisposition.match(/filename="?([^"]+)"?/);
+                        if (match && match[1]) {
+                            filename = match[1];
+                        }
+                    }
+                }
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                document.getElementById('exportMenu').classList.remove('show');
+            } catch (e) {
+                alert('导出失败�? + e.message);
+            }
+        }
+        
+        async function exportReport(reportId) {
+            await exportReportFormat(reportId, 'json');
+        }
+        
+        async function exportReportFormat(reportId, format) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`/api/v1/reports/${reportId}/export?format=${format}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('导出失败');
+                
+                const blob = await response.blob();
+                
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = `report_${reportId}.${format === 'excel' ? 'xlsx' : format}`;
+                if (contentDisposition) {
+                    let match = contentDisposition.match(/filename\*="?UTF-8''([^"]+)"?/i);
+                    if (match && match[1]) {
+                        filename = decodeURIComponent(match[1]);
+                    } else {
+                        match = contentDisposition.match(/filename="?([^"]+)"?/);
+                        if (match && match[1]) {
+                            filename = match[1];
+                        }
+                    }
+                }
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                document.querySelectorAll('.action-dropdown-menu.show').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            } catch (e) {
+                alert('导出失败�? + e.message);
+            }
+        }
+        
+        function exportCurrentReport() {
+            if (currentReportId) {
+                exportReportFormat(currentReportId, 'json');
+                closeDetailModal();
+            }
+        }
+        
+        function toggleModalExportMenu() {
+            document.getElementById('modalExportMenu').classList.toggle('show');
+        }
+        
+        function exportCurrentReportFormat(format) {
+            if (currentReportId) {
+                exportReportFormat(currentReportId, format);
+                closeDetailModal();
+            }
+        }
+        
+        async function deleteReport(reportId, orgName) {
+            if (!confirm(`确定要删除报告�?{orgName}」吗？此操作不可恢复。`)) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`/api/v1/evaluation/${reportId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '删除失败');
+                }
+                
+                alert('删除成功');
+                loadReports();
+            } catch (e) {
+                alert('删除失败�? + e.message);
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login';
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadReports);
+    </script>
+</body>
+</html>
