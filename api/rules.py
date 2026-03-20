@@ -61,8 +61,8 @@ def get_all_rules(
     keyword: Optional[str] = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
-    sort_by: str = Query("id", regex="^(id|dimension_code|weight|risk_threshold|created_at)$"),
-    sort_order: str = Query("asc", regex="^(asc|desc)$"),
+    sort_by: str = Query("id", pattern="^(id|dimension_code|weight|risk_threshold|created_at)$"),
+    sort_order: str = Query("asc", pattern="^(asc|desc)$"),
     db: Session = Depends(get_db)
 ):
     """获取所有规则（支持分页、排序、筛选）"""
@@ -163,9 +163,13 @@ def update_rule(rule_id: int, rule_data: RuleConfigUpdate, db: Session = Depends
     update_data = rule_data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(rule, field, value)
-    
-    rule.version += 1
-    
+
+    try:
+        current_version = float(rule.version or "1.0")
+        rule.version = str(current_version + 1.0)
+    except (ValueError, TypeError):
+        rule.version = "2.0"
+
     db.commit()
     db.refresh(rule)
     

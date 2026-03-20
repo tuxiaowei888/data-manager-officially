@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP配置 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-database-gear"></i>
+                    <span>数维数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item active">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-gem"></i> VIP配置</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">VIP用户管理</span>
+                        <div class="filter-group">
+                            <input type="text" id="searchKeyword" class="form-control" placeholder="搜索用户名或邮箱..." style="width: 200px;">
+                            <select class="filter-select" id="filterVipStatus" style="width: 120px;">
+                                <option value="">全部</option>
+                                <option value="vip">VIP用户</option>
+                                <option value="normal">普通用户</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" onclick="loadUsers()">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>用户名</th>
+                                        <th>邮箱</th>
+                                        <th>VIP状态</th>
+                                        <th>VIP到期时间</th>
+                                        <th>剩余评估次数</th>
+                                        <th>注册时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 40px;">
+                                            <div class="loading-spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="vipModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">设置VIP</h3>
+                <button class="modal-close" onclick="closeVipModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="vipModalUser"></p>
+                <div class="form-group mt-3">
+                    <label class="form-label">VIP时长（天）</label>
+                    <input type="number" class="form-control" id="vipDays" value="30" min="1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeVipModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveVip()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        let allUsers = [];
+        let filteredUsers = [];
+        let pagination = null;
+        let currentUserId = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            pagination = new Pagination({
+                pageSize: 10,
+                onPageChange: renderUserTable
+            });
+            paginationObj = pagination;
+
+            document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loadUsers();
+            });
+
+            await loadUsers();
+        });
+
+        async function loadUsers() {
+            const tbody = document.getElementById('userTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/users');
+                allUsers = (response.data && Array.isArray(response.data)) ? response.data : [];
+                allUsers = allUsers.map(u => ({
+                    ...u,
+                    remaining_evaluations: u.daily_eval_count || 0
+                }));
+                filterUsers();
+            } catch (error) {
+                console.error('加载用户失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function filterUsers() {
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+            const vipStatus = document.getElementById('filterVipStatus').value;
+
+            filteredUsers = allUsers.filter(u => {
+                if (keyword) {
+                    const matchUsername = (u.username || '').toLowerCase().includes(keyword);
+                    const matchEmail = (u.email || '').toLowerCase().includes(keyword);
+                    if (!matchUsername && !matchEmail) return false;
+                }
+                if (vipStatus === 'vip' && !u.is_vip) return false;
+                if (vipStatus === 'normal' && u.is_vip) return false;
+                return true;
+            });
+
+            pagination.setTotal(filteredUsers.length);
+            pagination.render('pagination');
+            renderUserTable(1);
+        }
+
+        function renderUserTable(page) {
+            const tbody = document.getElementById('userTableBody');
+            const start = (page - 1) * pagination.pageSize;
+            const end = start + pagination.pageSize;
+            const pageUsers = filteredUsers.slice(start, end);
+
+            if (pageUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding: 40px;">暂无用户数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageUsers.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td><strong>${u.username || '-'}</strong></td>
+                    <td>${u.email || '-'}</td>
+                    <td>
+                        ${u.is_vip
+                            ? '<span class="badge badge-warning">VIP</span>'
+                            : '<span class="badge badge-secondary">普通</span>'}
+                    </td>
+                    <td>${u.vip_expire_date || '-'}</td>
+                    <td>${u.remaining_evaluations ?? '-'}</td>
+                    <td>${formatDate(u.created_at)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            ${u.is_vip
+                                ? `<button class="btn btn-sm btn-warning" onclick="revokeVip(${u.id})" title="取消VIP">
+                                    <i class="bi bi-x-circle"></i>
+                                   </button>`
+                                : `<button class="btn btn-sm btn-success" onclick="openVipModal(${u.id})" title="开通VIP">
+                                    <i class="bi bi-gem"></i>
+                                   </button>`}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openVipModal(userId) {
+            currentUserId = userId;
+            const user = allUsers.find(u => u.id === userId);
+            document.getElementById('vipModalUser').textContent = `为用户 "${user?.username || userId}" 开通VIP`;
+            document.getElementById('vipDays').value = 30;
+            document.getElementById('vipModal').classList.add('active');
+        }
+
+        function closeVipModal() {
+            document.getElementById('vipModal').classList.remove('active');
+            currentUserId = null;
+        }
+
+        async function saveVip() {
+            if (!currentUserId) return;
+
+            const days = parseInt(document.getElementById('vipDays').value);
+            if (!days || days < 1) {
+                showMessage('请输入有效的天数', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiPost(`/users/${currentUserId}/vip`, { days });
+                showMessage('VIP开通成功', 'success');
+                closeVipModal();
+                await loadUsers();
+            } catch (error) {
+                showMessage('操作失败: ' + error.message, 'error');
+            }
+        }
+
+        async function revokeVip(userId) {
+            if (!confirm('确定要取消该用户的VIP吗？')) return;
+
+            try {
+                await apiDelete(`/users/${userId}/vip`);
+                showMessage('VIP已取消', 'success');
+                await loadUsers();
+            } catch (error) {
+                showMessage('操作失败: ' + error.message, 'error');
+            }
+        }
+
+        document.getElementById('vipModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVipModal();
+        });
+    </script>
+</body>
+</html>

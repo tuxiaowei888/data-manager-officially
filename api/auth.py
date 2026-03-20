@@ -22,13 +22,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["用户认证"])
 # JWT 配置
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError(
-        "SECRET_KEY environment variable must be set. "
-        "Please set it before starting the application."
-    )
-
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-please-change-in-production-12345678")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7天
 

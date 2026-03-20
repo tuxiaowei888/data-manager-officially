@@ -52,8 +52,8 @@ class AIConfigResponse(BaseModel):
     api_key_masked: str
     api_base_url: Optional[str]
     model_name: str
-    temperature: float
-    max_tokens: int
+    temperature: Optional[float]
+    max_tokens: Optional[int]
     system_prompt: Optional[str]
     report_prompt_template: Optional[str]
     is_active: bool
@@ -134,6 +134,41 @@ def get_config(config_id: int, db: Session = Depends(get_db)):
         api_key_masked=api_key_masked,
         api_base_url=config.api_base_url,
         model_name=config.model_name,
+        temperature=config.temperature,
+        max_tokens=config.max_tokens,
+        system_prompt=config.system_prompt,
+        report_prompt_template=config.report_prompt_template,
+        is_active=config.is_active,
+        is_default=config.is_default
+    )
+
+
+@router.put("/{config_id}", response_model=AIConfigResponse)
+def update_config(config_id: int, config_data: AIConfigUpdate, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+    """更新AI配置"""
+    config = db.query(AIConfig).filter(AIConfig.id == config_id).first()
+
+    if not config:
+        raise HTTPException(status_code=404, detail="配置不存在")
+
+    update_data = config_data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(config, field, value)
+
+    db.commit()
+    db.refresh(config)
+
+    api_key_masked = ""
+    if config.api_key:
+        api_key_masked = config.api_key[:8] + "****" + config.api_key[-4:] if len(config.api_key) > 12 else "****"
+
+    return AIConfigResponse(
+        id=config.id,
+        config_name=config.config_name,
+        provider=config.provider,
+        model_name=config.model_name,
+        api_key_masked=api_key_masked,
+        api_base_url=config.api_base_url,
         temperature=config.temperature,
         max_tokens=config.max_tokens,
         system_prompt=config.system_prompt,

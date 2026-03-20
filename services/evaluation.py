@@ -629,7 +629,27 @@ class EvaluationService:
             }
             for r in results
         ]
-    
+
+    def get_all_results(self, limit: int = 100) -> List[Dict[str, Any]]:
+        """获取所有评价历史（管理端用）"""
+        results = self.db.query(EvaluationResult).order_by(
+            EvaluationResult.created_at.desc()
+        ).limit(limit).all()
+
+        return [
+            {
+                'id': r.id,
+                'user_id': r.user_id,
+                'org_name': r.org_name or r.detail_json.get('form_data', {}).get('org_name', '未命名企业'),
+                'total_score': r.total_score,
+                'risk_level': r.risk_level,
+                'engine_version': r.engine_version,
+                'status': 'completed' if r.total_score else 'failed',
+                'created_at': r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '-'
+            }
+            for r in results
+        ]
+
     def delete_result(self, result_id: int) -> bool:
         """删除评价结果"""
         result = self.db.query(EvaluationResult).filter(

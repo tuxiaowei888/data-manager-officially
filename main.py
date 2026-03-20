@@ -5,6 +5,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
+# 配置日志系统
+from config.logging_config import setup_logging, get_logger
+setup_logging()
+logger = get_logger(__name__)
+
 # 导入路由
 from api.rules import router as rules_router
 from api.evaluation import router as evaluation_router
@@ -86,12 +91,6 @@ def api_docs_chinese():
     return FileResponse("api_docs_chinese.html")
 
 
-@app.get("/survey")
-def survey_page():
-    """调研表单页面"""
-    return FileResponse("frontend/index.html")
-
-
 @app.get("/report")
 def report_page():
     """报告页面"""
@@ -100,6 +99,12 @@ def report_page():
 
 @app.get("/login")
 def login_page():
+    """登录页面"""
+    return FileResponse("frontend/login.html")
+
+
+@app.get("/login.html")
+def login_html_page():
     """登录页面"""
     return FileResponse("frontend/login.html")
 
@@ -116,6 +121,12 @@ def register_page():
     return FileResponse("frontend/register.html")
 
 
+@app.get("/register.html")
+def register_html_page():
+    """注册页面"""
+    return FileResponse("frontend/register.html")
+
+
 @app.get("/history")
 def history_page():
     """历史报告页面"""
@@ -128,8 +139,20 @@ def admin_page():
     return FileResponse("frontend/admin.html")
 
 
+@app.get("/admin.html")
+def admin_html_page():
+    """管理员首页"""
+    return FileResponse("frontend/admin.html")
+
+
 @app.get("/rules")
 def rules_page():
+    """规则库管理页面"""
+    return FileResponse("frontend/rules.html")
+
+
+@app.get("/rules.html")
+def rules_html_page():
     """规则库管理页面"""
     return FileResponse("frontend/rules.html")
 
@@ -140,8 +163,20 @@ def knowledge_page():
     return FileResponse("frontend/knowledge.html")
 
 
+@app.get("/knowledge.html")
+def knowledge_html_page():
+    """知识库管理页面"""
+    return FileResponse("frontend/knowledge.html")
+
+
 @app.get("/users")
 def users_page():
+    """用户管理页面"""
+    return FileResponse("frontend/users.html")
+
+
+@app.get("/users.html")
+def users_html_page():
     """用户管理页面"""
     return FileResponse("frontend/users.html")
 
@@ -152,8 +187,20 @@ def config_page():
     return FileResponse("frontend/config.html")
 
 
+@app.get("/config.html")
+def config_html_page():
+    """系统配置页面"""
+    return FileResponse("frontend/config.html")
+
+
 @app.get("/customers")
 def customers_page():
+    """客户管理页面"""
+    return FileResponse("frontend/customers.html")
+
+
+@app.get("/customers.html")
+def customers_html_page():
     """客户管理页面"""
     return FileResponse("frontend/customers.html")
 
@@ -164,14 +211,86 @@ def reports_page():
     return FileResponse("frontend/reports.html")
 
 
+@app.get("/reports.html")
+def reports_html_page():
+    """报告管理页面"""
+    return FileResponse("frontend/reports.html")
+
+
 @app.get("/ai-config")
 def ai_config_page():
     """AI配置管理页面"""
     return FileResponse("frontend/ai_config.html")
 
 
+@app.get("/ai_config.html")
+def ai_config_html_page():
+    """AI配置管理页面"""
+    return FileResponse("frontend/ai_config.html")
+
+
+@app.get("/history")
+def history_page():
+    """历史记录页面"""
+    return FileResponse("frontend/history.html")
+
+
+@app.get("/history.html")
+def history_html_page():
+    """历史记录页面"""
+    return FileResponse("frontend/history.html")
+
+
+@app.get("/admin-new")
+def admin_new_page():
+    """新版管理后台首页"""
+    return FileResponse("frontend/admin-new/index.html")
+
+
+@app.get("/admin-new/index.html")
+def admin_new_index_html_page():
+    """新版管理后台首页"""
+    return FileResponse("frontend/admin-new/index.html")
+
+
+@app.get("/admin-new/pages/{page}")
+def admin_new_pages_page(page: str):
+    """新版管理后台子页面"""
+    return FileResponse(f"frontend/admin-new/pages/{page}")
+
+
+@app.get("/admin-new/pages/{folder}/{page}")
+def admin_new_pages_folder_page(folder: str, page: str):
+    """新版管理后台子页面"""
+    return FileResponse(f"frontend/admin-new/pages/{folder}/{page}")
+
+
+@app.get("/admin-new/pages/{page}.html")
+def admin_new_pages_html_page(page: str):
+    """新版管理后台子页面HTML"""
+    return FileResponse(f"frontend/admin-new/pages/{page}.html")
+
+
+@app.get("/admin-new/css/{file}")
+def admin_new_css_page(file: str):
+    """新版管理后台CSS文件"""
+    return FileResponse(f"frontend/admin-new/css/{file}")
+
+
+@app.get("/admin-new/js/{file}")
+def admin_new_js_page(file: str):
+    """新版管理后台JS文件"""
+    return FileResponse(f"frontend/admin-new/js/{file}")
+
+
 from fastapi.staticfiles import StaticFiles
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    """网站图标"""
+    return FileResponse("frontend/favicon.svg", media_type="image/svg+xml")
 
 
 if __name__ == "__main__":

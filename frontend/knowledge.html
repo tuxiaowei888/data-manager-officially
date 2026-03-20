@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数维数据管家系统 - 知识库管�?/title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>数维数据管家系统 - 知识库管�?/title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -534,24 +534,24 @@
             <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
-            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
-            <li><a href="/knowledge.html" class="active"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
+            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
+            <li><a href="/knowledge.html" class="active"><i class="bi bi-book"></i> 知识库管�?/a></li>
             <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
             <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
             <li><a href="/reports.html"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
             <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
             <li><a href="/config.html"><i class="bi bi-gear"></i> VIP配置</a></li>
-            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
         </ul>
     </div>
     
     <div class="main-content">
         <div class="page-header">
-            <h1 class="page-title"><i class="bi bi-book"></i>知识库管�?/h1>
+            <h1 class="page-title"><i class="bi bi-book"></i>知识库管�?/h1>
             <div style="display: flex; gap: 12px;">
                 <button class="btn-secondary" onclick="vectorizeAllDocs()" id="vectorizeBtn">
-                    <i class="bi bi-database-fill-gear"></i> 批量向量�?                </button>
+                    <i class="bi bi-database-fill-gear"></i> 批量向量�?                </button>
                 <button class="btn-primary-custom" onclick="openModal()">
                     <i class="bi bi-plus-lg"></i> 新建文档
                 </button>
@@ -619,7 +619,7 @@
                 <form id="docForm">
                     <div class="form-group">
                         <label class="form-label">文档标题 <span style="color: var(--danger-color);">*</span></label>
-                        <input type="text" class="form-control" id="docTitle" required placeholder="请输入文档标�?>
+                        <input type="text" class="form-control" id="docTitle" required placeholder="请输入文档标�?>
                     </div>
                     
                     <div class="form-row" style="display: flex; gap: 16px;">
@@ -632,7 +632,7 @@
                         
                         <div class="form-group" style="flex: 1;">
                             <label class="form-label">来源</label>
-                            <input type="text" class="form-control" id="docSource" placeholder="如：国务院、工信部�?>
+                            <input type="text" class="form-control" id="docSource" placeholder="如：国务院、工信部�?>
                         </div>
                     </div>
                     
@@ -650,7 +650,7 @@
                                 <i class="bi bi-x-circle"></i> 移除
                             </button>
                         </div>
-                        <div style="text-align: center; color: var(--text-disabled); margin: 12px 0;">�?或者手动输�?�?/div>
+                        <div style="text-align: center; color: var(--text-disabled); margin: 12px 0;">�?或者手动输�?�?/div>
                         <textarea class="form-control" id="docContent" rows="8" placeholder="请输入文档内容，支持政策法规、行业规范等文本..."></textarea>
                     </div>
                 </form>
@@ -681,7 +681,7 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script>
         let allDocs = [];
         let allCategories = [];
@@ -692,7 +692,7 @@
             const userInfo = localStorage.getItem('userInfo');
             
             if (!token || !userInfo) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             
@@ -700,11 +700,11 @@
                 const user = JSON.parse(userInfo);
                 if (user.user_type !== 'admin') {
                     alert('无权限访问：此页面仅限管理员使用');
-                    window.location.href = '/survey';
+                    window.location.href = '/home.html';
                     return false;
                 }
             } catch (e) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             
@@ -767,7 +767,7 @@
         function selectCategory(categoryId) {
             currentCategoryId = categoryId;
             
-            // 更新选中状�?            document.querySelectorAll('.category-item').forEach(item => {
+            // 更新选中状�?            document.querySelectorAll('.category-item').forEach(item => {
                 item.classList.remove('active');
             });
             event.currentTarget.classList.add('active');
@@ -859,11 +859,11 @@
             
             let filtered = allDocs;
             
-            // 按目录分类筛�?            if (currentCategoryId !== null) {
+            // 按目录分类筛�?            if (currentCategoryId !== null) {
                 filtered = filtered.filter(d => d.category_id === currentCategoryId);
             }
             
-            // 按关键词筛�?            if (keyword) {
+            // 按关键词筛�?            if (keyword) {
                 filtered = filtered.filter(d => 
                     d.title.toLowerCase().includes(keyword) ||
                     (d.content && d.content.toLowerCase().includes(keyword))
@@ -906,7 +906,7 @@
                 reader.readAsText(file);
             } else {
                 document.getElementById('docContent').value = '';
-                document.getElementById('docContent').placeholder = 'PDF/Word文件将在保存时由服务器解析，请直接点�?保存文档"';
+                document.getElementById('docContent').placeholder = 'PDF/Word文件将在保存时由服务器解析，请直接点�?保存文档"';
             }
         }
         
@@ -920,7 +920,7 @@
         
         function getCategoryName(categoryId) {
             const cat = allCategories.find(c => c.id === categoryId);
-            return cat ? cat.name : '未分�?;
+            return cat ? cat.name : '未分�?;
         }
         
         async function viewDoc(id) {
@@ -936,11 +936,11 @@
                 const doc = await response.json();
                 
                 document.getElementById('viewTitle').textContent = doc.title;
-                let content = (doc.content || '无内�?).replace(/\n\s*\n/g, '\n\n');
+                let content = (doc.content || '无内�?).replace(/\n\s*\n/g, '\n\n');
                 document.getElementById('viewContent').innerHTML = content.replace(/\n/g, '<br>');
                 document.getElementById('viewModal').classList.add('active');
             } catch (error) {
-                alert('获取文档详情失败�? + error.message);
+                alert('获取文档详情失败�? + error.message);
             }
         }
         
@@ -957,7 +957,7 @@
             const categoryId = document.getElementById('categoryId').value;
             
             if (!title) {
-                alert('请填写文档标�?);
+                alert('请填写文档标�?);
                 return;
             }
             
@@ -990,7 +990,7 @@
                     await loadDocs();
                     alert('保存成功');
                 } catch (error) {
-                    alert('保存失败�? + error.message);
+                    alert('保存失败�? + error.message);
                 }
                 return;
             }
@@ -1023,12 +1023,12 @@
                 await loadDocs();
                 alert('保存成功');
             } catch (error) {
-                alert('保存失败�? + error.message);
+                alert('保存失败�? + error.message);
             }
         }
         
         async function deleteDoc(id) {
-            if (!confirm('确定要删除这篇文档吗�?)) return;
+            if (!confirm('确定要删除这篇文档吗�?)) return;
             
             const token = localStorage.getItem('token');
             
@@ -1040,7 +1040,7 @@
                 
                 if (!response.ok) {
                     const error = await response.json();
-                    alert('删除失败�? + (error.detail || '未知错误'));
+                    alert('删除失败�? + (error.detail || '未知错误'));
                     return;
                 }
                 
@@ -1050,18 +1050,18 @@
                 renderCategories();
                 alert('删除成功');
             } catch (error) {
-                alert('删除失败�? + error.message);
+                alert('删除失败�? + error.message);
             }
         }
         
         async function vectorizeAllDocs() {
-            if (!confirm('确定要批量向量化所有文档吗？\n\n这可能需要一些时间，取决于文档数量�?)) return;
+            if (!confirm('确定要批量向量化所有文档吗？\n\n这可能需要一些时间，取决于文档数量�?)) return;
             
             const token = localStorage.getItem('token');
             const btn = document.getElementById('vectorizeBtn');
             const originalText = btn.innerHTML;
             
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 启动�?..';
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 启动�?..';
             btn.disabled = true;
             
             try {
@@ -1073,11 +1073,11 @@
                 const result = await response.json();
                 
                 if (result.status === 'success' && result.data.is_running) {
-                    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 处理�?0%...';
+                    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 处理�?0%...';
                     await pollVectorizeProgress(btn, originalText);
                 } else if (result.status === 'warning') {
                     if (result.data && result.data.is_running) {
-                        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 处理�?..';
+                        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 处理�?..';
                         await pollVectorizeProgress(btn, originalText);
                     } else {
                         alert(result.message || '处理失败');
@@ -1111,13 +1111,13 @@
                     
                     if (status.is_running) {
                         const progress = status.progress || 0;
-                        btn.innerHTML = `<i class="bi bi-hourglass-split"></i> 处理�?${progress}% (${status.processed}/${status.total})`;
+                        btn.innerHTML = `<i class="bi bi-hourglass-split"></i> 处理�?${progress}% (${status.processed}/${status.total})`;
                     } else if (status.completed) {
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                         
                         if (status.error) {
-                            alert(`向量化过程中发生错误�?{status.error}`);
+                            alert(`向量化过程中发生错误�?{status.error}`);
                         } else {
                             alert(`批量向量化完成！\n\n总计: ${status.total}\n成功: ${status.success}\n失败: ${status.fail}\n跳过: ${status.skipped}`);
                         }
@@ -1131,7 +1131,7 @@
                     console.error('获取进度失败:', error);
                     btn.innerHTML = originalText;
                     btn.disabled = false;
-                    alert('获取进度失败�? + error.message);
+                    alert('获取进度失败�? + error.message);
                     break;
                 }
             }
@@ -1140,13 +1140,13 @@
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');
-            window.location.href = '/login';
+            window.location.href = '/login.html';
         }
         
         document.addEventListener('DOMContentLoaded', async function() {
             await loadCategories();
             await loadDocs();
-            renderCategories(); // 文档加载后更新分类计�?            
+            renderCategories(); // 文档加载后更新分类计�?            
             // 拖拽上传支持
             const uploadArea = document.getElementById('uploadArea');
             

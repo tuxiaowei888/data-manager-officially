@@ -109,13 +109,26 @@ def get_report_retention_days(user: User, db: Session) -> int:
 
 
 def cleanup_expired_reports(db: Session):
-    """清理过期的报告（定时任务调用）"""
-    users = db.query(User).all()
+    """清理过期的报告（定时任务调用）
     
-    for user in users:
-        retention_days = get_report_retention_days(user, db)
-        cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
-        
+    注意：VIP用户的报告永久保留，即使VIP过期也不删除历史报告
+    只有普通用户的报告按保留天数清理
+    """
+    # 只清理普通用户的过期报告
+    free_retention_days = get_config_int(db, "free_report_retention_days", 7)
+    cutoff_date = datetime.utcnow() - timedelta(days=free_retention_days)
+    
+    # 查询所有普通用户（is_vip=False 或 VIP已过期）
+    from sqlalchemy import or_
+    regular_users = db.query(User).filter(
+        or_(
+            User.is_vip == False,
+            User.vip_expire_date < date.today()
+        )
+    ).all()
+    
+    deleted_count = 0
+    for user in regular_users:
         expired_reports = db.query(EvaluationResult).filter(
             EvaluationResult.user_id == user.id,
             EvaluationResult.created_at < cutoff_date
@@ -123,8 +136,14 @@ def cleanup_expired_reports(db: Session):
         
         for report in expired_reports:
             db.delete(report)
+            deleted_count += 1
     
     db.commit()
+    
+    # 记录清理日志
+    from config.logging_config import get_logger
+    logger = get_logger(__name__)
+    logger.info(f"清理过期报告完成，共删除 {deleted_count} 条记录")
 
 
 def set_user_vip(user: User, days: int, db: Session):

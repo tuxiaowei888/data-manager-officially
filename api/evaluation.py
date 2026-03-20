@@ -195,6 +195,22 @@ def delete_evaluation_result(
         raise HTTPException(status_code=404, detail=str(e))
 
 
+@router.get("/history")
+def get_evaluation_history(limit: int = 100, db: Session = Depends(get_db)):
+    """
+    获取所有评估历史记录（管理端用）
+
+    Args:
+        limit: 返回数量限制
+    """
+    from services.evaluation import EvaluationService
+
+    service = EvaluationService(db)
+    results = service.get_all_results(limit)
+
+    return results
+
+
 @router.get("/user/{user_id}/history")
 def get_user_evaluation_history(user_id: int, limit: int = 10, db: Session = Depends(get_db)):
     """

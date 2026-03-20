@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库管理 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-database-gear"></i>
+                    <span>数维数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item active">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-book"></i> 知识库管理</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="search-bar">
+                    <div class="search-input">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索知识库标题、内容...">
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="filterCategory">
+                            <option value="">全部分类</option>
+                            <option value="rule">规则知识</option>
+                            <option value="standard">标准规范</option>
+                            <option value="faq">常见问题</option>
+                            <option value="other">其他</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadKnowledge()">
+                            <i class="bi bi-search"></i> 搜索
+                        </button>
+                        <button class="btn btn-success" onclick="openAddKnowledgeModal()">
+                            <i class="bi bi-plus-lg"></i> 添加知识
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">知识库列表</span>
+                        <span id="knowledgeCount">共 0 条</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>标题</th>
+                                        <th>分类</th>
+                                        <th>标签</th>
+                                        <th>引用次数</th>
+                                        <th>状态</th>
+                                        <th>更新时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="knowledgeTableBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 40px;">
+                                            <div class="loading-spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="knowledgeModal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="knowledgeModalTitle">添加知识</h3>
+                <button class="modal-close" onclick="closeKnowledgeModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="knowledgeForm">
+                    <input type="hidden" id="knowledgeId">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="form-label">标题 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="knowledgeTitle" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">分类 <span class="text-danger">*</span></label>
+                                <select class="form-control" id="knowledgeCategory" required>
+                                    <option value="">请选择</option>
+                                    <option value="rule">规则知识</option>
+                                    <option value="standard">标准规范</option>
+                                    <option value="faq">常见问题</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">内容 <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="knowledgeContent" rows="10" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">标签</label>
+                        <input type="text" class="form-control" id="knowledgeTags" placeholder="多个标签用逗号分隔">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeKnowledgeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveKnowledge()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">知识详情</h3>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detailContent">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        let allKnowledge = [];
+        let filteredKnowledge = [];
+        let pagination = null;
+        let isEdit = false;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            pagination = new Pagination({
+                pageSize: 10,
+                onPageChange: renderKnowledgeTable
+            });
+            paginationObj = pagination;
+
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loadKnowledge();
+            });
+
+            await loadKnowledge();
+        });
+
+        async function loadKnowledge() {
+            const tbody = document.getElementById('knowledgeTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/knowledge');
+                allKnowledge = Array.isArray(response) ? response : (response.data || []);
+                allKnowledge = allKnowledge.map(k => ({
+                    id: k.id,
+                    title: k.title || '-',
+                    category: k.doc_type || k.category || 'other',
+                    tags: k.tags || [],
+                    content: k.content || '',
+                    is_active: k.is_active !== false,
+                    updated_at: k.created_at || '-',
+                    updated_time: k.created_at || '-'
+                }));
+                filterKnowledge();
+            } catch (error) {
+                console.error('加载知识库失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function filterKnowledge() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('filterCategory').value;
+
+            filteredKnowledge = allKnowledge.filter(k => {
+                if (keyword) {
+                    const matchTitle = (k.title || '').toLowerCase().includes(keyword);
+                    const matchContent = (k.content || '').toLowerCase().includes(keyword);
+                    if (!matchTitle && !matchContent) return false;
+                }
+                if (category && k.category !== category) return false;
+                return true;
+            });
+
+            document.getElementById('knowledgeCount').textContent = `共 ${filteredKnowledge.length} 条`;
+            pagination.setTotal(filteredKnowledge.length);
+            pagination.render('pagination');
+            renderKnowledgeTable(1);
+        }
+
+        function renderKnowledgeTable(page) {
+            const tbody = document.getElementById('knowledgeTableBody');
+            const start = (page - 1) * pagination.pageSize;
+            const end = start + pagination.pageSize;
+            const pageData = filteredKnowledge.slice(start, end);
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding: 40px;">暂无知识库数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageData.map(k => `
+                <tr>
+                    <td>${k.id}</td>
+                    <td><strong>${k.title || '-'}</strong></td>
+                    <td>${getCategoryBadge(k.category)}</td>
+                    <td>${formatTags(k.tags)}</td>
+                    <td>${k.引用次数 || 0}</td>
+                    <td>
+                        <span class="status-badge ${k.is_active !== false ? 'active' : 'inactive'}">
+                            ${k.is_active !== false ? '启用' : '禁用'}
+                        </span>
+                    </td>
+                    <td>${formatDate(k.updated_at || k.updated_time)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="viewKnowledgeDetail(${k.id})" title="查看">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="editKnowledge(${k.id})" title="编辑">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="toggleKnowledgeStatus(${k.id})" title="${k.is_active !== false ? '禁用' : '启用'}">
+                                <i class="bi ${k.is_active !== false ? 'bi-ban' : 'bi-check-circle'}"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteKnowledge(${k.id})" title="删除">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getCategoryBadge(category) {
+            const badges = {
+                'rule': '<span class="badge badge-info">规则知识</span>',
+                'standard': '<span class="badge badge-success">标准规范</span>',
+                'faq': '<span class="badge badge-warning">常见问题</span>',
+                'other': '<span class="badge badge-secondary">其他</span>'
+            };
+            return badges[category] || '<span class="badge">其他</span>';
+        }
+
+        function formatTags(tags) {
+            if (!tags) return '-';
+            if (typeof tags === 'string') {
+                return tags.split(',').map(t => `<span class="badge badge-info" style="margin-right: 3px;">${t.trim()}</span>`).join('');
+            }
+            if (Array.isArray(tags)) {
+                return tags.map(t => `<span class="badge badge-info" style="margin-right: 3px;">${t}</span>`).join('');
+            }
+            return '-';
+        }
+
+        function openAddKnowledgeModal() {
+            isEdit = false;
+            document.getElementById('knowledgeModalTitle').textContent = '添加知识';
+            document.getElementById('knowledgeForm').reset();
+            document.getElementById('knowledgeId').value = '';
+            document.getElementById('knowledgeModal').classList.add('active');
+        }
+
+        function editKnowledge(id) {
+            const item = allKnowledge.find(k => k.id === id);
+            if (!item) return;
+
+            isEdit = true;
+            document.getElementById('knowledgeModalTitle').textContent = '编辑知识';
+            document.getElementById('knowledgeId').value = item.id;
+            document.getElementById('knowledgeTitle').value = item.title || '';
+            document.getElementById('knowledgeCategory').value = item.category || '';
+            document.getElementById('knowledgeContent').value = item.content || '';
+            document.getElementById('knowledgeTags').value = Array.isArray(item.tags) ? item.tags.join(', ') : (item.tags || '');
+            document.getElementById('knowledgeModal').classList.add('active');
+        }
+
+        function closeKnowledgeModal() {
+            document.getElementById('knowledgeModal').classList.remove('active');
+        }
+
+        async function saveKnowledge() {
+            const id = document.getElementById('knowledgeId').value;
+            const title = document.getElementById('knowledgeTitle').value.trim();
+            const category = document.getElementById('knowledgeCategory').value;
+            const content = document.getElementById('knowledgeContent').value.trim();
+            const tagsStr = document.getElementById('knowledgeTags').value.trim();
+
+            if (!title || !category || !content) {
+                showMessage('请填写所有必填字段', 'error');
+                return;
+            }
+
+            const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+            const data = { title, category, content, tags };
+
+            try {
+                if (isEdit) {
+                    await apiPut(`/knowledge/${id}`, data);
+                    showMessage('知识更新成功', 'success');
+                } else {
+                    await apiPost('/knowledge', data);
+                    showMessage('知识创建成功', 'success');
+                }
+                closeKnowledgeModal();
+                await loadKnowledge();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function viewKnowledgeDetail(id) {
+            const item = allKnowledge.find(k => k.id === id);
+            if (!item) return;
+
+            document.getElementById('detailModal').classList.add('active');
+            const content = document.getElementById('detailContent');
+
+            content.innerHTML = `
+                <div class="mb-3">
+                    <h4>${item.title || '-'}</h4>
+                    ${getCategoryBadge(item.category)}
+                    <span class="ms-2">更新时间: ${formatDate(item.updated_at || item.updated_time)}</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标签</label>
+                    <div class="form-control" style="background: var(--bg-primary);">
+                        ${formatTags(item.tags)}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <label class="form-label">内容</label>
+                    <div class="form-control" style="background: var(--bg-primary); min-height: 200px; white-space: pre-wrap;">${item.content || '-'}</div>
+                </div>
+            `;
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        async function toggleKnowledgeStatus(id) {
+            const item = allKnowledge.find(k => k.id === id);
+            if (!item) return;
+
+            const action = item.is_active !== false ? '禁用' : '启用';
+            if (!confirm(`确定要${action}该知识吗？`)) return;
+
+            try {
+                await apiPut(`/knowledge/${id}`, { is_active: item.is_active === false ? true : false });
+                showMessage(`知识${action}成功`, 'success');
+                await loadKnowledge();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function deleteKnowledge(id) {
+            if (!confirm('确定要删除该知识吗？此操作不可恢复！')) return;
+
+            try {
+                await apiDelete(`/knowledge/${id}`);
+                showMessage('知识删除成功', 'success');
+                await loadKnowledge();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        document.getElementById('knowledgeModal').addEventListener('click', function(e) {
+            if (e.target === this) closeKnowledgeModal();
+        });
+
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDetailModal();
+        });
+    </script>
+</body>
+</html>

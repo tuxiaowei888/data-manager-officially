@@ -1,6 +1,6 @@
 ---
-name: "gitee代码上传"
-description: "帮助用户将代码上传到 Gitee 仓库。当用户需要推送代码到 Gitee、初始化 Git 仓库、配置远程仓库或解决上传问题时调用。"
+name: gitee代码上传
+description: 帮助用户将代码上传到 Gitee 仓库。当用户需要推送代码到 Gitee、初始化 Git 仓库、配置远程仓库或解决上传问题时调用。
 ---
 
 # Gitee 代码上传助手
@@ -35,8 +35,8 @@ git init
 
 ```bash
 # 配置用户名和邮箱（使用 Gitee 账号信息）
-git config user.name "你的Gitee用户名"
-git config user.email "你的Gitee邮箱"
+git config user.name "涂晓伟的GITEE"
+git config user.email "tuxiaowei520@163.com"
 
 # 查看配置
 git config --list

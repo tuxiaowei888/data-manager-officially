@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数维数据管家系统 - 规则库管�?/title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>数维数据管家系统 - 规则库管理</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -721,21 +721,21 @@
             <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin.html" id="menuDashboard"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
-            <li><a href="/rules.html" id="menuRules"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
-            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/admin.html" id="menuDashboard"><i class="bi bi-speedometer2"></i> 仪表盘</a></li>
+            <li><a href="/rules.html" id="menuRules"><i class="bi bi-sliders"></i> 规则库管理</a></li>
+            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管理</a></li>
             <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
             <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
             <li><a href="/reports.html"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
             <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
             <li><a href="/config.html"><i class="bi bi-gear"></i> VIP配置</a></li>
-            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登录</a></li>
         </ul>
     </div>
     
     <div class="main-content">
         <div class="page-header">
-            <h1 class="page-title" id="pageTitle"><i class="bi bi-speedometer2"></i> <span>仪表�?/span></h1>
+            <h1 class="page-title" id="pageTitle"><i class="bi bi-speedometer2"></i> <span>仪表盘</span></h1>
         </div>
         
         <div id="dashboardContent"></div>
@@ -745,7 +745,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle">新建规则</h3>
-                <button class="modal-close" onclick="closeModal()">
+                <button class="modal-close"
+                             onclick="closeModal()">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
@@ -755,25 +756,25 @@
                     
                     <div class="form-group">
                         <label class="form-label">规则名称</label>
-                        <input type="text" class="form-control" id="ruleName" required placeholder="请输入规则名�?>
+                        <input type="text" class="form-control" id="ruleName" required placeholder="请输入规则名称">
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">所属维�?/label>
+                        <label class="form-label">所属维度</label>
                         <select class="form-control" id="dimensionCode" required>
-                            <option value="C">合规与安�?/option>
+                            <option value="C">合规与安全</option>
                             <option value="Q">数据质量</option>
-                            <option value="V">价值评�?/option>
+                            <option value="V">价值评估</option>
                             <option value="O">权属确认</option>
                             <option value="S">成本计量</option>
                             <option value="M">管理体系</option>
-                            <option value="L">流通能�?/option>
+                            <option value="L">流通能力</option>
                             <option value="P">发展潜力</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">逻辑表达�?/label>
+                        <label class="form-label">逻辑表达式</label>
                         <textarea class="form-control" id="logicExpression" rows="3" placeholder="例如：data_source == '爬虫采集'"></textarea>
                     </div>
                     
@@ -783,20 +784,22 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">风险阈�?(0-100)</label>
+                        <label class="form-label">风险阈值(0-100)</label>
                         <input type="number" class="form-control" id="riskThreshold" min="0" max="100" value="1" step="0.1">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal()">取消</button>
-                <button class="btn-primary-custom" onclick="saveRule()">保存</button>
+                <button class="btn-secondary"
+                             onclick="closeModal()">取消</button>
+                <button class="btn-primary-custom"
+                             onclick="saveRule()">保存</button>
             </div>
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script>
         let allRules = [];
         
@@ -805,7 +808,7 @@
             const userInfo = localStorage.getItem('userInfo');
             
             if (!token || !userInfo) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             
@@ -818,11 +821,11 @@
             const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
             
             if (user.user_type !== 'admin') {
-                window.location.href = '/home';
+                window.location.href = '/home.html';
                 return;
             }
             
-            document.getElementById('pageTitle').innerHTML = '<i class="bi bi-sliders"></i> <span>规则库管�?/span>';
+            document.getElementById('pageTitle').innerHTML = '<i class="bi bi-sliders"></i> <span>规则库管理</span>';
             document.getElementById('menuRules').classList.add('active');
             renderRulesPage();
         }
@@ -832,8 +835,8 @@
             container.innerHTML = `
                 <div class="welcome-section">
                     <div class="welcome-text">
-                        <h1>欢迎回来�?span id="welcomeName">管理�?/span></h1>
-                        <p>今天�?<span id="todayDate"></span></p>
+                        <h1>欢迎回来，<span id="welcomeName">管理员</span></h1>
+                        <p>今天是<span id="todayDate"></span></p>
                     </div>
                     <div class="welcome-decoration">
                         <div class="circle c1"></div>
@@ -901,7 +904,7 @@
             
             container.innerHTML = `
                 <div class="page-breadcrumb">
-                    <span>规则库管�?/span>
+                    <span>规则库管理</span>
                 </div>
                 
                 <div class="stats-row">
@@ -911,18 +914,19 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-value success" id="activeRules">0</div>
-                        <div class="stat-label">已启�?/div>
+                        <div class="stat-label">已启用</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value tech" id="inactiveRules">0</div>
-                        <div class="stat-label">已禁�?/div>
+                        <div class="stat-label">已禁用</div>
                     </div>
                 </div>
                 
                 <div class="content-card">
                     <div class="table-header">
                         <span class="table-title">规则列表</span>
-                        <button class="btn-primary-custom" onclick="openModal()">
+                        <button class="btn-primary-custom"
+                             onclick="openModal()">
                             <i class="bi bi-plus-lg"></i> 新建规则
                         </button>
                     </div>
@@ -934,8 +938,8 @@
                                 <th>规则名称</th>
                                 <th>维度</th>
                                 <th>权重</th>
-                                <th>风险阈�?/th>
-                                <th>状�?/th>
+                                <th>风险阈值</th>
+                                <th>状态</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
@@ -989,7 +993,7 @@
             
             const welcomeName = document.getElementById('welcomeName');
             if (welcomeName) {
-                welcomeName.textContent = user.username || '管理�?;
+                welcomeName.textContent = user.username || '管理员';
             }
             
             const today = new Date();
@@ -1074,7 +1078,7 @@
                 new Chart(document.getElementById('riskChart'), {
                     type: 'doughnut',
                     data: {
-                        labels: ['P0(高风�?', 'P1(中风�?', 'P2(低风�?'],
+                        labels: ['P0(高风险)', 'P1(中风险)', 'P2(低风险)'],
                         datasets: [{
                             data: [riskLevels['P0'], riskLevels['P1'], riskLevels['P2']],
                             backgroundColor: ['#FF6B6B', '#FF9F43', '#2ECC71']
@@ -1122,14 +1126,16 @@
                     <td>${rule.weight}%</td>
                     <td>${rule.risk_threshold}</td>
                     <td>
-                        <div class="status-toggle ${rule.is_active ? 'active' : ''}" 
+                        <div class="status-toggle ${rule.is_active ? 'active' : ''}"
                              onclick="toggleRule(${rule.id}, ${rule.is_active})"></div>
                     </td>
                     <td>
-                        <button class="action-btn" onclick="editRule(${rule.id})" title="编辑">
+                        <button class="action-btn"
+                             onclick="editRule(${rule.id})" title="编辑">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="action-btn danger" onclick="deleteRule(${rule.id})" title="删除">
+                        <button class="action-btn danger"
+                             onclick="deleteRule(${rule.id})" title="删除">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -1139,16 +1145,16 @@
         
         function getDimensionName(code) {
             const mapping = {
-                'C': '合规与安�?,
-                'CO': '合规与安�?,
+                'C': '合规与安全',
+                'CO': '合规与安全',
                 'Q': '数据质量',
-                'V': '价值评�?,
+                'V': '价值评估',
                 'O': '权属确认',
                 'M': '管理体系',
-                'L': '流通能�?,
+                'L': '流通能力',
                 'P': '发展潜力',
                 'G': '治理质量',
-                'R': '确权与权�?,
+                'R': '确权与权责',
                 'S': '成本计量',
                 'D': '数据治理'
             };
@@ -1229,7 +1235,7 @@
                     method,
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(data)
                 });
@@ -1239,7 +1245,7 @@
                 closeModal();
                 loadRules();
             } catch (error) {
-                alert('保存失败�? + error.message);
+                alert('保存失败：' + error.message);
             }
         }
         
@@ -1259,7 +1265,7 @@
         }
         
         async function deleteRule(id) {
-            if (!confirm('确定要删除这条规则吗�?)) return;
+            if (!confirm('确定要删除这条规则吗？')) return;
             
             const token = localStorage.getItem('token');
             
@@ -1278,7 +1284,7 @@
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');
-            window.location.href = '/login';
+            window.location.href = '/login.html';
         }
         
         document.addEventListener('DOMContentLoaded', loadRules);

@@ -52,7 +52,22 @@ class RuleCalculator:
             计算结果（0-1 之间的浮点数）
         """
         try:
+            # 合并默认变量和用户数据
             names = {**self.names, **data}
+            
+            # 预检查表达式中的变量是否都有定义
+            import re
+            # 提取表达式中的变量名（排除函数名和关键字）
+            builtin_names = set(self.functions.keys()) | set(self.names.keys())
+            # 匹配单词，排除数字和字符串
+            potential_vars = set(re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', expression))
+            undefined_vars = potential_vars - set(names.keys()) - builtin_names - {'if', 'else', 'in', 'not', 'and', 'or'}
+            
+            if undefined_vars:
+                # 为未定义变量设置默认值0
+                for var in undefined_vars:
+                    names[var] = 0
+                    logger.debug(f"规则变量 '{var}' 未定义，使用默认值0")
             
             result = simple_eval(
                 expression,
@@ -71,6 +86,8 @@ class RuleCalculator:
         except Exception as e:
             logger.warning(f"规则计算失败：{expression}, 错误：{str(e)}")
             try:
+                # 确保names已定义
+                names = {**self.names, **data}
                 evaluator = EvalWithCompoundTypes(functions=self.functions, names=names)
                 result = evaluator.eval(expression)
                 if isinstance(result, (int, float)):

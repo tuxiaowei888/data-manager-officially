@@ -33,6 +33,7 @@ class ReportListItem(BaseModel):
     total_score: float
     risk_level: str
     created_at: Optional[str]
+    dimensions_count: int = 0
 
 
 class ReportDetail(BaseModel):
@@ -61,15 +62,23 @@ async def get_all_reports(
         EvaluationResult.org_name,
         EvaluationResult.total_score,
         EvaluationResult.risk_level,
-        EvaluationResult.created_at
+        EvaluationResult.created_at,
+        EvaluationResult.detail_json
     ).join(
         User, EvaluationResult.user_id == User.id
     ).order_by(
         EvaluationResult.created_at.desc()
     ).all()
-    
-    return [
-        ReportListItem(
+
+    report_list = []
+    for r in results:
+        dimensions_count = 0
+        if r.detail_json and isinstance(r.detail_json, dict):
+            dimensions = r.detail_json.get('dimensions', [])
+            if isinstance(dimensions, list):
+                dimensions_count = len(dimensions)
+
+        report_list.append(ReportListItem(
             id=r.id,
             user_id=r.user_id,
             username=r.username,
@@ -77,10 +86,11 @@ async def get_all_reports(
             org_name=r.org_name,
             total_score=r.total_score,
             risk_level=r.risk_level,
-            created_at=r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else None
-        )
-        for r in results
-    ]
+            created_at=r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else None,
+            dimensions_count=dimensions_count
+        ))
+
+    return report_list
 
 
 @router.get("/{report_id}", response_model=ReportDetail)

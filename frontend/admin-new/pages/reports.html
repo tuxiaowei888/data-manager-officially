@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报告管理 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-database-gear"></i>
+                    <span>数维数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item active">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-file-earmark-text"></i> 报告管理</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="search-bar">
+                    <div class="search-input">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索报告ID、客户名称...">
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="filterRisk">
+                            <option value="">全部风险</option>
+                            <option value="P0">P0 高风险</option>
+                            <option value="P1">P1 中风险</option>
+                            <option value="P2">P2 低风险</option>
+                        </select>
+                        <select class="filter-select" id="filterStatus">
+                            <option value="">全部状态</option>
+                            <option value="completed">已完成</option>
+                            <option value="failed">失败</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadReports()">
+                            <i class="bi bi-search"></i> 搜索
+                        </button>
+                        <button class="btn btn-success" onclick="exportReports()">
+                            <i class="bi bi-download"></i> 导出
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">报告列表</span>
+                        <span id="reportCount">共 0 条</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>报告ID</th>
+                                        <th>客户名称</th>
+                                        <th>评估类型</th>
+                                        <th>评分</th>
+                                        <th>风险等级</th>
+                                        <th>评估维度</th>
+                                        <th>生成时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 40px;">
+                                            <div class="loading-spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3 class="modal-title">报告详情</h3>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detailContent">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        let allReports = [];
+        let filteredReports = [];
+        let pagination = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            pagination = new Pagination({
+                pageSize: 10,
+                onPageChange: renderReportTable
+            });
+            paginationObj = pagination;
+
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loadReports();
+            });
+
+            await loadReports();
+        });
+
+        async function loadReports() {
+            const tbody = document.getElementById('reportTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/reports');
+                allReports = Array.isArray(response) ? response : (response.data || []);
+                allReports = allReports.map(r => ({
+                    id: r.id,
+                    customer_name: r.org_name || '-',
+                    company_name: r.org_name || '-',
+                    evaluation_type: '综合评估',
+                    score: r.total_score || '-',
+                    risk_level: r.risk_level || 'P2',
+                    status: 'completed',
+                    dimensions_count: r.dimensions_count || 0,
+                    created_at: r.created_at || '-'
+                }));
+                filterReports();
+            } catch (error) {
+                console.error('加载报告失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function filterReports() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const riskLevel = document.getElementById('filterRisk').value;
+            const status = document.getElementById('filterStatus').value;
+
+            filteredReports = allReports.filter(r => {
+                if (keyword) {
+                    const matchId = (r.id || '').toString().toLowerCase().includes(keyword);
+                    const matchCustomer = (r.customer_name || r.company_name || '').toLowerCase().includes(keyword);
+                    if (!matchId && !matchCustomer) return false;
+                }
+                if (riskLevel && r.risk_level !== riskLevel) return false;
+                if (status === 'completed' && r.status !== 'completed') return false;
+                if (status === 'failed' && r.status !== 'failed') return false;
+                return true;
+            });
+
+            document.getElementById('reportCount').textContent = `共 ${filteredReports.length} 条`;
+            pagination.setTotal(filteredReports.length);
+            pagination.render('pagination');
+            renderReportTable(1);
+        }
+
+        function renderReportTable(page) {
+            const tbody = document.getElementById('reportTableBody');
+            const start = (page - 1) * pagination.pageSize;
+            const end = start + pagination.pageSize;
+            const pageReports = filteredReports.slice(start, end);
+
+            if (pageReports.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding: 40px;">暂无报告数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageReports.map(r => `
+                <tr>
+                    <td><strong>#${r.id}</strong></td>
+                    <td>${r.customer_name || r.company_name || '-'}</td>
+                    <td>${r.evaluation_type || '综合评估'}</td>
+                    <td><strong>${r.score || '-'}</strong></td>
+                    <td>${getRiskBadge(r.risk_level)}</td>
+                    <td>${typeof r.dimensions_count === 'number' ? r.dimensions_count : (Array.isArray(r.dimensions) ? r.dimensions.length : 0)} 个</td>
+                    <td>${formatDate(r.created_at || r.generate_time)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="viewReportDetail(${r.id})" title="查看详情">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="downloadReport(${r.id})" title="下载报告">
+                                <i class="bi bi-download"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function viewReportDetail(id) {
+            const report = allReports.find(r => r.id === id);
+            if (!report) return;
+
+            const modal = document.getElementById('detailModal');
+            const modalContent = modal.querySelector('.modal');
+
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99999; align-items: center; justify-content: center;';
+            modalContent.style.cssText = 'display: block !important; background: white; border-radius: 12px; padding: 20px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; z-index: 100000; position: relative; margin: auto;';
+            modalContent.onclick = function(e) { e.stopPropagation(); };
+            modal.onclick = function(e) { if (e.target === modal) closeDetailModal(); };
+
+            const content = document.getElementById('detailContent');
+
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">报告ID</label>
+                        <div class="form-control" style="background: var(--bg-primary);">#${report.id}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">客户名称</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${report.customer_name || report.company_name || '-'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评估类型</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${report.evaluation_type || '综合评估'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评分</label>
+                        <div class="form-control" style="background: var(--bg-primary);"><strong class="fs-5">${report.score || '-'}</strong></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">风险等级</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${getRiskBadge(report.risk_level)}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">生成时间</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${formatDate(report.created_at || report.generate_time)}</div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <label class="form-label">报告摘要</label>
+                    <div class="form-control" style="background: var(--bg-primary); min-height: 100px;">${report.summary || report.description || '暂无摘要'}</div>
+                </div>
+                ${report.dimensions ? `
+                <div class="form-group mt-3">
+                    <label class="form-label">评估维度详情</label>
+                    <div class="form-control" style="background: var(--bg-primary); min-height: 150px; white-space: pre-wrap;">${typeof report.dimensions === 'string' ? report.dimensions : JSON.stringify(report.dimensions, null, 2)}</div>
+                </div>
+                ` : ''}
+                <div class="mt-3 text-end">
+                    <button class="btn btn-info" onclick="previewFullReport(${report.id})">
+                        <i class="bi bi-eye"></i> 预览报告
+                    </button>
+                    <button class="btn btn-primary" onclick="downloadReport(${report.id})">
+                        <i class="bi bi-download"></i> 下载报告
+                    </button>
+                </div>
+            `;
+        }
+
+        async function previewFullReport(id) {
+            const report = allReports.find(r => r.id === id);
+            if (!report) return;
+
+            let reportDetail = report;
+            try {
+                const detail = await apiGet(`/reports/${id}`);
+                if (detail && detail.detail) {
+                    reportDetail = { ...report, ...detail, detail: detail.detail };
+                }
+            } catch (e) {
+                console.error('获取报告详情失败', e);
+            }
+
+            const modal = document.getElementById('previewModal') || createPreviewModal();
+            const modalContent = modal.querySelector('.modal');
+
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999999; align-items: center; justify-content: center;';
+            modalContent.style.cssText = 'display: block !important; background: white; border-radius: 12px; padding: 0; width: 95%; max-width: 1000px; max-height: 90vh; overflow-y: auto; z-index: 1000000; position: relative; margin: auto;';
+            modalContent.onclick = function(e) { e.stopPropagation(); };
+            modal.onclick = function(e) { if (e.target === modal) closePreviewModal(); };
+
+            const content = document.getElementById('previewContent');
+            const dimensions = reportDetail.detail?.dimensions || [];
+            const summary = reportDetail.detail?.summary || '';
+            const p0Issues = reportDetail.detail?.p0_issues || [];
+            const p1Issues = reportDetail.detail?.p1_issues || [];
+            const p2Issues = reportDetail.detail?.p2_issues || [];
+
+            let dimensionsHtml = '';
+            if (dimensions.length > 0) {
+                dimensionsHtml = dimensions.map(dim => {
+                    const scoreClass = dim.score >= 80 ? 'text-success' : dim.score >= 60 ? 'text-warning' : 'text-danger';
+                    return `
+                        <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <span style="font-weight: bold; color: #333;">${dim.name}</span>
+                                    <span style="margin-left: 10px; padding: 2px 8px; border-radius: 10px; font-size: 12px; background: ${getLevelBgColor(dim.level)}; color: white;">${dim.level}</span>
+                                </div>
+                                <span class="${scoreClass}" style="font-size: 20px; font-weight: bold;">${dim.score}</span>
+                            </div>
+                            <div style="font-size: 13px; color: #666; margin-bottom: 5px;">${dim.logic || ''}</div>
+                            ${dim.suggestions && dim.suggestions.length > 0 ? `
+                                <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                                    <strong>建议：</strong>${dim.suggestions[0]}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            let issuesHtml = '';
+            if (p0Issues.length > 0 || p1Issues.length > 0 || p2Issues.length > 0) {
+                issuesHtml = `
+                    <h4 style="margin-top: 25px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">问题清单</h4>
+                    ${p0Issues.length > 0 ? `<div style="margin-bottom: 15px;"><span style="background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 10px;">P0 严重</span><span style="color: #666;">${p0Issues.length} 项</span></div>` : ''}
+                    ${p1Issues.length > 0 ? `<div style="margin-bottom: 15px;"><span style="background: #f39c12; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 10px;">P1 重要</span><span style="color: #666;">${p1Issues.length} 项</span></div>` : ''}
+                    ${p2Issues.length > 0 ? `<div style="margin-bottom: 15px;"><span style="background: #3498db; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 10px;">P2 一般</span><span style="color: #666;">${p2Issues.length} 项</span></div>` : ''}
+                `;
+            }
+
+            content.innerHTML = `
+                <div style="padding: 25px; border-bottom: 2px solid #eee;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2 style="margin: 0; color: #333;">${reportDetail.customer_name || reportDetail.company_name || reportDetail.org_name || '评估报告'}</h2>
+                            <p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">评估类型：${reportDetail.evaluation_type || '综合评估'} | 生成时间：${formatDate(reportDetail.created_at)}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 42px; font-weight: bold; color: ${getScoreColor(reportDetail.total_score || reportDetail.score)};">${reportDetail.total_score || reportDetail.score || '-'}</div>
+                            <div style="font-size: 14px; color: #666;">综合评分</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 25px;">
+                    <h4 style="margin-top: 0; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">风险等级</h4>
+                    <div style="display: inline-block; padding: 10px 25px; border-radius: 25px; font-weight: bold; background: ${getRiskBgColor(reportDetail.risk_level)}; color: white; font-size: 18px;">${reportDetail.risk_level || 'P2'}</div>
+
+                    <h4 style="margin-top: 25px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">评估维度详情</h4>
+                    <div style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fafafa;">
+                        ${dimensionsHtml || '<div style="padding: 20px; text-align: center; color: #999;">暂无维度数据</div>'}
+                    </div>
+
+                    ${issuesHtml}
+
+                    ${summary ? `
+                    <h4 style="margin-top: 25px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">评估结论</h4>
+                    <div style="line-height: 1.8; color: #555; padding: 15px; background: #f9f9f9; border-radius: 8px;">${summary}</div>
+                    ` : ''}
+                </div>
+                <div style="padding: 15px 25px; border-top: 1px solid #eee; text-align: right;">
+                    <button class="btn btn-secondary" onclick="closePreviewModal()">关闭</button>
+                </div>
+            `;
+        }
+
+        function getLevelBgColor(level) {
+            if (level === '良好') return '#2ecc71';
+            if (level === '待提升') return '#f39c12';
+            if (level === '不合格') return '#e74c3c';
+            return '#95a5a6';
+        }
+
+        function getScoreColor(score) {
+            if (!score) return '#666';
+            if (score >= 80) return '#2ECC71';
+            if (score >= 60) return '#F39C12';
+            return '#E74C3C';
+        }
+
+        function getRiskBgColor(risk) {
+            if (!risk) return '#95a5a6';
+            if (risk.startsWith('P1')) return '#e74c3c';
+            if (risk.startsWith('P2')) return '#f39c12';
+            if (risk.startsWith('P3')) return '#3498db';
+            return '#95a5a6';
+        }
+
+        function createPreviewModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'previewModal';
+            modal.innerHTML = `
+                <div class="modal" style="max-width: 1000px;">
+                    <div id="previewContent"></div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            return modal;
+        }
+
+        function closePreviewModal() {
+            const modal = document.getElementById('previewModal');
+            if (modal) {
+                modal.style.cssText = 'display: none !important;';
+            }
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            const modalContent = modal.querySelector('.modal');
+            modal.style.cssText = 'display: none !important;';
+            modalContent.style.cssText = '';
+        }
+
+        async function downloadReport(id) {
+            try {
+                showMessage('正在准备报告下载...', 'info');
+                const report = allReports.find(r => r.id === id);
+                if (!report) return;
+
+                const reportData = {
+                    report_id: report.id,
+                    customer_name: report.customer_name || report.company_name,
+                    evaluation_type: report.evaluation_type || '综合评估',
+                    score: report.score,
+                    risk_level: report.risk_level,
+                    summary: report.summary || report.description,
+                    dimensions: report.dimensions,
+                    generated_at: report.created_at || report.generate_time
+                };
+
+                const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `report_${report.id}_${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showMessage('报告下载成功', 'success');
+            } catch (error) {
+                console.error('下载失败:', error);
+                showMessage('下载失败: ' + error.message, 'error');
+            }
+        }
+
+        function exportReports() {
+            if (filteredReports.length === 0) {
+                showMessage('没有可导出的报告', 'warning');
+                return;
+            }
+
+            try {
+                const exportData = filteredReports.map(r => ({
+                    报告ID: r.id,
+                    客户名称: r.customer_name || r.company_name,
+                    评估类型: r.evaluation_type || '综合评估',
+                    评分: r.score,
+                    风险等级: r.risk_level,
+                    生成时间: formatDate(r.created_at || r.generate_time)
+                }));
+
+                const csv = convertToCSV(exportData);
+                const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `reports_export_${Date.now()}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showMessage('导出成功', 'success');
+            } catch (error) {
+                showMessage('导出失败: ' + error.message, 'error');
+            }
+        }
+
+        function convertToCSV(data) {
+            const headers = Object.keys(data[0]);
+            const csv = data.map(row => headers.map(h => `"${row[h] || ''}"`).join(','));
+            return [headers.join(','), ...csv].join('\n');
+        }
+    </script>
+</body>
+</html>

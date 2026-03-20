@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数维数据管家系统 - 注册</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css?v=2" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css?v=2" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css?v=2" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -29,13 +29,13 @@
             --font-family-zh: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
             --font-family-num: "Roboto Mono", "DIN Alternate", "SF Mono", monospace;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: var(--font-family-zh);
             background: var(--bg-dark);
@@ -45,7 +45,6 @@
             overflow: hidden;
         }
 
-        /* Canvas粒子背景 */
         #particles-canvas {
             position: fixed;
             top: 0;
@@ -55,7 +54,7 @@
             z-index: 0;
             pointer-events: none;
         }
-        
+
         .register-wrapper {
             display: flex;
             width: 100%;
@@ -64,8 +63,7 @@
             z-index: 1;
             overflow: hidden;
         }
-        
-        /* 左侧品牌区 */
+
         .brand-section {
             flex: 1;
             background: transparent;
@@ -86,7 +84,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 30%, rgba(0, 210, 255, 0.12) 0%, transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(78, 205, 196, 0.08) 0%, transparent 40%);
         }
@@ -159,7 +157,7 @@
             0%, 100% { transform: translateY(0); opacity: 0.6; }
             50% { transform: translateY(-20px); opacity: 1; }
         }
-        
+
         .brand-content {
             position: relative;
             z-index: 10;
@@ -167,7 +165,7 @@
             color: white;
             max-width: 480px;
         }
-        
+
         .brand-logo {
             width: 80px;
             height: 80px;
@@ -183,27 +181,27 @@
             position: relative;
             z-index: 10;
         }
-        
+
         .brand-logo i {
             font-size: 40px;
             color: #00D2FF;
             filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
         }
-        
+
         .brand-title {
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 12px;
             letter-spacing: -0.5px;
         }
-        
+
         .brand-subtitle {
             font-size: 16px;
             opacity: 0.9;
             margin-bottom: 40px;
             line-height: 1.6;
         }
-        
+
         .brand-steps {
             text-align: left;
             background: rgba(255, 255, 255, 0.1);
@@ -213,7 +211,7 @@
             position: relative;
             z-index: 10;
         }
-        
+
         .step-item {
             display: flex;
             align-items: flex-start;
@@ -221,12 +219,12 @@
             padding: 14px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .step-item:last-child {
             border-bottom: none;
             padding-bottom: 0;
         }
-        
+
         .step-number {
             width: 28px;
             height: 28px;
@@ -239,23 +237,22 @@
             font-weight: 600;
             flex-shrink: 0;
         }
-        
+
         .step-content {
             flex: 1;
         }
-        
+
         .step-title {
             font-size: 15px;
             font-weight: 500;
             margin-bottom: 4px;
         }
-        
+
         .step-desc {
             font-size: 13px;
             opacity: 0.8;
         }
-        
-        /* 右侧表单区 - 玻璃透明效果 */
+
         .form-section {
             width: 560px;
             min-width: 560px;
@@ -272,37 +269,35 @@
             position: relative;
         }
 
-
-        
         .form-header {
             margin-bottom: 28px;
         }
-        
+
         .form-title {
             font-size: 26px;
             font-weight: 600;
             color: white;
             margin-bottom: 8px;
         }
-        
+
         .form-desc {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.6);
         }
-        
+
         .form-row {
             display: flex;
             gap: 16px;
         }
-        
+
         .form-row .form-group {
             flex: 1;
         }
-        
+
         .form-group {
             margin-bottom: 18px;
         }
-        
+
         .form-label {
             display: block;
             font-size: 13px;
@@ -310,16 +305,16 @@
             color: rgba(255, 255, 255, 0.85);
             margin-bottom: 6px;
         }
-        
+
         .form-label .required {
             color: var(--danger-color);
             margin-left: 2px;
         }
-        
+
         .input-wrapper {
             position: relative;
         }
-        
+
         .input-wrapper i {
             position: absolute;
             left: 14px;
@@ -330,7 +325,7 @@
             transition: all 0.25s ease;
             opacity: 0.8;
         }
-        
+
         .form-control {
             width: 100%;
             padding: 12px 14px 12px 44px;
@@ -341,24 +336,24 @@
             transition: all 0.25s ease;
             background: rgba(0, 210, 255, 0.08);
         }
-        
+
         .form-control:focus {
             outline: none;
             border-color: var(--tech-accent);
             background: rgba(0, 210, 255, 0.12);
             box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.2), 0 0 30px rgba(0, 210, 255, 0.3);
         }
-        
+
         .form-control:focus + i,
         .input-wrapper:focus-within i {
             color: var(--tech-accent);
             opacity: 1;
         }
-        
+
         ::placeholder {
             color: rgba(255, 255, 255, 0.45);
         }
-        
+
         .password-toggle {
             position: absolute;
             right: 14px;
@@ -372,11 +367,11 @@
             font-size: 18px;
             transition: color 0.2s ease;
         }
-        
+
         .password-toggle:hover {
             color: var(--tech-accent);
         }
-        
+
         .password-strength {
             margin-top: 8px;
             height: 4px;
@@ -384,41 +379,41 @@
             border-radius: 2px;
             overflow: hidden;
         }
-        
+
         .password-strength-bar {
             height: 100%;
             width: 0;
             transition: all 0.3s ease;
             border-radius: 2px;
         }
-        
+
         .password-strength-bar.weak {
             width: 33%;
             background: var(--danger-color);
         }
-        
+
         .password-strength-bar.medium {
             width: 66%;
             background: var(--warning-color);
         }
-        
+
         .password-strength-bar.strong {
             width: 100%;
             background: var(--success-color);
         }
-        
+
         .password-hint {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.5);
             margin-top: 4px;
         }
-        
+
         .form-check {
             display: flex;
             align-items: flex-start;
             gap: 10px;
         }
-        
+
         .form-check-input {
             width: 16px;
             height: 16px;
@@ -427,23 +422,22 @@
             flex-shrink: 0;
             accent-color: var(--tech-accent);
         }
-        
+
         .form-check-label {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
             line-height: 1.5;
         }
-        
+
         .form-check-label a {
             color: var(--tech-accent);
             text-decoration: none;
         }
-        
+
         .form-check-label a:hover {
             text-decoration: underline;
         }
-        
-        /* 注册按钮 - 科技风格 */
+
         .btn-register {
             width: 100%;
             padding: 16px 24px;
@@ -499,7 +493,7 @@
         .btn-register:disabled::before {
             display: none;
         }
-        
+
         .divider {
             display: flex;
             align-items: center;
@@ -507,7 +501,7 @@
             color: rgba(255, 255, 255, 0.35);
             font-size: 13px;
         }
-        
+
         .divider::before,
         .divider::after {
             content: '';
@@ -515,28 +509,28 @@
             height: 1px;
             background: rgba(0, 210, 255, 0.15);
         }
-        
+
         .divider span {
             padding: 0 16px;
         }
-        
+
         .login-link {
             text-align: center;
             font-size: 14px;
             color: rgba(255, 255, 255, 0.6);
         }
-        
+
         .login-link a {
             color: var(--tech-accent);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
         }
-        
+
         .login-link a:hover {
             color: var(--tech-secondary);
         }
-        
+
         .alert {
             padding: 12px 16px;
             border-radius: 10px;
@@ -544,19 +538,19 @@
             margin-bottom: 16px;
             display: none;
         }
-        
+
         .alert-danger {
             background: rgba(255, 107, 107, 0.15);
             border: 1px solid var(--danger-color);
             color: var(--danger-color);
         }
-        
+
         .alert-success {
             background: rgba(46, 204, 113, 0.15);
             border: 1px solid var(--success-color);
             color: var(--success-color);
         }
-        
+
         .loading-spinner {
             display: inline-block;
             width: 18px;
@@ -568,7 +562,7 @@
             margin-right: 8px;
             vertical-align: middle;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -580,12 +574,12 @@
         .form-section {
             transition: all 0.4s ease;
         }
-        
+
         @media (max-width: 1024px) {
             .brand-section {
                 display: none;
             }
-            
+
             .form-section {
                 width: 100%;
                 min-width: auto;
@@ -601,7 +595,7 @@
                 overflow-y: auto;
             }
         }
-        
+
         @media (max-width: 600px) {
             .form-section {
                 padding: 30px 24px;
@@ -609,11 +603,11 @@
                 margin: 0;
                 border-radius: 0;
             }
-            
+
             .form-title {
                 font-size: 22px;
             }
-            
+
             .form-row {
                 flex-direction: column;
                 gap: 0;
@@ -643,7 +637,7 @@
                 </div>
                 <h1 class="brand-title">数维·数据资产管家</h1>
                 <p class="brand-subtitle">让数据价值看得见、可量化、能变现<br>开启数据资产化智能评估之旅</p>
-                
+
                 <div class="brand-steps">
                     <div class="step-item">
                         <div class="step-number">1</div>
@@ -669,25 +663,25 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="form-section">
             <div class="form-header">
                 <h2 class="form-title">创建账号</h2>
                 <p class="form-desc">填写以下信息完成注册</p>
             </div>
-            
+
             <div class="alert alert-danger" id="errorAlert"></div>
             <div class="alert alert-success" id="successAlert"></div>
-            
+
             <form id="registerForm">
                 <div class="form-group">
-                    <label class="form-label">用户名 <span class="required">*</span></label>
+                    <label class="form-label">用户名<span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" class="form-control" id="username" name="username" placeholder="3-20个字符，字母开头" required minlength="3" maxlength="20" pattern="^[a-zA-Z][a-zA-Z0-9_]*$" autocomplete="username">
                         <i class="bi bi-person"></i>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">邮箱</label>
@@ -696,7 +690,7 @@
                             <i class="bi bi-envelope"></i>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">手机号</label>
                         <div class="input-wrapper">
@@ -705,7 +699,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">密码 <span class="required">*</span></label>
                     <div class="input-wrapper">
@@ -720,7 +714,7 @@
                     </div>
                     <div class="password-hint" id="passwordHint">密码强度：未输入</div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">确认密码 <span class="required">*</span></label>
                     <div class="input-wrapper">
@@ -731,7 +725,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">推荐码（选填）</label>
                     <div class="input-wrapper">
@@ -739,30 +733,28 @@
                         <i class="bi bi-gift"></i>
                     </div>
                 </div>
-                
+
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="agreement" name="agreement" required>
                     <label class="form-check-label" for="agreement">
-                        我已阅读并同意 <a href="#">《用户服务协议》</a> 和 <a href="#">《隐私政策》</a>
+                        我已阅读并同意<a href="#">《用户服务协议》</a> 及<a href="#">《隐私政策》</a>
                     </label>
                 </div>
-                
-                <button type="submit" class="btn-register" id="registerBtn">
-                    注 册
-                </button>
+
+                <button type="submit" class="btn-register" id="registerBtn">注 册</button>
             </form>
-            
+
             <div class="divider">
                 <span>已有账号？</span>
             </div>
-            
+
             <div class="login-link">
                 <a href="/login.html">立即登录</a>
             </div>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script src="ui-particles-simple.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -783,7 +775,7 @@
         function togglePassword(inputId, iconId) {
             const passwordInput = document.getElementById(inputId);
             const eyeIcon = document.getElementById(iconId);
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.classList.remove('bi-eye');
@@ -794,19 +786,19 @@
                 eyeIcon.classList.add('bi-eye');
             }
         }
-        
+
         function checkPasswordStrength(password) {
             const bar = document.getElementById('passwordStrengthBar');
             const hint = document.getElementById('passwordHint');
-            
+
             bar.classList.remove('weak', 'medium', 'strong');
-            
+
             if (!password) {
                 bar.style.width = '0';
                 hint.textContent = '密码强度：未输入';
                 return;
             }
-            
+
             let strength = 0;
             if (password.length >= 6) strength++;
             if (password.length >= 10) strength++;
@@ -814,7 +806,7 @@
             if (/[a-z]/.test(password)) strength++;
             if (/[A-Z]/.test(password)) strength++;
             if (/[^a-zA-Z0-9]/.test(password)) strength++;
-            
+
             if (strength <= 2) {
                 bar.classList.add('weak');
                 hint.textContent = '密码强度：弱';
@@ -826,34 +818,34 @@
                 hint.textContent = '密码强度：强';
             }
         }
-        
+
         document.getElementById('password').addEventListener('input', function() {
             checkPasswordStrength(this.value);
         });
-        
+
         function showError(message) {
             const alert = document.getElementById('errorAlert');
             alert.textContent = message;
             alert.style.display = 'block';
             document.getElementById('successAlert').style.display = 'none';
         }
-        
+
         function showSuccess(message) {
             const alert = document.getElementById('successAlert');
             alert.textContent = message;
             alert.style.display = 'block';
             document.getElementById('errorAlert').style.display = 'none';
         }
-        
+
         function hideAlerts() {
             document.getElementById('errorAlert').style.display = 'none';
             document.getElementById('successAlert').style.display = 'none';
         }
-        
+
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             hideAlerts();
-            
+
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -862,45 +854,45 @@
             const referrerCode = document.getElementById('referrerCode').value.trim();
             const agreement = document.getElementById('agreement').checked;
             const registerBtn = document.getElementById('registerBtn');
-            
+
             if (!username) {
                 showError('请输入用户名');
                 return;
             }
-            
+
             if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(username)) {
                 showError('用户名必须以字母开头，只能包含字母、数字和下划线');
                 return;
             }
-            
+
             if (username.length < 3 || username.length > 20) {
-                showError('用户名长度需在3-20个字符之间');
+                showError('用户名长度需为3-20个字符之间');
                 return;
             }
-            
+
             if (!password) {
                 showError('请输入密码');
                 return;
             }
-            
+
             if (password.length < 6) {
-                showError('密码至少需要6个字符');
+                showError('密码至少需6个字符');
                 return;
             }
-            
+
             if (password !== confirmPassword) {
                 showError('两次输入的密码不一致');
                 return;
             }
-            
+
             if (!agreement) {
                 showError('请阅读并同意用户协议');
                 return;
             }
-            
+
             registerBtn.disabled = true;
             registerBtn.innerHTML = '<span class="loading-spinner"></span>注册中...';
-            
+
             try {
                 const response = await fetch('/api/v1/auth/register', {
                     method: 'POST',
@@ -913,13 +905,13 @@
                         referrer_code: referrerCode || null
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (response.ok) {
                     showSuccess('注册成功！正在跳转到登录页面...');
                     setTimeout(() => {
-                        window.location.href = '/login';
+                        window.location.href = '/login.html';
                     }, 1500);
                 } else {
                     showError(result.detail || '注册失败，请稍后重试');

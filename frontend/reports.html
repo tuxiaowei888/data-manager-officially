@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数维数据管家系统 - 报告管理</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #1B3A57;
@@ -670,15 +670,15 @@
             <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
-            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
-            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
+            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
+            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
             <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
             <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
             <li><a href="/reports.html" class="active"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
             <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
             <li><a href="/config.html"><i class="bi bi-gear"></i> VIP配置</a></li>
-            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
         </ul>
     </div>
     
@@ -686,17 +686,21 @@
         <div class="page-header">
             <h1 class="page-title"><i class="bi bi-file-earmark-text"></i>报告管理</h1>
             <div class="export-dropdown">
-                <button class="btn-export" onclick="toggleExportMenu()">
+                <button class="btn-export"
+                             onclick="toggleExportMenu()">
                     <i class="bi bi-download"></i> 导出报告
                 </button>
                 <div class="export-menu" id="exportMenu">
-                    <div class="export-menu-item" onclick="exportSelected('json')">
+                    <div class="export-menu-item"
+                             onclick="exportSelected('json')">
                         <i class="bi bi-filetype-json"></i> 导出JSON
                     </div>
-                    <div class="export-menu-item" onclick="exportSelected('excel')">
+                    <div class="export-menu-item"
+                             onclick="exportSelected('excel')">
                         <i class="bi bi-filetype-xlsx"></i> 导出Excel
                     </div>
-                    <div class="export-menu-item" onclick="exportSelected('pdf')">
+                    <div class="export-menu-item"
+                             onclick="exportSelected('pdf')">
                         <i class="bi bi-filetype-pdf"></i> 导出PDF
                     </div>
                 </div>
@@ -710,7 +714,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value success" id="statHigh">0</div>
-                <div class="stat-label">高分报告 (�?0)</div>
+                <div class="stat-label">高分报告 (�?0)</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value warning" id="statMid">0</div>
@@ -727,21 +731,21 @@
         </div>
         
         <div class="filter-card">
-            <div class="filter-title"><i class="bi bi-funnel"></i> 筛选条�?/div>
+            <div class="filter-title"><i class="bi bi-funnel"></i> 筛选条�?/div>
             <div class="filter-row">
                 <div class="filter-group">
                     <label class="filter-label">企业名称</label>
                     <input type="text" class="filter-input" id="filterOrgName" placeholder="输入企业名称">
                 </div>
                 <div class="filter-group">
-                    <label class="filter-label">客户用户�?/label>
-                    <input type="text" class="filter-input" id="filterUsername" placeholder="输入用户�?>
+                    <label class="filter-label">客户用户�?/label>
+                    <input type="text" class="filter-input" id="filterUsername" placeholder="输入用户�?>
                 </div>
                 <div class="filter-group">
                     <label class="filter-label">评分范围</label>
                     <select class="filter-select" id="filterScore">
                         <option value="">全部</option>
-                        <option value="high">高分 (�?0)</option>
+                        <option value="high">高分 (�?0)</option>
                         <option value="mid">中分 (60-79)</option>
                         <option value="low">低分 (&lt;60)</option>
                     </select>
@@ -750,9 +754,9 @@
                     <label class="filter-label">风险等级</label>
                     <select class="filter-select" id="filterRisk">
                         <option value="">全部</option>
-                        <option value="P0">高风�?/option>
-                        <option value="P1">中风�?/option>
-                        <option value="P2">低风�?/option>
+                        <option value="P0">高风�?/option>
+                        <option value="P1">中风�?/option>
+                        <option value="P2">低风�?/option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -760,15 +764,17 @@
                     <select class="filter-select" id="filterTime">
                         <option value="">全部</option>
                         <option value="today">今日</option>
-                        <option value="week">�?�?/option>
-                        <option value="month">�?0�?/option>
-                        <option value="quarter">�?0�?/option>
+                        <option value="week">近一�?/option>
+                        <option value="month">�?0�?/option>
+                        <option value="quarter">�?0�?/option>
                     </select>
                 </div>
-                <button class="btn-primary-custom" onclick="searchReports()">
+                <button class="btn-primary-custom"
+                             onclick="searchReports()">
                     <i class="bi bi-search"></i> 搜索
                 </button>
-                <button class="btn-secondary" onclick="resetFilters()">重置</button>
+                <button class="btn-secondary"
+                             onclick="resetFilters()">重置</button>
             </div>
         </div>
         
@@ -778,11 +784,12 @@
                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
                     <span class="table-title">报告列表</span>
                     <div class="selected-actions" id="selectedActions">
-                        <span class="selected-count">已选择 <span id="selectedCount">0</span> �?/span>
-                        <button class="btn-secondary" onclick="clearSelection()">取消选择</button>
+                        <span class="selected-count">已选择 <span id="selectedCount">0</span> �?/span>
+                        <button class="btn-secondary"
+                             onclick="clearSelection()">取消选择</button>
                     </div>
                 </div>
-                <div class="page-info" id="pageInfo">�?0 条记�?/div>
+                <div class="page-info" id="pageInfo">�?0 条记�?/div>
             </div>
             
             <table class="data-table">
@@ -802,7 +809,7 @@
                         <td colspan="7">
                             <div class="empty-state">
                                 <div class="loading-spinner"></div>
-                                <p>加载�?..</p>
+                                <p>加载�?..</p>
                             </div>
                         </td>
                     </tr>
@@ -810,7 +817,7 @@
             </table>
             
             <div class="pagination">
-                <div class="page-info" id="pageRange">�?0-0 �?/div>
+                <div class="page-info" id="pageRange">�?0-0 �?/div>
                 <div class="page-buttons" id="pageButtons"></div>
             </div>
         </div>
@@ -821,22 +828,28 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">报告详情</div>
-                <button class="modal-close" onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
+                <button class="modal-close"
+                             onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-body" id="detailContent"></div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeDetailModal()">关闭</button>
+                <button class="btn-secondary"
+                             onclick="closeDetailModal()">关闭</button>
                 <div class="export-dropdown">
-                    <button class="btn-primary-custom" onclick="toggleModalExportMenu()">
-                        <i class="bi bi-download"></i> 导出此报�?                    </button>
+                    <button class="btn-primary-custom"
+                             onclick="toggleModalExportMenu()">
+                        <i class="bi bi-download"></i> 导出此报�?                   </button>
                     <div class="export-menu" id="modalExportMenu" style="bottom: 100%; top: auto; right: 0; left: auto;">
-                        <div class="export-menu-item" onclick="exportCurrentReportFormat('json')">
+                        <div class="export-menu-item"
+                             onclick="exportCurrentReportFormat('json')">
                             <i class="bi bi-filetype-json"></i> 导出JSON
                         </div>
-                        <div class="export-menu-item" onclick="exportCurrentReportFormat('excel')">
+                        <div class="export-menu-item"
+                             onclick="exportCurrentReportFormat('excel')">
                             <i class="bi bi-filetype-xlsx"></i> 导出Excel
                         </div>
-                        <div class="export-menu-item" onclick="exportCurrentReportFormat('pdf')">
+                        <div class="export-menu-item"
+                             onclick="exportCurrentReportFormat('pdf')">
                             <i class="bi bi-filetype-pdf"></i> 导出PDF
                         </div>
                     </div>
@@ -845,7 +858,7 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script>
         let allReports = [];
         let filteredReports = [];
@@ -858,18 +871,18 @@
             const token = localStorage.getItem('token');
             const userInfo = localStorage.getItem('userInfo');
             if (!token || !userInfo) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             try {
                 const user = JSON.parse(userInfo);
                 if (user.user_type !== 'admin') {
-                    alert('无权限访�?);
-                    window.location.href = '/survey';
+                    alert('无权限访�?);
+                    window.location.href = '/index.html';
                     return false;
                 }
             } catch (e) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             return true;
@@ -945,7 +958,7 @@
                                onchange="toggleSelect(${r.id})">
                     </td>
                     <td>
-                        <div class="org-name">${r.org_name || '未命名企�?}</div>
+                        <div class="org-name">${r.org_name || '未命名企�?}</div>
                     </td>
                     <td>
                         <div>${r.username || '-'}</div>
@@ -959,26 +972,32 @@
                     </td>
                     <td>${r.created_at || '-'}</td>
                     <td>
-                        <button class="action-btn" onclick="viewDetail(${r.id})" title="查看详情">
+                        <button class="action-btn"
+                             onclick="viewDetail(${r.id})" title="查看详情">
                             <i class="bi bi-eye"></i>
                         </button>
                         <div class="action-dropdown">
-                            <button class="action-btn" onclick="toggleActionDropdown(event, ${r.id})" title="导出">
+                            <button class="action-btn"
+                             onclick="toggleActionDropdown(event, ${r.id})" title="导出">
                                 <i class="bi bi-download"></i>
                             </button>
                             <div class="action-dropdown-menu" id="dropdown-${r.id}">
-                                <div class="action-dropdown-item" onclick="exportReportFormat(${r.id}, 'json')">
+                                <div class="action-dropdown-item"
+                             onclick="exportReportFormat(${r.id}, 'json')">
                                     <i class="bi bi-filetype-json"></i> 导出JSON
                                 </div>
-                                <div class="action-dropdown-item" onclick="exportReportFormat(${r.id}, 'excel')">
+                                <div class="action-dropdown-item"
+                             onclick="exportReportFormat(${r.id}, 'excel')">
                                     <i class="bi bi-filetype-xlsx"></i> 导出Excel
                                 </div>
-                                <div class="action-dropdown-item" onclick="exportReportFormat(${r.id}, 'pdf')">
+                                <div class="action-dropdown-item"
+                             onclick="exportReportFormat(${r.id}, 'pdf')">
                                     <i class="bi bi-filetype-pdf"></i> 导出PDF
                                 </div>
                             </div>
                         </div>
-                        <button class="action-btn danger" onclick="deleteReport(${r.id}, '${r.org_name || '未命名企�?}')" title="删除">
+                        <button class="action-btn danger"
+                             onclick="deleteReport(${r.id}, '${r.org_name || '未命名企�?}')" title="删除">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -994,11 +1013,12 @@
             const start = (currentPage - 1) * pageSize + 1;
             const end = Math.min(currentPage * pageSize, total);
             
-            document.getElementById('pageInfo').textContent = `�?${total} 条记录`;
-            document.getElementById('pageRange').textContent = `�?${start}-${end} 条`;
+            document.getElementById('pageInfo').textContent = `�?${total} 条记录`;
+            document.getElementById('pageRange').textContent = `�?${start}-${end} 条`;
             
             let buttonsHtml = '';
-            buttonsHtml += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+            buttonsHtml += `<button class="page-btn"
+                             onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
                 <i class="bi bi-chevron-left"></i>
             </button>`;
             
@@ -1006,7 +1026,8 @@
                 buttonsHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
             }
             
-            buttonsHtml += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+            buttonsHtml += `<button class="page-btn"
+                             onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
                 <i class="bi bi-chevron-right"></i>
             </button>`;
             
@@ -1033,7 +1054,7 @@
         }
         
         function getRiskText(level) {
-            const map = { 'P0': '高风�?, 'P1': '中风�?, 'P2': '低风�? };
+            const map = { 'P0': '高风�?, 'P1': '中风�?, 'P2': '低风�? };
             return map[level] || level;
         }
         
@@ -1149,7 +1170,7 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">总分</div>
-                                <div class="detail-value" style="font-size: 24px; font-weight: 700; ${report.total_score >= 80 ? 'color: var(--success-color);' : report.total_score >= 60 ? 'color: var(--warning-color);' : 'color: var(--danger-color);'}">${report.total_score}�?/div>
+                                <div class="detail-value" style="font-size: 24px; font-weight: 700; ${report.total_score >= 80 ? 'color: var(--success-color);' : report.total_score >= 60 ? 'color: var(--warning-color);' : 'color: var(--danger-color);'}">${report.total_score}�?/div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">风险等级</div>
@@ -1166,7 +1187,7 @@
                             ${report.detail.dimensions.map(d => `
                                 <div class="dimension-item">
                                     <span class="dimension-name">${d.name}</span>
-                                    <span class="dimension-score ${getScoreClass(d.score)}">${d.score}�?/span>
+                                    <span class="dimension-score ${getScoreClass(d.score)}">${d.score}�?/span>
                                 </div>
                             `).join('')}
                         </div>
@@ -1232,7 +1253,7 @@
                 const contentDisposition = response.headers.get('Content-Disposition');
                 let filename = `reports_export.${format === 'excel' ? 'xlsx' : format === 'pdf' ? 'pdf' : 'json'}`;
                 if (contentDisposition) {
-                    let match = contentDisposition.match(/filename\*="?UTF-8''([^"]+)"?/i);
+                    let match = contentDisposition.match(/filename\*="?UTF-8', '([^"]+)"?/i);
                     if (match && match[1]) {
                         filename = decodeURIComponent(match[1]);
                     } else {
@@ -1255,7 +1276,7 @@
                 
                 document.getElementById('exportMenu').classList.remove('show');
             } catch (e) {
-                alert('导出失败�? + e.message);
+                alert('导出失败�? + e.message);
             }
         }
         
@@ -1278,7 +1299,7 @@
                 const contentDisposition = response.headers.get('Content-Disposition');
                 let filename = `report_${reportId}.${format === 'excel' ? 'xlsx' : format}`;
                 if (contentDisposition) {
-                    let match = contentDisposition.match(/filename\*="?UTF-8''([^"]+)"?/i);
+                    let match = contentDisposition.match(/filename\*="?UTF-8', '([^"]+)"?/i);
                     if (match && match[1]) {
                         filename = decodeURIComponent(match[1]);
                     } else {
@@ -1302,7 +1323,7 @@
                     menu.classList.remove('show');
                 });
             } catch (e) {
-                alert('导出失败�? + e.message);
+                alert('导出失败�? + e.message);
             }
         }
         
@@ -1325,7 +1346,7 @@
         }
         
         async function deleteReport(reportId, orgName) {
-            if (!confirm(`确定要删除报告�?{orgName}」吗？此操作不可恢复。`)) {
+            if (!confirm(`确定要删除报告�?{orgName}」吗？此操作不可恢复。`)) {
                 return;
             }
             
@@ -1345,14 +1366,14 @@
                 alert('删除成功');
                 loadReports();
             } catch (e) {
-                alert('删除失败�? + e.message);
+                alert('删除失败�? + e.message);
             }
         }
         
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');
-            window.location.href = '/login';
+            window.location.href = '/login.html';
         }
         
         document.addEventListener('DOMContentLoaded', loadReports);

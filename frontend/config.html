@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP配置 - 数维数据管家系统</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #1B3A57;
@@ -339,15 +339,15 @@
             <h1><i class="bi bi-pie-chart-fill"></i> 数据资产管家</h1>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
-            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
-            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
+            <li><a href="/admin.html"><i class="bi bi-speedometer2"></i> 仪表�?/a></li>
+            <li><a href="/rules.html"><i class="bi bi-sliders"></i> 规则库管�?/a></li>
+            <li><a href="/knowledge.html"><i class="bi bi-book"></i> 知识库管�?/a></li>
             <li><a href="/ai-config.html"><i class="bi bi-robot"></i> AI配置管理</a></li>
             <li><a href="/customers.html"><i class="bi bi-person-lines-fill"></i> 客户管理</a></li>
             <li><a href="/reports.html"><i class="bi bi-file-earmark-text"></i> 报告管理</a></li>
             <li><a href="/users.html"><i class="bi bi-people"></i> 用户管理</a></li>
             <li><a href="/config.html" class="active"><i class="bi bi-gear"></i> VIP配置</a></li>
-            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
+            <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> 退出登�?/a></li>
         </ul>
     </div>
     
@@ -363,7 +363,7 @@
                 </div>
                 <div>
                     <div class="section-title">VIP权限配置</div>
-                    <small style="color: var(--text-secondary);">设置普通用户与VIP用户的权限差�?/small>
+                    <small style="color: var(--text-secondary);">设置普通用户与VIP用户的权限差�?small>
                 </div>
             </div>
             
@@ -371,15 +371,15 @@
                 <div class="config-item">
                     <div class="config-label">
                         <i class="bi bi-calculator"></i>
-                        普通用户每日评估次�?                    </div>
+                        普通用户每日评估次�?                   </div>
                     <input type="number" class="config-input" id="freeDailyEvalLimit" min="1" max="100">
-                    <div class="help-text">VIP用户无限�?/div>
+                    <div class="help-text">VIP用户无限�?div>
                 </div>
                 
                 <div class="config-item">
                     <div class="config-label">
                         <i class="bi bi-calendar-check"></i>
-                        VIP默认开通天�?                    </div>
+                        VIP默认开通天�?                   </div>
                     <input type="number" class="config-input" id="vipDefaultDays" min="1" max="3650">
                     <div class="help-text">管理员开通VIP时的默认天数</div>
                 </div>
@@ -387,9 +387,9 @@
                 <div class="config-item">
                     <div class="config-label">
                         <i class="bi bi-clock-history"></i>
-                        普通用户报告保留天�?                    </div>
+                        普通用户报告保留天�?                   </div>
                     <input type="number" class="config-input" id="freeReportRetentionDays" min="1" max="365">
-                    <div class="help-text">超过天数后自动删�?/div>
+                    <div class="help-text">超过天数后自动删�?div>
                 </div>
                 
                 <div class="config-item">
@@ -414,10 +414,12 @@
             </div>
             
             <div class="action-bar">
-                <button class="btn-reset" onclick="loadConfig()">
+                <button class="btn-reset"
+                             onclick="loadConfig()">
                     <i class="bi bi-arrow-counterclockwise"></i> 重置
                 </button>
-                <button class="btn-save" onclick="saveConfig()">
+                <button class="btn-save"
+                             onclick="saveConfig()">
                     <i class="bi bi-check-lg"></i> 保存配置
                 </button>
             </div>
@@ -430,7 +432,7 @@
                 </div>
                 <div>
                     <div class="section-title">权限对比预览</div>
-                    <small style="color: var(--text-secondary);">当前配置下普通用户与VIP用户的功能差�?/small>
+                    <small style="color: var(--text-secondary);">当前配置下普通用户与VIP用户的功能差�?small>
                 </div>
             </div>
             
@@ -439,24 +441,24 @@
                     <thead>
                         <tr>
                             <th>功能</th>
-                            <th><span class="badge-free">普通用�?/span></th>
-                            <th><span class="badge-vip">VIP用户</span></th>
+                            <th><span class="badge-free">普通用�?span></th>
+                            <th><span class="badge-vip">VIP用户</span>th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>每日评估次数</td>
-                            <td id="compareDailyEval">3�?/td>
-                            <td>无限�?/td>
+                            <td id="compareDailyEval">3�?td>
+                            <td>无限�?td>
                         </tr>
                         <tr>
                             <td>报告保留期限</td>
-                            <td id="compareReportRetention">7�?/td>
+                            <td id="compareReportRetention">7�?td>
                             <td id="compareVipReportRetention">永久</td>
                         </tr>
                         <tr>
                             <td>报告导出</td>
-                            <td>不支�?/td>
+                            <td>不支�?td>
                             <td id="compareExport">PDF/Word</td>
                         </tr>
                         <tr>
@@ -476,7 +478,7 @@
             const userInfo = localStorage.getItem('userInfo');
             
             if (!token || !userInfo) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             
@@ -484,11 +486,11 @@
                 const user = JSON.parse(userInfo);
                 if (user.user_type !== 'admin') {
                     alert('无权限访问：此页面仅限管理员使用');
-                    window.location.href = '/survey';
+                    window.location.href = '/index.html';
                     return false;
                 }
             } catch (e) {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
             
@@ -529,13 +531,13 @@
         }
         
         function updateComparison(config) {
-            document.getElementById('compareDailyEval').textContent = config.free_daily_eval_limit + '�?;
-            document.getElementById('compareReportRetention').textContent = config.free_report_retention_days + '�?;
+            document.getElementById('compareDailyEval').textContent = config.free_daily_eval_limit + '�?
+            document.getElementById('compareReportRetention').textContent = config.free_report_retention_days + '�?
             
             const vipDays = config.vip_report_retention_days;
-            document.getElementById('compareVipReportRetention').textContent = vipDays >= 36500 ? '永久' : vipDays + '�?;
+            document.getElementById('compareVipReportRetention').textContent = vipDays >= 36500 ? '永久' : vipDays + '�?
             
-            document.getElementById('compareExport').textContent = config.enable_vip_export ? 'PDF/Word' : '不支�?;
+            document.getElementById('compareExport').textContent = config.enable_vip_export ? 'PDF/Word' : '', '不支�?
         }
         
         function toggleSwitch(element) {
@@ -546,10 +548,10 @@
             const token = localStorage.getItem('token');
             
             const data = {
-                free_daily_eval_limit: parseInt(document.getElementById('freeDailyEvalLimit').value),
-                vip_default_days: parseInt(document.getElementById('vipDefaultDays').value),
-                free_report_retention_days: parseInt(document.getElementById('freeReportRetentionDays').value),
-                vip_report_retention_days: parseInt(document.getElementById('vipReportRetentionDays').value),
+                free_daily_eval_limit: parseInt(document.getElementById('freeDailyEvalLimit').value)'
+                vip_default_days: parseInt(document.getElementById('vipDefaultDays').value)'
+                free_report_retention_days: parseInt(document.getElementById('freeReportRetentionDays').value)'
+                vip_report_retention_days: parseInt(document.getElementById('vipReportRetentionDays').value)'
                 enable_vip_export: document.getElementById('enableVipExport').classList.contains('active')
             };
             
@@ -558,7 +560,7 @@
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',,
                     },
                     body: JSON.stringify(data)
                 });
@@ -566,16 +568,16 @@
                 if (!response.ok) throw new Error('保存失败');
                 
                 updateComparison(data);
-                alert('配置已保�?);
+                alert('配置已保�?);
             } catch (error) {
-                alert('保存失败�? + error.message);
+                alert('保存失败�? + error.message);
             }
         }
         
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');
-            window.location.href = '/login';
+            window.location.href = '/login.html';
         }
         
         document.addEventListener('DOMContentLoaded', loadConfig);
