@@ -152,7 +152,7 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 | 首页 | http://localhost:8000/home.html |
 | 调研表单 | http://localhost:8000/index.html |
 | 评估报告 | http://localhost:8000/report.html |
-| 管理后台 | http://localhost:8000/admin.html |
+| 管理后台 | http://localhost:8000/admin-new/ |
 | API 文档 | http://localhost:8000/docs |
 | 中文文档 | http://localhost:8000/api_docs_chinese.html |
 
@@ -169,84 +169,86 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 │   ├── reports.py               # 报告生成与查询
 │   ├── users.py                 # 用户管理
 │   ├── customers.py             # 客户管理
-│   ├── channel.py               # 渠道与推荐码管理
-│   ├── config.py                # 系统配置
-│   ├── ai_config.py             # AI服务配置
-│   └── ai_rules.py              # AI规则生成
+│   ├── channel.py              # 渠道与推荐码管理
+│   ├── config.py               # 系统配置
+│   ├── ai_config.py           # AI服务配置
+│   └── ai_rules.py            # AI规则生成
 │
 ├── config/                       # 配置文件
-│   ├── database.py              # 数据库连接配置
-│   └── logging_config.py        # 日志配置
+│   ├── database.py             # 数据库连接配置
+│   └── logging_config.py       # 日志配置
 │
-├── data/                         # 数据文件
-│   └── seed_rules_v1.json       # 31条种子规则
+├── data/                        # 数据文件
+│   └── seed_rules_v1.json    # 31条种子规则
 │
-├── database/                     # 数据库相关
-│   └── backup/                  # 备份脚本
+├── database/                    # 数据库相关
+│   └── backup/                # 备份脚本
 │
-├── frontend/                     # 前端页面（HTML/JS/CSS）
-│   ├── login*.html              # 登录页面（多版本）
-│   ├── home.html                # 用户首页
-│   ├── index.html               # 调研表单（核心）
-│   ├── report.html              # 评估报告展示
-│   ├── admin.html               # 管理后台
-│   ├── customers.html           # 客户管理
-│   ├── knowledge.html           # 知识库管理
-│   ├── rules.html               # 规则库管理
-│   ├── users.html               # 用户管理
-│   ├── ai_config.html           # AI配置
-│   └── ui-*.css/js              # UI组件库
+├── frontend/                    # 前端页面（HTML/JS/CSS）
+│   ├── login*.html           # 登录页面（多版本）
+│   ├── home.html            # 用户首页
+│   ├── index.html           # 调研表单（核心）
+│   ├── report.html          # 评估报告展示
+│   ├── admin-new/          # 新版管理后台 (v0.7)
+│   │   ├── index.html      # 管理后台首页
+│   │   ├── css/common.css  # 通用样式
+│   │   ├── js/common.js    # 通用脚本
+│   │   └── pages/         # 管理模块页面
+│   │       ├── users.html    # 用户管理
+│   │       ├── customers.html # 客户管理
+│   │       ├── rules.html    # 规则库管理
+│   │       ├── knowledge.html # 知识库管理
+│   │       ├── reports.html   # 报告管理
+│   │       ├── history.html   # 评估历史
+│   │       ├── ai-config.html # AI配置管理
+│   │       └── vip-config.html # VIP配置管理
+│   ├── customers.html      # 客户管理
+│   ├── knowledge.html      # 知识库管理
+│   ├── rules.html         # 规则库管理
+│   ├── users.html        # 用户管理
+│   ├── ai_config.html   # AI配置
+│   └── ui-*.css/js     # UI组件库
 │
-├── miniprogram/                  # 微信小程序
-│   ├── pages/                   # 小程序页面
-│   │   ├── index/               # 首页
-│   │   ├── form/                # 表单填写
-│   │   ├── report/              # 报告查看
-│   │   └── profile/             # 个人中心
-│   ├── app.js                   # 小程序入口
-│   ├── app.json                 # 小程序配置
-│   └── app.wxss                 # 小程序样式
+├── models/                     # 数据库模型（SQLAlchemy）
+│   ├── user.py              # 用户模型
+│   ├── evaluation_result.py # 评估结果
+│   ├── rule_config.py       # 规则配置（核心）
+│   ├── knowledge_doc.py    # 知识文档
+│   ├── knowledge_category.py # 知识分类
+│   ├── channel.py          # 渠道模型
+│   ├── ai_config.py       # AI配置模型
+│   └── system_config.py   # 系统配置
 │
-├── models/                       # 数据库模型（SQLAlchemy）
-│   ├── user.py                  # 用户模型
-│   ├── evaluation_result.py     # 评估结果
-│   ├── rule_config.py           # 规则配置（核心）
-│   ├── knowledge_doc.py         # 知识文档
-│   ├── knowledge_category.py    # 知识分类
-│   ├── channel.py               # 渠道模型
-│   ├── ai_config.py             # AI配置模型
-│   └── system_config.py         # 系统配置
-│
-├── schemas/                      # Pydantic模型（数据验证）
+├── schemas/                    # Pydantic模型（数据验证）
 │   ├── auth.py
 │   └── channel.py
 │
-├── scripts/                      # 工具脚本
-│   ├── init_db.py               # 数据库初始化
-│   ├── full_init_db.py          # 完整初始化（含规则）
-│   └── create_admin.py          # 创建管理员账号
+├── scripts/                    # 工具脚本
+│   ├── init_db.py          # 数据库初始化
+│   ├── full_init_db.py    # 完整初始化（含规则）
+│   └── create_admin.py    # 创建管理员账号
 │
-├── services/                     # 业务服务层（核心逻辑）
-│   ├── evaluation.py            # 评价服务（主引擎）
-│   ├── rule_calculator.py       # 规则计算器
-│   ├── report_generator.py      # 报告生成器
-│   ├── policy_retriever.py      # 策略检索器
-│   ├── ai_service.py            # AI服务集成
-│   ├── vector_store.py          # 向量存储（ChromaDB）
-│   ├── pdf_service.py           # PDF生成服务
-│   └── vip_service.py           # VIP服务
+├── services/                   # 业务服务层（核心逻辑）
+│   ├── evaluation.py       # 评价服务（主引擎）
+│   ├── rule_calculator.py  # 规则计算器
+│   ├── report_generator.py # 报告生成器
+│   ├── policy_retriever.py # 策略检索器
+│   ├── ai_service.py      # AI服务集成
+│   ├── vector_store.py    # 向量存储（ChromaDB）
+│   ├── pdf_service.py    # PDF生成服务
+│   └── vip_service.py   # VIP服务
 │
-├── tests/                        # 测试文件
+├── tests/                      # 测试文件
 │
-├── .trae/skills/                 # Trae AI Skills
+├── .trae/skills/              # Trae AI Skills
 │   ├── gitee代码上传/
 │   ├── github代码上传/
 │   └── ...（其他skills）
 │
-├── main.py                       # FastAPI主应用入口
-├── requirements.txt              # Python依赖（20+包）
-├── .env.example                  # 环境变量模板
-└── README.md                     # 本文件
+├── main.py                   # FastAPI主应用入口
+├── requirements.txt         # Python依赖（20+包）
+├── .env.example             # 环境变量模板
+└── README.md               # 本文件
 ```
 
 ## 🔌 API 接口（12个模块，60+接口）
@@ -264,7 +266,7 @@ POST   /change-password           # 修改密码
 ```
 POST   /evaluate                  # 执行评估（核心）
 GET    /{id}                      # 获取评估结果详情
-GET    /user/{user_id}/history    # 获取用户历史记录
+GET    /user/{user_id}/history   # 获取用户历史记录
 POST   /{id}/report               # 生成评估报告
 DELETE /{id}                      # 删除评估记录
 ```
@@ -289,7 +291,7 @@ GET    /{id}                      # 获取文档详情
 PUT    /{id}                      # 更新文档
 DELETE /{id}                      # 删除文档
 GET    /search                    # 语义搜索（向量检索）
-POST   /{id}/vectorize            # 文档向量化
+POST   /{id}/vectorize           # 文档向量化
 ```
 
 ### 📁 知识分类 `/api/v1/knowledge-categories`
@@ -325,7 +327,7 @@ POST   /                          # 创建渠道
 GET    /{id}                      # 获取渠道详情
 PUT    /{id}                      # 更新渠道
 DELETE /{id}                      # 删除渠道
-POST   /{id}/generate-code        # 生成推荐码
+POST   /{id}/generate-code       # 生成推荐码
 GET    /stats                     # 渠道统计
 ```
 
@@ -333,9 +335,9 @@ GET    /stats                     # 渠道统计
 ```
 GET    /                          # 获取报告列表
 GET    /{id}                      # 获取报告详情
-POST   /{id}/export/pdf           # 导出PDF
-POST   /{id}/export/word          # 导出Word
-POST   /{id}/send                 # 发送报告
+POST   /{id}/export/pdf          # 导出PDF
+POST   /{id}/export/word        # 导出Word
+POST   /{id}/send                # 发送报告
 ```
 
 ### ⚙️ 系统配置 `/api/v1/config`
@@ -345,15 +347,16 @@ PUT    /                          # 更新系统配置
 GET    /version                   # 获取版本信息
 ```
 
-### 🤖 AI配置 `/api/v1/ai-config`
+### 🤖 AI配置 `/api/v1/ai`
 ```
 GET    /                          # 获取AI配置列表
 POST   /                          # 创建AI配置
 GET    /{id}                      # 获取配置详情
 PUT    /{id}                      # 更新配置
 DELETE /{id}                      # 删除配置
-POST   /test                      # 测试AI连接
+POST   /{id}/test                 # 测试AI连接
 GET    /providers                 # 获取支持的厂商列表
+POST   /{config_id}/set-default   # 设为默认配置
 ```
 
 ### 🤖 AI规则 `/api/v1/ai-rules`
@@ -391,8 +394,8 @@ POST   /explain                   # AI解释规则
 
 ### 前端
 - **Web前端**: HTML5 + CSS3 + JavaScript（原生）
-- **小程序**: 微信小程序（原生开发）
-- **UI组件**: 自定义CSS组件库
+- **UI组件**: Bootstrap 5 + Bootstrap Icons
+- **图表**: Chart.js 4.4
 
 ### 部署与运维
 - **Web服务器**: Nginx（反向代理）
@@ -404,10 +407,10 @@ POST   /explain                   # AI解释规则
 
 ```bash
 # 备份数据库
-database/backup/备份数据库.bat
+docker exec shuwei-mysql mysqldump -u root -p shuwei_data_manager > backup.sql
 
 # 恢复数据库
-database/backup/恢复数据库.bat
+docker exec -i shuwei-mysql mysql -u root -p shuwei_data_manager < backup.sql
 ```
 
 ## 🗺️ 开发路线
@@ -423,22 +426,14 @@ database/backup/恢复数据库.bat
 | Phase 5 | 用户认证与权限管理（JWT） | ✅ |
 | Phase 6 | 微信小程序端 | ✅ |
 | Phase 7 | AI服务集成（多厂商支持） | ✅ |
+| Phase 8 | 新版管理后台v0.7 | ✅ |
 
 ### 进行中 🚧
 
 | 阶段 | 功能 | 状态 |
 |------|------|------|
-| Phase 8 | 云端部署与运维 | 🚧 |
-| Phase 9 | 数据分析仪表盘 | 📋 |
-| Phase 10 | 企业版功能（多租户） | 📋 |
-
-## 📚 文档索引
-
-| 文档 | 说明 | 状态 |
-|------|------|------|
-| [使用指南.md](使用指南.md) | 系统使用指南 | ✅ 最新 |
-| [UI 设计规范.md](UI 设计规范.md) | UI/UX 设计规范 | ✅ 最新 |
-| [功能架构图.md](功能架构图.md) | 系统架构说明 | ✅ 参考 |
+| Phase 9 | 云端部署与运维 | 🚧 |
+| Phase 10 | 数据分析仪表盘 | 📋 |
 
 ## ☁️ 部署建议
 
@@ -465,10 +460,10 @@ database/backup/恢复数据库.bat
 │  └─────────────┘    └─────────────┘    │
 │         │                               │
 │         ▼                               │
-│  ┌─────────────┐                        │
-│  │ Chroma Cloud│                        │
-│  │ 向量数据库   │                        │
-│  └─────────────┘                        │
+│  ┌─────────────┐                       │
+│  │ Chroma Cloud│                       │
+│  │ 向量数据库   │                       │
+│  └─────────────┘                       │
 └─────────────────────────────────────────┘
 ```
 
