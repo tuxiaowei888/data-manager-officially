@@ -23,6 +23,8 @@ from api.users import router as users_router
 from api.config import router as config_router
 from api.customers import router as customers_router
 from api.ai_config import router as ai_config_router
+from api.prompt_templates import router as prompt_templates_router
+from api.permissions import router as permissions_router
 
 # 创建应用
 app = FastAPI(
@@ -59,6 +61,8 @@ app.include_router(users_router)
 app.include_router(config_router)
 app.include_router(customers_router)
 app.include_router(ai_config_router)
+app.include_router(prompt_templates_router)
+app.include_router(permissions_router)
 
 
 @app.get("/")
@@ -191,6 +195,12 @@ def config_page():
 def config_html_page():
     """系统配置页面"""
     return FileResponse("frontend/config.html")
+
+
+@app.get("/test-btn.html")
+def test_btn_page():
+    """测试按钮页面"""
+    return FileResponse("frontend/test-btn.html")
 
 
 @app.get("/customers")

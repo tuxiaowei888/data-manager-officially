@@ -14,6 +14,7 @@ class KnowledgeDoc(Base):
     
     id = Column(Integer, primary_key=True, index=True, comment="主键")
     category_id = Column(Integer, ForeignKey('knowledge_categories.id'), nullable=True, comment="目录分类ID")
+    display_order = Column(Integer, default=0, nullable=True, comment="显示排序")
     doc_type = Column(String(50), nullable=True, comment="文档类型")
     title = Column(String(500), nullable=False, comment="文档标题")
     content = Column(Text, nullable=True, comment="文档内容文本")

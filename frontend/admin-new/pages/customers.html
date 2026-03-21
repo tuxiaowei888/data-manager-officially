@@ -12,10 +12,11 @@
     <div class="admin-layout">
         <!-- 侧边栏 -->
         <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <i class="bi bi-database-gear"></i>
-                    <span>数维数据管家</span>
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -63,6 +64,7 @@
         <!-- 主内容 -->
         <main class="main-content">
             <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
                 <div class="topbar-left">
                     <h1 class="topbar-title"><i class="bi bi-people"></i> 客户管理</h1>
                 </div>
@@ -160,6 +162,46 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script src="/admin-new/js/common.js"></script>
     <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 顶部栏粒子动画
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
         let allCustomers = [];
         let filteredCustomers = [];
         let currentCustomer = null;

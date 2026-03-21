@@ -162,7 +162,7 @@ async def get_customers(
         elif register_time == 'month':
             query = query.filter(User.created_at >= today - timedelta(days=30))
     
-    users = query.order_by(User.id.desc()).offset((page - 1) * page_size).limit(page_size).all()
+    users = query.order_by(User.id.asc()).offset((page - 1) * page_size).limit(page_size).all()
     
     results = []
     for u in users:

@@ -23,7 +23,7 @@ async function apiRequest(endpoint, options = {}) {
         ...options,
         headers: {
             ...defaultOptions.headers,
-            ...options.headers
+            ...(options.headers || {})
         }
     };
 
@@ -62,7 +62,10 @@ async function apiGet(endpoint) {
 async function apiPost(endpoint, data) {
     return apiRequest(endpoint, {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 }
 
@@ -112,8 +115,22 @@ function checkAuth() {
  * 格式化日期
  */
 function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
+    if (!dateString || dateString === '-' || dateString === 'None' || dateString === 'null') return '-';
+    
+    let date;
+    if (typeof dateString === 'string') {
+        const cleaned = dateString.trim();
+        if (!cleaned) return '-';
+        date = new Date(cleaned);
+        if (isNaN(date.getTime())) {
+            date = new Date(cleaned.replace(/\//g, '-'));
+        }
+    } else {
+        date = new Date(dateString);
+    }
+    
+    if (isNaN(date.getTime())) return '-';
+    
     return date.toLocaleDateString('zh-CN', {
         year: 'numeric',
         month: '2-digit',

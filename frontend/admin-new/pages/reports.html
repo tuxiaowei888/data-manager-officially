@@ -11,10 +11,11 @@
 <body>
     <div class="admin-layout">
         <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <i class="bi bi-database-gear"></i>
-                    <span>数维数据管家</span>
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -61,6 +62,7 @@
 
         <main class="main-content">
             <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
                 <div class="topbar-left">
                     <h1 class="topbar-title"><i class="bi bi-file-earmark-text"></i> 报告管理</h1>
                 </div>
@@ -77,6 +79,36 @@
             </header>
 
             <div class="page-content">
+                <div class="stats-grid" id="reportStatsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalReports">0</h3>
+                            <p>报告总数</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgScore">0</h3>
+                            <p>平均评分</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="successRate">0%</h3>
+                            <p>成功率</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="search-bar">
                     <div class="search-input">
                         <i class="bi bi-search"></i>
@@ -94,6 +126,10 @@
                             <option value="completed">已完成</option>
                             <option value="failed">失败</option>
                         </select>
+                        <label style="font-size: 12px; color: #999;">开始日期</label>
+                        <input type="date" class="filter-select" id="filterDateStart" style="width: 140px;">
+                        <label style="font-size: 12px; color: #999; margin-left: 8px;">结束日期</label>
+                        <input type="date" class="filter-select" id="filterDateEnd" style="width: 140px;">
                         <button class="btn btn-primary" onclick="loadReports()">
                             <i class="bi bi-search"></i> 搜索
                         </button>
@@ -154,8 +190,49 @@
     </div>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="/admin-new/js/common.js"></script>
     <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 顶部栏粒子动画
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
         let allReports = [];
         let filteredReports = [];
         let pagination = null;
@@ -209,6 +286,8 @@
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             const riskLevel = document.getElementById('filterRisk').value;
             const status = document.getElementById('filterStatus').value;
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
 
             filteredReports = allReports.filter(r => {
                 if (keyword) {
@@ -219,13 +298,38 @@
                 if (riskLevel && r.risk_level !== riskLevel) return false;
                 if (status === 'completed' && r.status !== 'completed') return false;
                 if (status === 'failed' && r.status !== 'failed') return false;
+                if (dateStart) {
+                    const reportDate = new Date(r.created_at).toISOString().split('T')[0];
+                    if (reportDate < dateStart) return false;
+                }
+                if (dateEnd) {
+                    const reportDate = new Date(r.created_at).toISOString().split('T')[0];
+                    if (reportDate > dateEnd) return false;
+                }
                 return true;
             });
 
             document.getElementById('reportCount').textContent = `共 ${filteredReports.length} 条`;
+
+            updateReportStats();
+
             pagination.setTotal(filteredReports.length);
             pagination.render('pagination');
             renderReportTable(1);
+        }
+
+        function updateReportStats() {
+            const total = allReports.length;
+            const completedReports = allReports.filter(r => r.status === 'completed' || r.status === 'success');
+            const successCount = completedReports.length;
+            const successRate = total > 0 ? Math.round((successCount / total) * 100) : 0;
+
+            const scores = allReports.filter(r => r.score !== '-' && r.score !== null && r.score !== undefined).map(r => parseFloat(r.score));
+            const avgScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 0;
+
+            document.getElementById('totalReports').textContent = total;
+            document.getElementById('avgScore').textContent = avgScore;
+            document.getElementById('successRate').textContent = successRate + '%';
         }
 
         function renderReportTable(page) {
@@ -502,40 +606,63 @@
             }
         }
 
-        function exportReports() {
+        async function exportReports() {
             if (filteredReports.length === 0) {
                 showMessage('没有可导出的报告', 'warning');
                 return;
             }
 
             try {
-                const exportData = filteredReports.map(r => ({
-                    报告ID: r.id,
-                    客户名称: r.customer_name || r.company_name,
-                    评估类型: r.evaluation_type || '综合评估',
-                    评分: r.score,
-                    风险等级: r.risk_level,
-                    生成时间: formatDate(r.created_at || r.generate_time)
-                }));
+                showMessage('正在获取完整报告内容...', 'info');
+                const exportData = [];
 
-                const csv = convertToCSV(exportData);
-                const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+                for (const r of filteredReports) {
+                    let fullContent = '';
+                    try {
+                        const report = await apiGet(`/reports/${r.id}`);
+                        fullContent = report.content || report.report_content || '';
+                    } catch (e) {
+                        fullContent = '（获取完整内容失败）';
+                    }
+
+                    exportData.push({
+                        报告ID: r.id,
+                        客户名称: r.customer_name || r.company_name,
+                        评估类型: r.evaluation_type || '综合评估',
+                        评分: r.score,
+                        风险等级: r.risk_level,
+                        生成时间: formatDate(r.created_at || r.generate_time),
+                        完整报告内容: fullContent
+                    });
+                }
+
+                const worksheet = XLSX.utils.json_to_sheet(exportData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, '报告列表');
+
+                const colWidths = [
+                    { wch: 10 },
+                    { wch: 25 },
+                    { wch: 15 },
+                    { wch: 10 },
+                    { wch: 12 },
+                    { wch: 20 },
+                    { wch: 100 }
+                ];
+                worksheet['!cols'] = colWidths;
+
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `reports_export_${Date.now()}.csv`;
+                a.download = `reports_export_${Date.now()}.xlsx`;
                 a.click();
                 URL.revokeObjectURL(url);
                 showMessage('导出成功', 'success');
             } catch (error) {
                 showMessage('导出失败: ' + error.message, 'error');
             }
-        }
-
-        function convertToCSV(data) {
-            const headers = Object.keys(data[0]);
-            const csv = data.map(row => headers.map(h => `"${row[h] || ''}"`).join(','));
-            return [headers.join(','), ...csv].join('\n');
         }
     </script>
 </body>

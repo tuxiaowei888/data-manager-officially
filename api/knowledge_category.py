@@ -48,6 +48,20 @@ class CategoryResponse(BaseModel):
         from_attributes = True
 
 
+class CategoryTreeResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    icon: Optional[str]
+    sort_order: int
+    is_active: bool
+    doc_count: int = 0
+    children: List['CategoryTreeResponse'] = []
+
+    class Config:
+        from_attributes = True
+
+
 @router.get("", response_model=List[CategoryResponse])
 def get_all_categories(db: Session = Depends(get_db)):
     """获取所有目录分类"""
@@ -70,6 +84,47 @@ def get_all_categories(db: Session = Depends(get_db)):
         ))
     
     return results
+
+
+@router.get("/tree", response_model=List[CategoryTreeResponse])
+def get_category_tree(db: Session = Depends(get_db)):
+    """获取目录分类树形结构"""
+    categories = db.query(KnowledgeCategory).order_by(KnowledgeCategory.sort_order).all()
+    
+    # 构建树形结构
+    category_map = {}
+    root_categories = []
+    
+    # 第一遍：创建所有分类节点
+    for c in categories:
+        doc_count = db.query(KnowledgeDoc).filter(KnowledgeDoc.category_id == c.id).count()
+        category_map[c.id] = CategoryTreeResponse(
+            id=c.id,
+            name=c.name,
+            description=c.description,
+            icon=c.icon,
+            sort_order=c.sort_order,
+            is_active=c.is_active,
+            doc_count=doc_count,
+            children=[]
+        )
+    
+    # 第二遍：构建父子关系
+    for c in categories:
+        if c.parent_id and c.parent_id in category_map:
+            category_map[c.parent_id].children.append(category_map[c.id])
+        elif not c.parent_id:
+            root_categories.append(category_map[c.id])
+    
+    # 按 sort_order 排序
+    def sort_tree(categories):
+        categories.sort(key=lambda x: x.sort_order)
+        for cat in categories:
+            if cat.children:
+                sort_tree(cat.children)
+    
+    sort_tree(root_categories)
+    return root_categories
 
 
 @router.get("/{category_id}", response_model=CategoryResponse)

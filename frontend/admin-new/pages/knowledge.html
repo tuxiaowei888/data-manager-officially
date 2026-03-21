@@ -11,10 +11,11 @@
 <body>
     <div class="admin-layout">
         <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <i class="bi bi-database-gear"></i>
-                    <span>数维数据管家</span>
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -61,6 +62,7 @@
 
         <main class="main-content">
             <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
                 <div class="topbar-left">
                     <h1 class="topbar-title"><i class="bi bi-book"></i> 知识库管理</h1>
                 </div>
@@ -83,12 +85,11 @@
                         <input type="text" id="searchInput" placeholder="搜索知识库标题、内容...">
                     </div>
                     <div class="filter-group">
+                        <select class="filter-select" id="filterMainCategory" onchange="onMainCategoryChange()">
+                            <option value="">所有主分类</option>
+                        </select>
                         <select class="filter-select" id="filterCategory">
-                            <option value="">全部分类</option>
-                            <option value="rule">规则知识</option>
-                            <option value="standard">标准规范</option>
-                            <option value="faq">常见问题</option>
-                            <option value="other">其他</option>
+                            <option value="">所有子分类</option>
                         </select>
                         <button class="btn btn-primary" onclick="loadKnowledge()">
                             <i class="bi bi-search"></i> 搜索
@@ -155,20 +156,38 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="form-label">分类 <span class="text-danger">*</span></label>
-                                <select class="form-control" id="knowledgeCategory" required>
+                                <label class="form-label">主分类 <span class="text-danger">*</span></label>
+                                <select class="form-control" id="knowledgeMainCategory" onchange="onFormMainCategoryChange()" required>
                                     <option value="">请选择</option>
-                                    <option value="rule">规则知识</option>
-                                    <option value="standard">标准规范</option>
-                                    <option value="faq">常见问题</option>
-                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">子分类 <span class="text-danger">*</span></label>
+                                <select class="form-control" id="knowledgeCategory" required>
+                                    <option value="">请先选择主分类</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">内容 <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="knowledgeContent" rows="10" required></textarea>
+                        <textarea class="form-control" id="knowledgeContent" rows="12" style="min-height: 300px;" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">上传资料</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="file-upload-content">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <p>拖拽文件到此处，或<span class="file-upload-link">点击上传</span></p>
+                                <span class="file-upload-hint">支持 .pdf, .docx, .doc, .txt, .md 格式</span>
+                            </div>
+                            <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt,.md" style="display: none;">
+                        </div>
+                        <div class="file-list" id="fileList"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">标签</label>
@@ -178,7 +197,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeKnowledgeModal()">取消</button>
-                <button class="btn btn-primary" onclick="saveKnowledge()">保存</button>
+                <button class="btn btn-primary" id="saveKnowledgeBtn" onclick="saveKnowledge()">保存</button>
             </div>
         </div>
     </div>
@@ -200,10 +219,52 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script src="/admin-new/js/common.js"></script>
     <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 顶部栏粒子动画
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
         let allKnowledge = [];
         let filteredKnowledge = [];
         let pagination = null;
         let isEdit = false;
+        let categoryTree = [];
+        let categoryMap = {};
 
         document.addEventListener('DOMContentLoaded', async function() {
             const user = checkAuth();
@@ -211,6 +272,8 @@
 
             document.getElementById('userName').textContent = user.username || '管理员';
             document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            initFileUpload();
 
             pagination = new Pagination({
                 pageSize: 10,
@@ -222,8 +285,103 @@
                 if (e.key === 'Enter') loadKnowledge();
             });
 
+            await loadCategoryTree();
             await loadKnowledge();
         });
+
+        async function loadCategoryTree() {
+            try {
+                const response = await apiGet('/knowledge-categories/tree');
+                categoryTree = response || [];
+                
+                buildCategoryMap();
+                populateMainCategorySelect('filterMainCategory');
+                populateMainCategorySelect('knowledgeMainCategory');
+            } catch (error) {
+                console.error('加载分类失败:', error);
+                categoryTree = [];
+            }
+        }
+
+        function buildCategoryMap() {
+            categoryMap = {};
+            for (const parent of categoryTree) {
+                categoryMap[parent.id] = parent;
+                for (const child of parent.children || []) {
+                    categoryMap[child.id] = child;
+                }
+            }
+        }
+
+        function populateMainCategorySelect(selectId) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            const firstOption = select.options[0];
+            select.innerHTML = '';
+            select.add(firstOption);
+            
+            for (const cat of categoryTree) {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                select.add(option);
+            }
+        }
+
+        function onMainCategoryChange() {
+            const mainCatId = document.getElementById('filterMainCategory').value;
+            const subCatSelect = document.getElementById('filterCategory');
+            
+            subCatSelect.innerHTML = '<option value="">所有子分类</option>';
+            
+            if (!mainCatId) return;
+            
+            const mainCat = categoryMap[mainCatId];
+            if (mainCat && mainCat.children) {
+                for (const child of mainCat.children) {
+                    const option = document.createElement('option');
+                    option.value = child.id;
+                    option.textContent = child.name;
+                    subCatSelect.add(option);
+                }
+            }
+        }
+
+        function onFormMainCategoryChange() {
+            const mainCatId = document.getElementById('knowledgeMainCategory').value;
+            const subCatSelect = document.getElementById('knowledgeCategory');
+            
+            subCatSelect.innerHTML = '<option value="">请先选择主分类</option>';
+            
+            if (!mainCatId) return;
+            
+            const mainCat = categoryMap[mainCatId];
+            if (mainCat && mainCat.children && mainCat.children.length > 0) {
+                subCatSelect.innerHTML = '<option value="">请选择子分类</option>';
+                for (const child of mainCat.children) {
+                    const option = document.createElement('option');
+                    option.value = child.id;
+                    option.textContent = child.name;
+                    subCatSelect.add(option);
+                }
+            } else if (mainCat) {
+                subCatSelect.innerHTML = '<option value="">无子分类</option>';
+            }
+        }
+
+        function getCategoryName(categoryId) {
+            if (!categoryId) return '-';
+            const cat = categoryMap[categoryId];
+            if (cat) {
+                if (cat.parent_id) {
+                    const parent = categoryMap[cat.parent_id];
+                    return parent ? `${parent.name} / ${cat.name}` : cat.name;
+                }
+                return cat.name;
+            }
+            return '-';
+        }
 
         async function loadKnowledge() {
             const tbody = document.getElementById('knowledgeTableBody');
@@ -235,7 +393,7 @@
                 allKnowledge = allKnowledge.map(k => ({
                     id: k.id,
                     title: k.title || '-',
-                    category: k.doc_type || k.category || 'other',
+                    category_id: k.category_id,
                     tags: k.tags || [],
                     content: k.content || '',
                     is_active: k.is_active !== false,
@@ -251,7 +409,8 @@
 
         function filterKnowledge() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('filterCategory').value;
+            const mainCatId = document.getElementById('filterMainCategory').value;
+            const subCatId = document.getElementById('filterCategory').value;
 
             filteredKnowledge = allKnowledge.filter(k => {
                 if (keyword) {
@@ -259,7 +418,15 @@
                     const matchContent = (k.content || '').toLowerCase().includes(keyword);
                     if (!matchTitle && !matchContent) return false;
                 }
-                if (category && k.category !== category) return false;
+                if (subCatId) {
+                    if (k.category_id !== parseInt(subCatId)) return false;
+                } else if (mainCatId) {
+                    const mainCat = categoryMap[mainCatId];
+                    if (mainCat && mainCat.children) {
+                        const childIds = mainCat.children.map(c => c.id);
+                        if (!childIds.includes(k.category_id) && k.category_id !== mainCatId) return false;
+                    }
+                }
                 return true;
             });
 
@@ -284,7 +451,7 @@
                 <tr>
                     <td>${k.id}</td>
                     <td><strong>${k.title || '-'}</strong></td>
-                    <td>${getCategoryBadge(k.category)}</td>
+                    <td>${getCategoryName(k.category_id)}</td>
                     <td>${formatTags(k.tags)}</td>
                     <td>${k.引用次数 || 0}</td>
                     <td>
@@ -301,8 +468,8 @@
                             <button class="btn btn-sm btn-primary" onclick="editKnowledge(${k.id})" title="编辑">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-warning" onclick="toggleKnowledgeStatus(${k.id})" title="${k.is_active !== false ? '禁用' : '启用'}">
-                                <i class="bi ${k.is_active !== false ? 'bi-ban' : 'bi-check-circle'}"></i>
+                            <button class="btn btn-sm ${k.is_active !== false ? 'btn-warning' : 'btn-success'}" onclick="toggleKnowledgeStatus(${k.id})" title="${k.is_active !== false ? '禁用' : '启用'}">
+                                <i class="bi ${k.is_active !== false ? 'bi-pause' : 'bi-check'}"></i>
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="deleteKnowledge(${k.id})" title="删除">
                                 <i class="bi bi-trash"></i>
@@ -311,16 +478,6 @@
                     </td>
                 </tr>
             `).join('');
-        }
-
-        function getCategoryBadge(category) {
-            const badges = {
-                'rule': '<span class="badge badge-info">规则知识</span>',
-                'standard': '<span class="badge badge-success">标准规范</span>',
-                'faq': '<span class="badge badge-warning">常见问题</span>',
-                'other': '<span class="badge badge-secondary">其他</span>'
-            };
-            return badges[category] || '<span class="badge">其他</span>';
         }
 
         function formatTags(tags) {
@@ -339,81 +496,250 @@
             document.getElementById('knowledgeModalTitle').textContent = '添加知识';
             document.getElementById('knowledgeForm').reset();
             document.getElementById('knowledgeId').value = '';
+            uploadedFile = null;
+            document.getElementById('fileList').innerHTML = '';
             document.getElementById('knowledgeModal').classList.add('active');
         }
 
-        function editKnowledge(id) {
-            const item = allKnowledge.find(k => k.id === id);
-            if (!item) return;
+        async function editKnowledge(id) {
+            try {
+                const item = await apiGet(`/knowledge/${id}`);
+                if (!item) return;
 
-            isEdit = true;
-            document.getElementById('knowledgeModalTitle').textContent = '编辑知识';
-            document.getElementById('knowledgeId').value = item.id;
-            document.getElementById('knowledgeTitle').value = item.title || '';
-            document.getElementById('knowledgeCategory').value = item.category || '';
-            document.getElementById('knowledgeContent').value = item.content || '';
-            document.getElementById('knowledgeTags').value = Array.isArray(item.tags) ? item.tags.join(', ') : (item.tags || '');
-            document.getElementById('knowledgeModal').classList.add('active');
+                isEdit = true;
+                document.getElementById('knowledgeModalTitle').textContent = '编辑知识';
+                document.getElementById('knowledgeId').value = item.id;
+                document.getElementById('knowledgeTitle').value = item.title || '';
+                document.getElementById('knowledgeContent').value = item.content || '';
+
+                const cat = categoryMap[item.category_id];
+                if (cat) {
+                    if (cat.parent_id) {
+                        document.getElementById('knowledgeMainCategory').value = cat.parent_id;
+                        onFormMainCategoryChange();
+                        setTimeout(() => {
+                            document.getElementById('knowledgeCategory').value = item.category_id;
+                        }, 50);
+                    } else {
+                        document.getElementById('knowledgeMainCategory').value = cat.id;
+                        onFormMainCategoryChange();
+                    }
+                }
+
+                document.getElementById('knowledgeModal').classList.add('active');
+            } catch (error) {
+                showMessage('获取知识详情失败', 'error');
+            }
         }
 
         function closeKnowledgeModal() {
             document.getElementById('knowledgeModal').classList.remove('active');
+            uploadedFile = null;
+            document.getElementById('fileList').innerHTML = '';
+        }
+
+        let uploadedFile = null;
+
+        function initFileUpload() {
+            const area = document.getElementById('fileUploadArea');
+            const input = document.getElementById('fileInput');
+
+            area.addEventListener('click', () => input.click());
+
+            area.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                area.classList.add('dragover');
+            });
+
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('dragover');
+            });
+
+            area.addEventListener('drop', (e) => {
+                e.preventDefault();
+                area.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            input.addEventListener('change', () => {
+                if (input.files.length > 0) {
+                    handleFileUpload(input.files[0]);
+                }
+            });
+        }
+
+        async function handleFileUpload(file) {
+            const validTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/msword',
+                'text/plain',
+                'text/markdown'
+            ];
+
+            const ext = file.name.toLowerCase().split('.').pop();
+            const validExts = ['pdf', 'docx', 'doc', 'txt', 'md'];
+
+            if (!validExts.includes(ext)) {
+                showMessage('不支持的文件格式，请上传 PDF、Word、TXT 或 MD 文件', 'error');
+                return;
+            }
+
+            uploadedFile = file;
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <span class="file-item-name">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>${file.name}</span>
+                        <span style="color: var(--text-secondary); font-size: 12px;">(${(file.size / 1024).toFixed(1)} KB)</span>
+                        <span class="file-loading" style="color: var(--tech-accent);">正在解析...</span>
+                    </span>
+                    <button class="file-item-remove" onclick="removeUploadedFile()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            `;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/v1/knowledge/preview', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('knowledgeContent').value = result.content;
+                    const fileLoading = document.querySelector('.file-loading');
+                    if (fileLoading) fileLoading.textContent = '(已解析)';
+                } else {
+                    const error = await response.json();
+                    const fileLoading = document.querySelector('.file-loading');
+                    if (fileLoading) fileLoading.textContent = '(解析失败)';
+                    showMessage('文件内容解析失败: ' + (error.detail || '未知错误'), 'error');
+                }
+            } catch (error) {
+                const fileLoading = document.querySelector('.file-loading');
+                if (fileLoading) fileLoading.textContent = '(解析失败)';
+                console.error('预览失败:', error);
+            }
+        }
+
+        function removeUploadedFile() {
+            uploadedFile = null;
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('fileInput').value = '';
         }
 
         async function saveKnowledge() {
             const id = document.getElementById('knowledgeId').value;
             const title = document.getElementById('knowledgeTitle').value.trim();
-            const category = document.getElementById('knowledgeCategory').value;
+            const categoryId = document.getElementById('knowledgeCategory').value;
             const content = document.getElementById('knowledgeContent').value.trim();
             const tagsStr = document.getElementById('knowledgeTags').value.trim();
 
-            if (!title || !category || !content) {
-                showMessage('请填写所有必填字段', 'error');
+            if (!title) {
+                showMessage('请填写标题', 'error');
+                return;
+            }
+
+            if (!categoryId) {
+                showMessage('请选择子分类', 'error');
+                return;
+            }
+
+            if (!content && !uploadedFile) {
+                showMessage('请填写内容或上传文件', 'error');
                 return;
             }
 
             const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
-            const data = { title, category, content, tags };
+            const saveBtn = document.getElementById('saveKnowledgeBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>保存中...';
 
             try {
-                if (isEdit) {
-                    await apiPut(`/knowledge/${id}`, data);
-                    showMessage('知识更新成功', 'success');
+                if (uploadedFile && !content) {
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('file', uploadedFile);
+                    formData.append('category_id', categoryId);
+                    formData.append('source', uploadedFile.name);
+
+                    const token = localStorage.getItem('token');
+                    const response = await fetch('/api/v1/knowledge/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': token ? `Bearer ${token}` : ''
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.detail || '上传失败');
+                    }
+
+                    showMessage('知识创建成功，向量化处理中...', 'success');
+                    closeKnowledgeModal();
+                    loadKnowledge();
                 } else {
-                    await apiPost('/knowledge', data);
-                    showMessage('知识创建成功', 'success');
+                    const data = {
+                        title,
+                        category_id: parseInt(categoryId),
+                        content
+                    };
+                    if (isEdit) {
+                        await apiPut(`/knowledge/${id}`, data);
+                        showMessage('知识更新成功，向量化处理中...', 'success');
+                    } else {
+                        await apiPost('/knowledge', data);
+                        showMessage('知识创建成功，向量化处理中...', 'success');
+                    }
+                    closeKnowledgeModal();
+                    loadKnowledge();
                 }
-                closeKnowledgeModal();
-                await loadKnowledge();
             } catch (error) {
                 showMessage(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '保存';
             }
         }
 
         async function viewKnowledgeDetail(id) {
-            const item = allKnowledge.find(k => k.id === id);
-            if (!item) return;
+            try {
+                const item = await apiGet(`/knowledge/${id}`);
+                if (!item) return;
 
-            document.getElementById('detailModal').classList.add('active');
-            const content = document.getElementById('detailContent');
+                document.getElementById('detailModal').classList.add('active');
+                const content = document.getElementById('detailContent');
+                const timeToShow = item.updated_at || item.created_at || '-';
 
-            content.innerHTML = `
-                <div class="mb-3">
-                    <h4>${item.title || '-'}</h4>
-                    ${getCategoryBadge(item.category)}
-                    <span class="ms-2">更新时间: ${formatDate(item.updated_at || item.updated_time)}</span>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">标签</label>
-                    <div class="form-control" style="background: var(--bg-primary);">
-                        ${formatTags(item.tags)}
+                content.innerHTML = `
+                    <div class="mb-3">
+                        <h4>${item.title || '-'}</h4>
+                        <span class="badge badge-info">${getCategoryName(item.category_id)}</span>
+                        <span class="ms-2">更新时间: ${timeToShow}</span>
                     </div>
-                </div>
-                <div class="form-group mt-3">
-                    <label class="form-label">内容</label>
-                    <div class="form-control" style="background: var(--bg-primary); min-height: 200px; white-space: pre-wrap;">${item.content || '-'}</div>
-                </div>
-            `;
+                    <div class="form-group mt-3">
+                        <label class="form-label">内容</label>
+                        <div class="form-control" style="background: var(--bg-primary); min-height: 300px; max-height: 600px; overflow-y: auto; white-space: pre-wrap;">${item.content || '-'}</div>
+                    </div>
+                `;
+            } catch (error) {
+                showMessage('获取详情失败', 'error');
+            }
         }
 
         function closeDetailModal() {
@@ -428,7 +754,7 @@
             if (!confirm(`确定要${action}该知识吗？`)) return;
 
             try {
-                await apiPut(`/knowledge/${id}`, { is_active: item.is_active === false ? true : false });
+                await apiRequest(`/knowledge/${id}/toggle`, { method: 'PATCH' });
                 showMessage(`知识${action}成功`, 'success');
                 await loadKnowledge();
             } catch (error) {

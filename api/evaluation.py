@@ -196,7 +196,11 @@ def delete_evaluation_result(
 
 
 @router.get("/history")
-def get_evaluation_history(limit: int = 100, db: Session = Depends(get_db)):
+def get_evaluation_history(
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     获取所有评估历史记录（管理端用）
 
@@ -212,7 +216,12 @@ def get_evaluation_history(limit: int = 100, db: Session = Depends(get_db)):
 
 
 @router.get("/user/{user_id}/history")
-def get_user_evaluation_history(user_id: int, limit: int = 10, db: Session = Depends(get_db)):
+def get_user_evaluation_history(
+    user_id: int,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     获取用户评价历史
     
@@ -229,7 +238,11 @@ def get_user_evaluation_history(user_id: int, limit: int = 10, db: Session = Dep
 
 
 @router.get("/{result_id}")
-def get_evaluation_result(result_id: int, db: Session = Depends(get_db)):
+def get_evaluation_result(
+    result_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     获取评价结果
     

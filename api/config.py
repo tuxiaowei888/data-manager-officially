@@ -105,7 +105,7 @@ async def update_vip_limits(
     
     db.commit()
     
-    return ResponseModel(code=200, message="配置已更新")
+    return ResponseModel(status="success", message="配置已更新")
 
 
 @router.put("/{key}", response_model=ConfigItem)

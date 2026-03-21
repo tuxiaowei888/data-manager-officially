@@ -27,6 +27,7 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     user_type: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
 class UserResponse(BaseModel):
@@ -73,7 +74,7 @@ async def get_users(
     total = db.query(User).count()
     
     # 获取分页数据
-    users = db.query(User).order_by(User.id.desc()).offset(skip).limit(limit).all()
+    users = db.query(User).order_by(User.id.asc()).offset(skip).limit(limit).all()
     
     return {
         "total": total,
@@ -153,7 +154,9 @@ async def update_user(
         user.phone = user_data.phone
     if user_data.user_type:
         user.user_type = user_data.user_type
-    
+    if user_data.is_active is not None:
+        user.is_active = user_data.is_active
+
     db.commit()
     db.refresh(user)
     
@@ -209,7 +212,7 @@ async def delete_user(
     db.delete(user)
     db.commit()
     
-    return ResponseModel(code=200, message="用户已删除")
+    return ResponseModel(status="success", message="用户已删除")
 
 
 @router.post("/{user_id}/vip", response_model=ResponseModel)
@@ -229,7 +232,7 @@ async def set_user_vip(
     set_vip(user, data.days, db)
     
     return ResponseModel(
-        code=200,
+        status="success",
         message=f"已为用户 {user.username} 开通VIP {data.days} 天"
     )
 
@@ -241,15 +244,21 @@ async def revoke_user_vip(
     admin: User = Depends(check_admin)
 ):
     """取消用户VIP"""
-    from services.vip_service import revoke_user_vip as revoke_vip
-    
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="用户不存在")
-    
-    revoke_vip(user, db)
-    
-    return ResponseModel(
-        code=200,
-        message=f"已取消用户 {user.username} 的VIP"
-    )
+    try:
+        from services.vip_service import revoke_user_vip as revoke_vip_func
+
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="用户不存在")
+
+        revoke_vip_func(user, db)
+
+        return ResponseModel(
+            status="success",
+            message=f"已取消用户 {user.username} 的VIP"
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"取消VIP失败: {str(e)}")
