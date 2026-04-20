@@ -14,9 +14,6 @@ from models.knowledge_doc import KnowledgeDoc
 from schemas import KnowledgeDocCreate, KnowledgeDocResponse, ResponseModel
 from api.auth import check_admin
 from models.user import User
-from config.logging_config import get_logger
-
-logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/knowledge", tags=["知识库管理"])
 
@@ -64,7 +61,7 @@ def _run_vectorize_task(doc_ids: list):
                         _vectorize_status["fail"] += 1
                     _vectorize_status["processed"] += 1
             except Exception as e:
-                logger.error(f"[Vectorize] 文档 ID {doc.id} 处理失败：{e}")
+                print(f"[Vectorize] 文档ID {doc.id} 处理失败: {e}")
                 with _vectorize_lock:
                     _vectorize_status["fail"] += 1
                     _vectorize_status["processed"] += 1
@@ -297,6 +294,7 @@ def delete_document(doc_id: int, db: Session = Depends(get_db), admin: User = De
         raise
     except Exception as e:
         db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
         raise HTTPException(status_code=500, detail=f"删除失败：{str(e)}")
 
 
@@ -459,29 +457,26 @@ def search_documents(
 ):
     """
     搜索政策文档
-
+    
     V1.0 实现：简单的文本匹配
     V2.0 实现：语义检索
-
+    
     Args:
         keyword: 搜索关键词
     """
     from services.vector_store import vector_store
-
+    
     if vector_store.is_available():
         results = vector_store.search(keyword, top_k=10)
         return {
             "mode": "semantic",
             "results": results
         }
-
-    # 转义 SQL LIKE 特殊字符，防止通配符注入
-    escaped_keyword = keyword.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
-
+    
     docs = db.query(KnowledgeDoc).filter(
-        KnowledgeDoc.content.like(f"%{escaped_keyword}%", escape='\\')
+        KnowledgeDoc.content.like(f"%{keyword}%")
     ).all()
-
+    
     return {
         "mode": "keyword",
         "results": docs

@@ -4,7 +4,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from config.database import get_db
 from models.user import User
@@ -15,15 +15,15 @@ router = APIRouter(prefix="/api/v1/users", tags=["用户管理"])
 
 
 class UserCreate(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50, description="用户名，3-50字符")
-    password: str = Field(..., min_length=6, max_length=100, description="密码，至少6字符")
+    username: str
+    password: str
     email: Optional[str] = None
     phone: Optional[str] = None
     user_type: str = "client"
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = Field(None, min_length=3, max_length=50)
+    username: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     user_type: Optional[str] = None

@@ -1,45 +1,59 @@
-# Python 缓存文件
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# 虚拟环境
-venv/
-.venv/
+.Python
 env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# IDE 配置
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# 向量数据库（运行时生成）
-chroma_db/
-
-# 环境变量（包含敏感信息）
+# 环境变量
 .env
 .env.local
 
-# 日志文件
-*.log
-logs/
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# 临时文件
-*.tmp
-*.temp
-.cache/
-
-# 系统文件
+# 操作系统
 .DS_Store
 Thumbs.db
 
-# 测试覆盖率
-htmlcov/
-.coverage
+# 日志
+*.log
+logs/
 
-# 打包文件
-dist/
-build/
-*.egg-info/
+# 数据库备份
+database_backups/
+*.sql
+
+# 向量数据库（云端重新生成）
+chroma_db/
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 临时文件
+*.tmp
+*.bak

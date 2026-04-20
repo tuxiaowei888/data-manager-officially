@@ -1,6 +1,6 @@
 """
 评价服务模块 - 数维数据管家系统
-核心流程：规则库评分 → 知识库碰撞 → AI整体出报告
+核心流程：客户填写表单 → 规则库计算 → 知识库检索 → 调用AI API → 输出报告
 """
 from typing import Dict, List, Any, Optional
 from sqlalchemy.orm import Session
@@ -9,25 +9,27 @@ from datetime import datetime
 from models.rule_config import RuleConfig, DIMENSIONS
 from models.evaluation_result import EvaluationResult
 from services.rule_calculator import RuleCalculator
+from services.policy_retriever import PolicyRetriever
 from services.report_generator import ReportGenerator
-from services.knowledge_base_engine import KnowledgeBaseEngine
 
 
 class EvaluationService:
     """
     评价服务 - 核心评估引擎
-
-    核心三段式流程：
-    1. 规则库评分    → 31条规则计算，输出8维度得分
-    2. 知识库碰撞    → 向量检索+静态库，输出政策建议
-    3. AI整体出报告 → 三要素融合，输出7章诊断报告
+    
+    流程：
+    1. 客户填写表单 → 接收表单数据
+    2. 规则库计算 → 使用规则计算各维度得分
+    3. 知识库检索 → 检索相关政策/知识
+    4. 调用AI API → AI分析生成报告内容
+    5. 输出报告 → 生成完整评估报告
     """
-
+    
     def __init__(self, db: Session):
         self.db = db
         self.calculator = RuleCalculator()
+        self.policy_retriever = PolicyRetriever()
         self.report_generator = ReportGenerator()
-        self.knowledge_engine = KnowledgeBaseEngine()
     
     def evaluate(self, form_data: Dict[str, Any], user_id: int = None) -> Dict[str, Any]:
         """
@@ -207,35 +209,36 @@ class EvaluationService:
     
     def _retrieve_knowledge(self, rule_results: Dict[str, Any], form_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Step 3: 知识库碰撞（使用知识库碰撞引擎）
-
-        根据评估结果和表单数据，与知识库进行碰撞，
-        产出政策依据和改进建议。
-
-        V2.0: 使用统一的 KnowledgeBaseEngine
-        - 第一层：ChromaDB 向量语义检索
-        - 第二层：PolicyRetriever 静态文案库
+        Step 3: 知识库检索
+        根据评估结果和表单数据，检索相关知识库内容
+        
+        V2.0: 优先使用向量检索，降级到静态文案库
         """
-        dimension_scores = {
-            dim['code']: dim['score']
-            for dim in rule_results.get('dimensions', [])
-        }
-
-        collision_result = self.knowledge_engine.collide(dimension_scores)
-
         knowledge_results = {
-            'suggestions': collision_result.get('suggestions', {}),
+            'suggestions': {},
             'policies': [],
             'best_practices': [],
-            'collision_mode': collision_result.get('collision_mode'),
-            'metadata': collision_result.get('metadata', {})
+            'vector_results': []
         }
-
-        for policy in collision_result.get('policies', []):
-            content = policy.get('content', '')
-            if content:
-                knowledge_results['policies'].append(content)
-
+        
+        from services.vector_store import vector_store
+        
+        for dim in rule_results.get('dimensions', []):
+            dim_code = dim['code']
+            dim_score = dim['score']
+            dim_name = dim.get('name', dim_code)
+            
+            suggestions = self.policy_retriever.get_suggestions_by_score(dim_code, dim_score)
+            knowledge_results['suggestions'][dim_code] = suggestions
+            
+            if vector_store.is_available():
+                query = f"{dim_name}，得分{dim_score}分，数据资产化，合规管理"
+                results = vector_store.search(query, top_k=3)
+                if results:
+                    knowledge_results['vector_results'].extend(results)
+                    for r in results:
+                        knowledge_results['policies'].append(r.get('content', ''))
+        
         return knowledge_results
     
     def _call_ai_api(self, rule_results: Dict[str, Any], knowledge_results: Dict[str, Any], 

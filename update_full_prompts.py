@@ -1,8 +1,6 @@
 import pymysql
-from config.script_db import get_pymysql_connection
 
-# 使用安全的数据库连接，从环境变量读取配置
-conn = get_pymysql_connection()
+conn = pymysql.connect(host='localhost', user='root', password='root', database='shuwei_data_manager', charset='utf8mb4')
 cursor = conn.cursor()
 
 # 完整的系统提示词

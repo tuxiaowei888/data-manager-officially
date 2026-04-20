@@ -22,28 +22,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["用户认证"])
 # JWT 配置
 import os
 
-# 安全配置：SECRET_KEY必须从环境变量设置
-# 生产环境：必须设置强密码，建议使用 openssl rand -hex 32 生成
-# 开发环境：可以在 .env 文件中设置 SECRET_KEY
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    # 检查是否是开发环境（DEBUG模式）
-    DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-    if DEBUG:
-        # 开发环境：使用默认值但记录强烈警告
-        import warnings
-        warnings.warn(
-            "SECRET_KEY未设置，使用开发默认值。生产环境必须设置SECRET_KEY环境变量！",
-            UserWarning
-        )
-        SECRET_KEY = "dev-secret-key-please-change-in-production-12345678"
-    else:
-        # 生产环境：必须设置SECRET_KEY
-        raise ValueError(
-            "SECRET_KEY环境变量必须设置。请在.env文件中设置或使用环境变量。\n"
-            "生成命令: openssl rand -hex 32"
-        )
-
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-please-change-in-production-12345678")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7天
 

@@ -104,12 +104,8 @@ class KnowledgeDocResponse(BaseModel):
 
 # ============ 通用响应模型 ============
 
-from typing import Generic, TypeVar
-
-T = TypeVar('T')
-
-class ResponseModel(BaseModel, Generic[T]):
+class ResponseModel(BaseModel):
     """通用响应模型"""
-    code: int = 200
-    message: str = ""
-    data: Optional[T] = None
+    status: str
+    message: str
+    data: Optional[Any] = None

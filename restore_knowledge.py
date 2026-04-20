@@ -12,12 +12,16 @@ if match:
     data_section = match.group(1)
     print(f'数据区域长度: {len(data_section)}')
 
-    # 连接数据库 - 使用安全的数据库连接
-    from config.script_db import get_pymysql_connection
-    conn = get_pymysql_connection()
-    # 设置SQL模式
+    # 连接数据库
+    conn = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='root',
+        database='shuwei_data_manager',
+        charset='utf8mb4',
+        sql_mode='NO_ENGINE_SUBSTITUTION'
+    )
     cursor = conn.cursor()
-    cursor.execute("SET SESSION sql_mode='NO_ENGINE_SUBSTITUTION'")
 
     # 删除现有数据
     cursor.execute('DELETE FROM knowledge_docs')

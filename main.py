@@ -1,7 +1,6 @@
 """
 FastAPI 主应用 - 数维数据管家系统
 """
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -26,9 +25,6 @@ from api.customers import router as customers_router
 from api.ai_config import router as ai_config_router
 from api.prompt_templates import router as prompt_templates_router
 from api.permissions import router as permissions_router
-from api.datasets import router as datasets_router
-from api.org_profiles import router as org_profiles_router
-from api.subscription import router as subscription_router
 
 # 创建应用
 app = FastAPI(
@@ -42,18 +38,10 @@ app = FastAPI(
     }
 )
 
-# 配置 CORS - 从环境变量读取允许的来源
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080,http://localhost:8000")
-allowed_origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",") if origin.strip()]
-
-# 开发环境允许所有来源，生产环境限制具体域名
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-if DEBUG:
-    allowed_origins = ["*"]
-
+# 配置 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],  # 开发环境允许所有来源
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -75,9 +63,6 @@ app.include_router(customers_router)
 app.include_router(ai_config_router)
 app.include_router(prompt_templates_router)
 app.include_router(permissions_router)
-app.include_router(datasets_router)
-app.include_router(org_profiles_router)
-app.include_router(subscription_router)
 
 
 @app.get("/")
@@ -144,6 +129,120 @@ def register_page():
 def register_html_page():
     """注册页面"""
     return FileResponse("frontend/register.html")
+
+
+@app.get("/history")
+def history_page():
+    """历史报告页面"""
+    return FileResponse("frontend/history.html")
+
+
+@app.get("/admin")
+def admin_page():
+    """管理员首页"""
+    return FileResponse("frontend/admin.html")
+
+
+@app.get("/admin.html")
+def admin_html_page():
+    """管理员首页"""
+    return FileResponse("frontend/admin.html")
+
+
+@app.get("/rules")
+def rules_page():
+    """规则库管理页面"""
+    return FileResponse("frontend/rules.html")
+
+
+@app.get("/rules.html")
+def rules_html_page():
+    """规则库管理页面"""
+    return FileResponse("frontend/rules.html")
+
+
+@app.get("/knowledge")
+def knowledge_page():
+    """知识库管理页面"""
+    return FileResponse("frontend/knowledge.html")
+
+
+@app.get("/knowledge.html")
+def knowledge_html_page():
+    """知识库管理页面"""
+    return FileResponse("frontend/knowledge.html")
+
+
+@app.get("/users")
+def users_page():
+    """用户管理页面"""
+    return FileResponse("frontend/users.html")
+
+
+@app.get("/users.html")
+def users_html_page():
+    """用户管理页面"""
+    return FileResponse("frontend/users.html")
+
+
+@app.get("/config")
+def config_page():
+    """系统配置页面"""
+    return FileResponse("frontend/config.html")
+
+
+@app.get("/config.html")
+def config_html_page():
+    """系统配置页面"""
+    return FileResponse("frontend/config.html")
+
+
+@app.get("/test-btn.html")
+def test_btn_page():
+    """测试按钮页面"""
+    return FileResponse("frontend/test-btn.html")
+
+
+@app.get("/customers")
+def customers_page():
+    """客户管理页面"""
+    return FileResponse("frontend/customers.html")
+
+
+@app.get("/customers.html")
+def customers_html_page():
+    """客户管理页面"""
+    return FileResponse("frontend/customers.html")
+
+
+@app.get("/reports")
+def reports_page():
+    """报告管理页面"""
+    return FileResponse("frontend/reports.html")
+
+
+@app.get("/reports.html")
+def reports_html_page():
+    """报告管理页面"""
+    return FileResponse("frontend/reports.html")
+
+
+@app.get("/ai-config")
+def ai_config_page():
+    """AI配置管理页面"""
+    return FileResponse("frontend/ai_config.html")
+
+
+@app.get("/ai_config.html")
+def ai_config_html_page():
+    """AI配置管理页面"""
+    return FileResponse("frontend/ai_config.html")
+
+
+@app.get("/history")
+def history_page():
+    """历史记录页面"""
+    return FileResponse("frontend/history.html")
 
 
 @app.get("/history.html")

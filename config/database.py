@@ -2,38 +2,18 @@
 数据库配置模块 - 数维数据管家系统
 """
 import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config.logging_config import get_logger
 
-# 加载 .env 文件中的环境变量
-load_dotenv()
-
 logger = get_logger(__name__)
 
-# 数据库连接配置 - 从环境变量读取
-# 生产环境：必须设置 DATABASE_URL 环境变量
-# 开发环境：可以在 .env 文件中设置 DATABASE_URL 或使用默认值
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    # 检查是否是开发环境（DEBUG模式）
-    DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-    if DEBUG:
-        # 开发环境：使用默认值但记录警告
-        import warnings
-        warnings.warn(
-            "DATABASE_URL未设置，使用开发默认值。生产环境必须设置DATABASE_URL环境变量！",
-            UserWarning
-        )
-        DATABASE_URL = "mysql+pymysql://root:root@localhost:3306/shuwei_data_manager?charset=utf8mb4"
-    else:
-        # 生产环境：必须设置DATABASE_URL
-        raise ValueError(
-            "DATABASE_URL环境变量必须设置。请在.env文件中设置或使用环境变量。\n"
-            "格式: mysql+pymysql://用户名:密码@主机:端口/数据库名?charset=utf8mb4"
-        )
+# 数据库连接配置 - 从环境变量读取，提供默认值用于开发环境
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "mysql+pymysql://root:root@localhost:3306/shuwei_data_manager?charset=utf8mb4"
+)
 
 # 连接池配置
 POOL_SIZE = int(os.getenv("DB_POOL_SIZE", "10"))

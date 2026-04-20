@@ -12,13 +12,10 @@ import io
 import traceback
 
 from config.database import get_db
-from api.auth import get_current_user, check_admin
+from api.auth import get_current_user
 from models.user import User
 from models.evaluation_result import EvaluationResult
 from services.vip_service import check_user_can_evaluate, increment_eval_count, can_export_report
-from config.logging_config import get_logger
-
-logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/evaluation", tags=["评价服务"])
 
@@ -153,15 +150,15 @@ def download_evaluation_report(
     }
     
     try:
-        logger.info(f"[PDF] 开始生成报告，report_id: {result_id}, org_name: {org_name}")
+        print(f"[PDF] 开始生成报告，report_data: {report_data}")
         pdf_file = generate_report_pdf(report_data)
-        logger.info(f"[PDF] PDF 生成成功，report_id: {result_id}, 大小：{len(pdf_file.getvalue())} bytes")
+        print(f"[PDF] PDF生成成功，大小: {len(pdf_file.getvalue())} bytes")
     except Exception as e:
         import sys
         exc_info = sys.exc_info()
         error_details = ''.join(traceback.format_exception(*exc_info))
-        logger.error(f"[PDF] 生成失败，report_id: {result_id}, 错误：{error_details}")
-        raise HTTPException(status_code=500, detail=f"PDF 生成失败：{type(e).__name__}: {str(e)}")
+        print(f"[PDF] 生成失败: {error_details}")
+        raise HTTPException(status_code=500, detail=f"PDF生成失败：{type(e).__name__}: {str(e)}")
     
     filename = generate_pdf_filename(org_name, result_id)
     encoded_filename = quote(filename)
@@ -202,7 +199,7 @@ def delete_evaluation_result(
 def get_evaluation_history(
     limit: int = 100,
     db: Session = Depends(get_db),
-    admin: User = Depends(check_admin)
+    current_user: User = Depends(get_current_user)
 ):
     """
     获取所有评估历史记录（管理端用）

@@ -1,8 +1,6 @@
 import pymysql
-from config.script_db import get_pymysql_connection
 
-# 使用安全的数据库连接
-conn = get_pymysql_connection()
+conn = pymysql.connect(host='localhost', user='root', password='root', database='shuwei_data_manager', charset='utf8mb4')
 cursor = conn.cursor()
 
 system_prompt = '''# 你是数维数据管家系统的AI智能诊断专家
