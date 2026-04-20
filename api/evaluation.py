@@ -12,7 +12,7 @@ import io
 import traceback
 
 from config.database import get_db
-from api.auth import get_current_user
+from api.auth import get_current_user, check_admin
 from models.user import User
 from models.evaluation_result import EvaluationResult
 from services.vip_service import check_user_can_evaluate, increment_eval_count, can_export_report
@@ -199,7 +199,7 @@ def delete_evaluation_result(
 def get_evaluation_history(
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    admin: User = Depends(check_admin)
 ):
     """
     获取所有评估历史记录（管理端用）

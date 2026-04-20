@@ -473,8 +473,11 @@ def search_documents(
             "results": results
         }
     
+    # 转义 SQL LIKE 特殊字符，防止通配符注入
+    escaped_keyword = keyword.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+
     docs = db.query(KnowledgeDoc).filter(
-        KnowledgeDoc.content.like(f"%{keyword}%")
+        KnowledgeDoc.content.like(f"%{escaped_keyword}%", escape='\\')
     ).all()
     
     return {
