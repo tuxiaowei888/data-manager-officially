@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评估历史 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item active">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-clock-history"></i> 评估历史</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-list-ol"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCount">-</h3>
+                            <p>总评估次数</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="successCount">-</h3>
+                            <p>成功</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="failCount">-</h3>
+                            <p>失败</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="bi bi-bar-chart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgScore">-</h3>
+                            <p>平均评分</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-bar">
+                    <div class="search-input">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索客户名称、评估类型...">
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="filterStatus">
+                            <option value="">全部状态</option>
+                            <option value="completed">成功</option>
+                            <option value="failed">失败</option>
+                        </select>
+                        <label style="font-size: 12px; color: #999;">开始日期</label>
+                        <input type="date" class="filter-select" id="filterDateStart" style="width: 140px;">
+                        <label style="font-size: 12px; color: #999; margin-left: 8px;">结束日期</label>
+                        <input type="date" class="filter-select" id="filterDateEnd" style="width: 140px;">
+                        <button class="btn btn-primary" onclick="loadHistory()">
+                            <i class="bi bi-search"></i> 搜索
+                        </button>
+                        <button class="btn btn-success" onclick="exportHistory()">
+                            <i class="bi bi-download"></i> 导出
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">评估记录</span>
+                        <span id="historyCount">共 0 条</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>客户名称</th>
+                                        <th>评估类型</th>
+                                        <th>评分</th>
+                                        <th>风险等级</th>
+                                        <th>状态</th>
+                                        <th>耗时</th>
+                                        <th>评估时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <tr>
+                                        <td colspan="9" style="text-align: center; padding: 40px;">
+                                            <div class="loading-spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="modal-title">评估详情</h3>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detailContent">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 顶部栏粒子动画
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        let allHistory = [];
+        let filteredHistory = [];
+        let pagination = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            pagination = new Pagination({
+                pageSize: 10,
+                onPageChange: renderHistoryTable
+            });
+            paginationObj = pagination;
+
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loadHistory();
+            });
+
+            await loadHistory();
+        });
+
+        async function loadHistory() {
+            const tbody = document.getElementById('historyTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/evaluation/history');
+                allHistory = Array.isArray(response) ? response : (response.data || []);
+                allHistory = allHistory.map(h => ({
+                    id: h.id,
+                    customer_name: h.org_name || '-',
+                    company_name: h.org_name || '-',
+                    evaluation_type: '综合评估',
+                    score: h.total_score || '-',
+                    risk_level: h.risk_level || 'P2',
+                    status: h.status || 'completed',
+                    duration: '-',
+                    created_at: h.created_at || '-'
+                }));
+                updateStats();
+                filterHistory();
+            } catch (error) {
+                console.error('加载评估历史失败:', error);
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function updateStats() {
+            const total = allHistory.length;
+            const success = allHistory.filter(h => h.status === 'completed' || h.status === 'success').length;
+            const failed = total - success;
+            const scores = allHistory.filter(h => h.score != null).map(h => parseFloat(h.score));
+            const avgScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '-';
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('successCount').textContent = success;
+            document.getElementById('failCount').textContent = failed;
+            document.getElementById('avgScore').textContent = avgScore;
+        }
+
+        function filterHistory() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
+
+            filteredHistory = allHistory.filter(h => {
+                if (keyword) {
+                    const matchCustomer = (h.customer_name || h.company_name || '').toLowerCase().includes(keyword);
+                    const matchType = (h.evaluation_type || '').toLowerCase().includes(keyword);
+                    if (!matchCustomer && !matchType) return false;
+                }
+                if (status && h.status !== status) return false;
+
+                if (dateStart || dateEnd) {
+                    const evalDate = new Date(h.created_at || h.evaluation_time);
+                    if (dateStart && evalDate < new Date(dateStart)) return false;
+                    if (dateEnd && evalDate > new Date(dateEnd + 'T23:59:59')) return false;
+                }
+                return true;
+            });
+
+            document.getElementById('historyCount').textContent = `共 ${filteredHistory.length} 条`;
+            pagination.setTotal(filteredHistory.length);
+            pagination.render('pagination');
+            renderHistoryTable(1);
+        }
+
+        function renderHistoryTable(page) {
+            const tbody = document.getElementById('historyTableBody');
+            const start = (page - 1) * pagination.pageSize;
+            const end = start + pagination.pageSize;
+            const pageData = filteredHistory.slice(start, end);
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted" style="padding: 40px;">暂无评估记录</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageData.map(h => {
+                const isSuccess = h.status === 'completed' || h.status === 'success';
+                return `
+                    <tr>
+                        <td><strong>#${h.id}</strong></td>
+                        <td>${h.customer_name || h.company_name || '-'}</td>
+                        <td>${h.evaluation_type || '综合评估'}</td>
+                        <td><strong>${h.score || '-'}</strong></td>
+                        <td>${getRiskBadge(h.risk_level)}</td>
+                        <td>
+                            ${isSuccess
+                                ? '<span class="badge badge-success">成功</span>'
+                                : '<span class="badge badge-danger">失败</span>'}
+                        </td>
+                        <td>${h.duration ? h.duration + 's' : '-'}</td>
+                        <td>${formatDate(h.created_at || h.evaluation_time)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-secondary" onclick="viewHistoryDetail(${h.id})" title="查看详情">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function viewHistoryDetail(id) {
+            const item = allHistory.find(h => h.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('detailModal');
+            const modalContent = modal.querySelector('.modal');
+
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99999; align-items: center; justify-content: center;';
+            modalContent.style.cssText = 'display: block !important; background: white; border-radius: 12px; padding: 20px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; z-index: 100000; position: relative; margin: auto;';
+            modalContent.onclick = function(e) { e.stopPropagation(); };
+            modal.onclick = function(e) { if (e.target === modal) closeDetailModal(); };
+
+            const content = document.getElementById('detailContent');
+            const isSuccess = item.status === 'completed' || item.status === 'success';
+
+            let dimensionsHtml = '';
+            if (item.dimensions && typeof item.dimensions === 'object') {
+                dimensionsHtml = Object.entries(item.dimensions).map(([key, value]) => `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <span>${key}</span>
+                        <strong>${value}</strong>
+                    </div>
+                `).join('');
+            } else if (item.dimensions) {
+                dimensionsHtml = `<pre style="white-space: pre-wrap;">${typeof item.dimensions === 'string' ? item.dimensions : JSON.stringify(item.dimensions, null, 2)}</pre>`;
+            }
+
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">评估ID</label>
+                        <div class="form-control" style="background: var(--bg-primary);">#${item.id}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">客户名称</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${item.customer_name || item.company_name || '-'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评估类型</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${item.evaluation_type || '综合评估'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评分</label>
+                        <div class="form-control" style="background: var(--bg-primary);"><strong class="fs-5">${item.score || '-'}</strong></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">风险等级</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${getRiskBadge(item.risk_level)}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">状态</label>
+                        <div class="form-control" style="background: var(--bg-primary);">
+                            ${isSuccess
+                                ? '<span class="badge badge-success">成功</span>'
+                                : '<span class="badge badge-danger">失败</span>'}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评估耗时</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${item.duration ? item.duration + ' 秒' : '-'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评估时间</label>
+                        <div class="form-control" style="background: var(--bg-primary);">${formatDate(item.created_at || item.evaluation_time)}</div>
+                    </div>
+                </div>
+                ${item.error_message || item.error ? `
+                <div class="form-group mt-3">
+                    <label class="form-label text-danger">错误信息</label>
+                    <div class="form-control" style="background: #fff5f5; color: var(--danger-color); min-height: 60px;">${item.error_message || item.error}</div>
+                </div>
+                ` : ''}
+                ${dimensionsHtml ? `
+                <div class="form-group mt-3">
+                    <label class="form-label">评估维度详情</label>
+                    <div style="background: var(--bg-primary); padding: 15px; border-radius: var(--radius);">
+                        ${dimensionsHtml}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            const modalContent = modal.querySelector('.modal');
+            modal.style.cssText = 'display: none !important;';
+            modalContent.style.cssText = '';
+        }
+
+        function exportHistory() {
+            if (filteredHistory.length === 0) {
+                showMessage('没有可导出的记录', 'warning');
+                return;
+            }
+
+            try {
+                const exportData = filteredHistory.map(h => ({
+                    评估ID: h.id,
+                    客户名称: h.customer_name || h.company_name,
+                    评估类型: h.evaluation_type || '综合评估',
+                    评分: h.score,
+                    风险等级: h.risk_level,
+                    状态: (h.status === 'completed' || h.status === 'success') ? '成功' : '失败',
+                    耗时: h.duration ? h.duration + '秒' : '-',
+                    评估时间: formatDate(h.created_at || h.evaluation_time)
+                }));
+
+                const worksheet = XLSX.utils.json_to_sheet(exportData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, '评估历史');
+
+                const colWidths = [
+                    { wch: 10 },
+                    { wch: 25 },
+                    { wch: 15 },
+                    { wch: 10 },
+                    { wch: 12 },
+                    { wch: 10 },
+                    { wch: 12 },
+                    { wch: 20 }
+                ];
+                worksheet['!cols'] = colWidths;
+
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `evaluation_history_${Date.now()}.xlsx`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showMessage('导出成功', 'success');
+            } catch (error) {
+                showMessage('导出失败: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

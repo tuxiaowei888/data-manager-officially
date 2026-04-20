@@ -16,6 +16,11 @@ from config.database import engine, Base, SessionLocal
 from models.rule_config import RuleConfig
 from models.evaluation_result import EvaluationResult
 from models.knowledge_doc import KnowledgeDoc
+from models.user import User
+from models.channel import Channel
+from models.ai_config import AIConfig
+from models.knowledge_category import KnowledgeCategory
+from models.system_config import SystemConfig
 
 
 def create_tables():

@@ -2,8 +2,9 @@
 知识库管理 API - 数维数据管家系统
 提供政策文档的上传、查询功能
 """
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, Form, BackgroundTasks
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 import threading
 import time
@@ -13,6 +14,9 @@ from models.knowledge_doc import KnowledgeDoc
 from schemas import KnowledgeDocCreate, KnowledgeDocResponse, ResponseModel
 from api.auth import check_admin
 from models.user import User
+from config.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/knowledge", tags=["知识库管理"])
 
@@ -60,7 +64,7 @@ def _run_vectorize_task(doc_ids: list):
                         _vectorize_status["fail"] += 1
                     _vectorize_status["processed"] += 1
             except Exception as e:
-                print(f"[Vectorize] 文档ID {doc.id} 处理失败: {e}")
+                logger.error(f"[Vectorize] 文档 ID {doc.id} 处理失败：{e}")
                 with _vectorize_lock:
                     _vectorize_status["fail"] += 1
                     _vectorize_status["processed"] += 1
@@ -72,6 +76,13 @@ def _run_vectorize_task(doc_ids: list):
         with _vectorize_lock:
             _vectorize_status["is_running"] = False
             _vectorize_status["end_time"] = time.time()
+
+
+@router.get("/stats")
+def get_knowledge_stats(db: Session = Depends(get_db)):
+    """获取知识库统计"""
+    count = db.query(KnowledgeDoc).filter(KnowledgeDoc.is_active == True).count()
+    return {"total": count, "active": count}
 
 
 @router.get("")
@@ -87,7 +98,7 @@ def get_all_documents(
         category_id: 按目录分类筛选
         keyword: 按关键词搜索
     """
-    query = db.query(KnowledgeDoc).filter(KnowledgeDoc.is_active == True)
+    query = db.query(KnowledgeDoc)
     
     if category_id:
         query = query.filter(KnowledgeDoc.category_id == category_id)
@@ -95,18 +106,20 @@ def get_all_documents(
     if keyword:
         query = query.filter(KnowledgeDoc.title.contains(keyword))
     
-    docs = query.order_by(KnowledgeDoc.created_at.desc()).all()
-    
+    docs = query.order_by(KnowledgeDoc.display_order.asc()).all()
+
     return [
         {
             "id": d.id,
             "category_id": d.category_id,
+            "display_order": d.display_order,
             "doc_type": d.doc_type,
             "title": d.title,
             "content": d.content[:500] + "..." if d.content and len(d.content) > 500 else d.content,
             "source": d.source,
             "is_active": d.is_active,
-            "created_at": d.created_at.strftime('%Y-%m-%d %H:%M') if d.created_at else None
+            "created_at": d.created_at.strftime('%Y-%m-%d %H:%M') if d.created_at else None,
+            "updated_at": d.updated_at.strftime('%Y-%m-%d %H:%M') if d.updated_at else None
         }
         for d in docs
     ]
@@ -133,7 +146,8 @@ def get_document(doc_id: int, db: Session = Depends(get_db)):
         "content": doc.content,
         "source": doc.source,
         "is_active": doc.is_active,
-        "created_at": doc.created_at.strftime('%Y-%m-%d %H:%M') if doc.created_at else None
+        "created_at": doc.created_at.strftime('%Y-%m-%d %H:%M') if doc.created_at else None,
+        "updated_at": doc.updated_at.strftime('%Y-%m-%d %H:%M') if doc.updated_at else None
     }
 
 
@@ -141,17 +155,20 @@ def get_document(doc_id: int, db: Session = Depends(get_db)):
 def create_document(doc_data: KnowledgeDocCreate, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
     """
     创建政策文档
-    
+
     管理员可以上传政策文档
     """
+    max_order = db.query(func.max(KnowledgeDoc.display_order)).scalar() or 0
+
     doc = KnowledgeDoc(
         title=doc_data.title,
         category_id=doc_data.category_id,
         content=doc_data.content,
         source=doc_data.source,
-        is_active=True
+        is_active=True,
+        display_order=max_order + 1
     )
-    
+
     db.add(doc)
     db.commit()
     db.refresh(doc)
@@ -171,6 +188,71 @@ def create_document(doc_data: KnowledgeDocCreate, db: Session = Depends(get_db),
         "content": doc.content[:500] + "..." if doc.content and len(doc.content) > 500 else doc.content,
         "source": doc.source,
         "is_active": doc.is_active,
+        "created_at": doc.created_at.strftime('%Y-%m-%d %H:%M') if doc.created_at else None,
+        "updated_at": doc.updated_at.strftime('%Y-%m-%d %H:%M') if doc.updated_at else None
+    }
+
+
+@router.patch("/{doc_id}/toggle")
+def toggle_document_status(
+    doc_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(check_admin)
+):
+    """
+    切换文档状态（启用/禁用）
+
+    Args:
+        doc_id: 文档 ID
+    """
+    doc = db.query(KnowledgeDoc).filter(KnowledgeDoc.id == doc_id).first()
+
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"文档不存在：{doc_id}")
+
+    doc.is_active = not doc.is_active
+    db.commit()
+
+    return {
+        "id": doc.id,
+        "is_active": doc.is_active,
+        "message": f"文档已{'启用' if doc.is_active else '禁用'}"
+    }
+
+
+@router.put("/{doc_id}")
+def update_document(
+    doc_id: int, 
+    doc_data: KnowledgeDocCreate, 
+    db: Session = Depends(get_db), 
+    admin: User = Depends(check_admin)
+):
+    """
+    更新政策文档
+
+    Args:
+        doc_id: 文档 ID
+    """
+    doc = db.query(KnowledgeDoc).filter(KnowledgeDoc.id == doc_id).first()
+    
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"文档不存在：{doc_id}")
+    
+    doc.title = doc_data.title
+    doc.category_id = doc_data.category_id
+    doc.content = doc_data.content
+    doc.source = doc_data.source
+    
+    db.commit()
+    db.refresh(doc)
+    
+    return {
+        "id": doc.id,
+        "category_id": doc.category_id,
+        "title": doc.title,
+        "content": doc.content[:500] + "..." if doc.content and len(doc.content) > 500 else doc.content,
+        "source": doc.source,
+        "is_active": doc.is_active,
         "created_at": doc.created_at.strftime('%Y-%m-%d %H:%M') if doc.created_at else None
     }
 
@@ -179,23 +261,33 @@ def create_document(doc_data: KnowledgeDocCreate, db: Session = Depends(get_db),
 def delete_document(doc_id: int, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
     """
     删除政策文档
-    
+
     Args:
         doc_id: 文档 ID
     """
     try:
         doc = db.query(KnowledgeDoc).filter(KnowledgeDoc.id == doc_id).first()
-        
+
         if not doc:
             raise HTTPException(status_code=404, detail=f"文档不存在：{doc_id}")
-        
+
+        deleted_order = doc.display_order
+
         db.delete(doc)
+
+        db.query(KnowledgeDoc).filter(
+            KnowledgeDoc.display_order > deleted_order
+        ).update(
+            {KnowledgeDoc.display_order: KnowledgeDoc.display_order - 1},
+            synchronize_session=False
+        )
+
         db.commit()
-        
+
         from services.vector_store import vector_store
         if vector_store.is_available():
             vector_store.delete_document(str(doc_id))
-        
+
         return ResponseModel(
             status="success",
             message=f"文档已删除：{doc_id}",
@@ -208,13 +300,69 @@ def delete_document(doc_id: int, db: Session = Depends(get_db), admin: User = De
         raise HTTPException(status_code=500, detail=f"删除失败：{str(e)}")
 
 
+@router.post("/preview")
+async def preview_document(
+    file: UploadFile = File(...),
+):
+    """
+    预览文档内容（解析文件但不保存）
+
+    支持 .txt, .md, .doc, .docx, .pdf 格式
+    """
+    import io
+    from PyPDF2 import PdfReader
+
+    content = await file.read()
+    filename = file.filename.lower() if file.filename else ""
+    content_text = ""
+
+    try:
+        if filename.endswith('.pdf'):
+            pdf_reader = PdfReader(io.BytesIO(content))
+            for page in pdf_reader.pages:
+                text = page.extract_text()
+                if text:
+                    content_text += text + "\n\n"
+        elif filename.endswith('.docx') or filename.endswith('.doc'):
+            try:
+                from docx import Document
+                doc = Document(io.BytesIO(content))
+                for para in doc.paragraphs:
+                    text = para.text.strip()
+                    if text:
+                        content_text += text + "\n\n"
+            except ImportError:
+                raise HTTPException(status_code=500, detail="服务器未安装python-docx库，无法解析Word文件")
+        else:
+            try:
+                content_text = content.decode('utf-8')
+            except UnicodeDecodeError:
+                try:
+                    content_text = content.decode('gbk')
+                except:
+                    content_text = content.decode('utf-8', errors='ignore')
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"文件解析失败：{str(e)}")
+
+    if not content_text.strip():
+        raise HTTPException(status_code=400, detail="文件内容为空或无法解析")
+
+    return {
+        "filename": file.filename,
+        "content": content_text[:5000] if len(content_text) > 5000 else content_text,
+        "truncated": len(content_text) > 5000
+    }
+
+
 @router.post("/upload")
 async def upload_document(
-    title: str,
+    title: str = Form(..., description="文档标题"),
     file: UploadFile = File(...),
-    category_id: Optional[int] = Query(None, description="目录分类ID"),
-    doc_type: Optional[str] = Query(None, description="文档类型"),
-    source: Optional[str] = Query(None, description="来源"),
+    category_id: Optional[int] = Form(None, description="目录分类ID"),
+    source: Optional[str] = Form(None, description="来源"),
     db: Session = Depends(get_db),
     admin: User = Depends(check_admin)
 ):
@@ -274,7 +422,6 @@ async def upload_document(
     doc = KnowledgeDoc(
         title=title,
         category_id=category_id,
-        doc_type=doc_type,
         content=content_text,
         source=source or file.filename,
         is_active=True
@@ -300,7 +447,8 @@ async def upload_document(
         "content": doc.content[:500] + "..." if len(doc.content) > 500 else doc.content,
         "source": doc.source,
         "is_active": doc.is_active,
-        "created_at": doc.created_at.strftime('%Y-%m-%d %H:%M') if doc.created_at else None
+        "created_at": doc.created_at.strftime('%Y-%m-%d %H:%M') if doc.created_at else None,
+        "updated_at": doc.updated_at.strftime('%Y-%m-%d %H:%M') if doc.updated_at else None
     }
 
 
@@ -311,26 +459,29 @@ def search_documents(
 ):
     """
     搜索政策文档
-    
+
     V1.0 实现：简单的文本匹配
     V2.0 实现：语义检索
-    
+
     Args:
         keyword: 搜索关键词
     """
     from services.vector_store import vector_store
-    
+
     if vector_store.is_available():
         results = vector_store.search(keyword, top_k=10)
         return {
             "mode": "semantic",
             "results": results
         }
-    
+
+    # 转义 SQL LIKE 特殊字符，防止通配符注入
+    escaped_keyword = keyword.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+
     docs = db.query(KnowledgeDoc).filter(
-        KnowledgeDoc.content.like(f"%{keyword}%")
+        KnowledgeDoc.content.like(f"%{escaped_keyword}%", escape='\\')
     ).all()
-    
+
     return {
         "mode": "keyword",
         "results": docs

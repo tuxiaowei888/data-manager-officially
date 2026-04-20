@@ -9,17 +9,14 @@ from config.database import Base
 
 
 DIMENSIONS = {
-    "C": {"name": "合规与安全", "color": "#FF6B6B", "weight": 25},
-    "CO": {"name": "合规与安全", "color": "#FF6B6B", "weight": 25},
-    "Q": {"name": "数据质量", "color": "#4ECDC4", "weight": 20},
-    "V": {"name": "价值评估", "color": "#45B7D1", "weight": 20},
+    "C": {"name": "合规与安全", "color": "#FF6B6B", "weight": 20},
+    "Q": {"name": "数据质量", "color": "#4ECDC4", "weight": 15},
     "O": {"name": "权属确认", "color": "#96CEB4", "weight": 15},
-    "M": {"name": "管理体系", "color": "#96CEB4", "weight": 15},
+    "V": {"name": "价值评估", "color": "#45B7D1", "weight": 20},
+    "M": {"name": "管理体系", "color": "#9B59B6", "weight": 10},
     "L": {"name": "流通能力", "color": "#FFEAA7", "weight": 10},
-    "P": {"name": "发展潜力", "color": "#DDA0DD", "weight": 10},
-    "G": {"name": "治理质量", "color": "#4ECDC4", "weight": 20},
-    "R": {"name": "确权与权属", "color": "#96CEB4", "weight": 15},
-    "S": {"name": "成本计量", "color": "#FFEAA7", "weight": 10}
+    "P": {"name": "发展潜力", "color": "#DDA0DD", "weight": 5},
+    "S": {"name": "成本计量", "color": "#3498DB", "weight": 5}
 }
 
 

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>规则库管理 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+    <style>
+        .rule-dimension { font-weight: 500; }
+        .dimension-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .dimension-C { background: #e3f2fd; color: #1565c0; }
+        .dimension-Q { background: #e8f5e9; color: #2e7d32; }
+        .dimension-O { background: #fff3e0; color: #e65100; }
+        .dimension-V { background: #fff8e1; color: #f9a825; }
+        .dimension-S { background: #fce4ec; color: #c2185b; }
+        .dimension-M { background: #e0f7fa; color: #00838f; }
+        .dimension-L { background: #e1f5fe; color: #0277bd; }
+        .dimension-P { background: #f3e5f5; color: #7b1fa2; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item active">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 主内容 -->
+        <main class="main-content">
+            <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-list-check"></i> 规则库管理</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- 搜索和筛选 -->
+                <div class="search-bar">
+                    <div class="search-input">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索规则名称...">
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="filterDimension">
+                            <option value="">全部维度</option>
+                            <option value="C">C - 合规与安全</option>
+                            <option value="CO">CO - 治理与质量</option>
+                            <option value="Q">Q - 数据质量</option>
+                            <option value="V">V - 价值评估</option>
+                            <option value="O">O - 权属确认</option>
+                            <option value="M">M - 管理体系</option>
+                            <option value="L">L - 流通能力</option>
+                            <option value="P">P - 发展潜力</option>
+                            <option value="G">G - 治理质量</option>
+                            <option value="R">R - 确权与权责</option>
+                            <option value="S">S - 成本计量</option>
+                            <option value="D">D - 数据治理</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadRules()">
+                            <i class="bi bi-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 规则列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">评估规则列表</span>
+                        <button class="btn btn-success" onclick="openModal()">
+                            <i class="bi bi-plus-lg"></i> 新建规则
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>规则名称</th>
+                                        <th>维度</th>
+                                        <th>权重</th>
+                                        <th>风险阈值</th>
+                                        <th>状态</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesTableBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 40px;">
+                                            <div class="loading-spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新建/编辑模态框 -->
+    <div class="modal-overlay" id="ruleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">新建规则</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="ruleForm">
+                    <input type="hidden" id="ruleId">
+                    <div id="formError" class="alert alert-danger" style="display: none;"></div>
+                    <div class="form-group">
+                        <label class="form-label">规则名称 *</label>
+                        <input type="text" class="form-control" id="ruleName" required placeholder="请输入规则名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">维度 *</label>
+                        <select class="form-control" id="dimensionCode" required>
+                            <option value="">请选择维度</option>
+                            <option value="C">C - 合规与安全</option>
+                            <option value="CO">CO - 治理与质量</option>
+                            <option value="Q">Q - 数据质量</option>
+                            <option value="V">V - 价值评估</option>
+                            <option value="O">O - 权属确认</option>
+                            <option value="M">M - 管理体系</option>
+                            <option value="L">L - 流通能力</option>
+                            <option value="P">P - 发展潜力</option>
+                            <option value="G">G - 治理质量</option>
+                            <option value="R">R - 确权与权责</option>
+                            <option value="S">S - 成本计量</option>
+                            <option value="D">D - 数据治理</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">权重 (%) *</label>
+                        <input type="number" class="form-control" id="weight" required min="0" max="100" value="10" placeholder="0-100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">风险阈值</label>
+                        <input type="number" class="form-control" id="riskThreshold" min="0" max="100" value="60" placeholder="风险阈值">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">逻辑表达式</label>
+                        <textarea class="form-control" id="logicExpression" rows="3" placeholder="可选，评估时使用的逻辑表达式"></textarea>
+                        <small class="form-text text-muted">格式示例：score > 60 AND dimension_C > 50</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveRule()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 顶部栏粒子动画
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        let allRules = [];
+        let filteredRules = [];
+        let pagination = null;
+
+        const dimensionNames = {
+            'C': '合规与安全',
+            'CO': '治理与质量',
+            'Q': '数据质量',
+            'V': '价值评估',
+            'O': '权属确认',
+            'M': '管理体系',
+            'L': '流通能力',
+            'P': '发展潜力',
+            'G': '治理质量',
+            'R': '确权与权责',
+            'S': '成本计量',
+            'D': '数据治理'
+        };
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            pagination = new Pagination({
+                pageSize: 10,
+                onPageChange: renderRulesTable
+            });
+            paginationObj = pagination;
+
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') filterRules();
+            });
+
+            await loadRules();
+        });
+
+        async function loadRules() {
+            const tbody = document.getElementById('rulesTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/rules');
+                const rulesData = response.data || response || [];
+                allRules = Array.isArray(rulesData) ? rulesData : [];
+                filterRules();
+            } catch (error) {
+                console.error('加载规则失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function filterRules() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const dimension = document.getElementById('filterDimension').value;
+
+            filteredRules = allRules.filter(r => {
+                if (keyword && !(r.rule_name || '').toLowerCase().includes(keyword)) {
+                    return false;
+                }
+                if (dimension && r.dimension_code !== dimension) {
+                    return false;
+                }
+                return true;
+            });
+
+            pagination.setTotal(filteredRules.length);
+            pagination.render('pagination');
+            renderRulesTable(1);
+        }
+
+        function renderRulesTable(page) {
+            const tbody = document.getElementById('rulesTableBody');
+            const start = (page - 1) * pagination.pageSize;
+            const end = start + pagination.pageSize;
+            const pageRules = filteredRules.slice(start, end);
+
+            if (pageRules.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding: 40px;">暂无规则数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageRules.map(r => `
+                <tr>
+                    <td>${r.id}</td>
+                    <td><strong>${r.rule_name || '-'}</strong></td>
+                    <td><span class="dimension-badge dimension-${r.dimension_code || 'C'}">${r.dimension_code || '-'} - ${dimensionNames[r.dimension_code] || ''}</span></td>
+                    <td><strong>${r.weight || 0}%</strong></td>
+                    <td>${r.risk_threshold || '-'}</td>
+                    <td>
+                        <span class="status-badge ${r.is_active ? 'active' : 'inactive'}">
+                            ${r.is_active ? '启用' : '禁用'}
+                        </span>
+                    </td>
+                    <td>${formatDate(r.created_at)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="editRule(${r.id})" title="编辑">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm ${r.is_active ? 'btn-warning' : 'btn-success'}" onclick="toggleRule(${r.id}, ${!r.is_active})" title="${r.is_active ? '禁用' : '启用'}">
+                                <i class="bi bi-${r.is_active ? 'pause' : 'play'}"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRule(${r.id})" title="删除">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openModal(ruleId = null) {
+            const modal = document.getElementById('ruleModal');
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99999; align-items: center; justify-content: center;';
+
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.style.cssText = 'background: white; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; z-index: 100000; position: relative; margin: auto; display: block !important;';
+                modalContent.onclick = function(e) { e.stopPropagation(); };
+            }
+
+            modal.onclick = function(e) {
+                if (e.target === modal) closeModal();
+            };
+
+            document.getElementById('ruleForm').reset();
+            document.getElementById('ruleId').value = '';
+            document.getElementById('modalTitle').textContent = '新建规则';
+
+            if (ruleId) {
+                const rule = allRules.find(r => r.id === ruleId);
+                if (rule) {
+                    document.getElementById('ruleId').value = rule.id;
+                    document.getElementById('ruleName').value = rule.rule_name || '';
+                    document.getElementById('dimensionCode').value = rule.dimension_code || '';
+                    document.getElementById('weight').value = rule.weight || 10;
+                    document.getElementById('riskThreshold').value = rule.risk_threshold || 60;
+                    document.getElementById('logicExpression').value = rule.logic_expression || '';
+                    document.getElementById('modalTitle').textContent = '编辑规则';
+                }
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('ruleModal');
+            modal.style.cssText = 'display: none !important;';
+        }
+
+        function editRule(id) {
+            openModal(id);
+        }
+
+        function showFormError(msg) {
+            const errEl = document.getElementById('formError');
+            errEl.textContent = msg;
+            errEl.style.display = 'block';
+        }
+
+        function hideFormError() {
+            document.getElementById('formError').style.display = 'none';
+        }
+
+        function showFormSuccess(msg) {
+            const errEl = document.getElementById('formError');
+            errEl.textContent = msg;
+            errEl.className = 'alert alert-success';
+            errEl.style.display = 'block';
+        }
+
+        async function saveRule() {
+            hideFormError();
+            const ruleId = document.getElementById('ruleId').value;
+            const data = {
+                rule_name: document.getElementById('ruleName').value,
+                dimension_code: document.getElementById('dimensionCode').value,
+                weight: parseFloat(document.getElementById('weight').value) || 10,
+                risk_threshold: parseFloat(document.getElementById('riskThreshold').value) || 60,
+                logic_expression: document.getElementById('logicExpression').value,
+                is_active: true
+            };
+
+            if (!data.rule_name || !data.dimension_code) {
+                showFormError('请填写必填项（规则名称和维度）');
+                return;
+            }
+
+            try {
+                if (ruleId) {
+                    await apiPut(`/rules/${ruleId}`, data);
+                    showFormSuccess('规则更新成功！');
+                } else {
+                    await apiPost('/rules', data);
+                    showFormSuccess('规则创建成功！');
+                }
+                setTimeout(() => {
+                    closeModal();
+                    loadRules();
+                }, 1000);
+            } catch (error) {
+                console.error('保存规则失败:', error);
+                showFormError('保存失败: ' + error.message);
+            }
+        }
+
+        async function toggleRule(id, isActive) {
+            try {
+                await apiPut(`/rules/${id}`, { is_active: isActive });
+                showMessage(isActive ? '规则已启用' : '规则已禁用', 'success');
+                await loadRules();
+            } catch (error) {
+                console.error('切换规则状态失败:', error);
+                showMessage('操作失败: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteRule(id) {
+            if (!confirm('确定要删除这条规则吗？')) return;
+
+            try {
+                await apiDelete(`/rules/${id}`);
+                showMessage('规则删除成功', 'success');
+                await loadRules();
+            } catch (error) {
+                console.error('删除规则失败:', error);
+                showMessage('删除失败: ' + error.message, 'error');
+            }
+        }
+
+        document.getElementById('ruleModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

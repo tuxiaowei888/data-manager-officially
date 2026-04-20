@@ -12,10 +12,13 @@ import io
 import traceback
 
 from config.database import get_db
-from api.auth import get_current_user
+from api.auth import get_current_user, check_admin
 from models.user import User
 from models.evaluation_result import EvaluationResult
 from services.vip_service import check_user_can_evaluate, increment_eval_count, can_export_report
+from config.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/evaluation", tags=["评价服务"])
 
@@ -150,15 +153,15 @@ def download_evaluation_report(
     }
     
     try:
-        print(f"[PDF] 开始生成报告，report_data: {report_data}")
+        logger.info(f"[PDF] 开始生成报告，report_id: {result_id}, org_name: {org_name}")
         pdf_file = generate_report_pdf(report_data)
-        print(f"[PDF] PDF生成成功，大小: {len(pdf_file.getvalue())} bytes")
+        logger.info(f"[PDF] PDF 生成成功，report_id: {result_id}, 大小：{len(pdf_file.getvalue())} bytes")
     except Exception as e:
         import sys
         exc_info = sys.exc_info()
         error_details = ''.join(traceback.format_exception(*exc_info))
-        print(f"[PDF] 生成失败: {error_details}")
-        raise HTTPException(status_code=500, detail=f"PDF生成失败：{type(e).__name__}: {str(e)}")
+        logger.error(f"[PDF] 生成失败，report_id: {result_id}, 错误：{error_details}")
+        raise HTTPException(status_code=500, detail=f"PDF 生成失败：{type(e).__name__}: {str(e)}")
     
     filename = generate_pdf_filename(org_name, result_id)
     encoded_filename = quote(filename)
@@ -195,8 +198,33 @@ def delete_evaluation_result(
         raise HTTPException(status_code=404, detail=str(e))
 
 
+@router.get("/history")
+def get_evaluation_history(
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    admin: User = Depends(check_admin)
+):
+    """
+    获取所有评估历史记录（管理端用）
+
+    Args:
+        limit: 返回数量限制
+    """
+    from services.evaluation import EvaluationService
+
+    service = EvaluationService(db)
+    results = service.get_all_results(limit)
+
+    return results
+
+
 @router.get("/user/{user_id}/history")
-def get_user_evaluation_history(user_id: int, limit: int = 10, db: Session = Depends(get_db)):
+def get_user_evaluation_history(
+    user_id: int,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     获取用户评价历史
     
@@ -213,7 +241,11 @@ def get_user_evaluation_history(user_id: int, limit: int = 10, db: Session = Dep
 
 
 @router.get("/{result_id}")
-def get_evaluation_result(result_id: int, db: Session = Depends(get_db)):
+def get_evaluation_result(
+    result_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     获取评价结果
     

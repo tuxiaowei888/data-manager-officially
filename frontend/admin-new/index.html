@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家 - 管理后台</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+    <style>
+        .welcome-section {
+            background: #0f2847;
+            color: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+        }
+        .welcome-section canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+        .welcome-section h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .welcome-section p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        .chart-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+        .chart-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="index.html" class="nav-item active" data-page="dashboard">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item" data-page="customers">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item" data-page="reports">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item" data-page="rules">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item" data-page="ai">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item" data-page="knowledge">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item" data-page="users">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item" data-page="vip">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item" data-page="history">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 主内容 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="topbar topbar-original">
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-speedometer2"></i> 仪表盘</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <div class="page-content">
+                <!-- 欢迎区域 -->
+                <div class="welcome-section">
+                    <canvas id="welcome-particles"></canvas>
+                    <div class="welcome-content">
+                        <h1>欢迎回来，<span id="welcomeName">管理员</span></h1>
+                        <p>今天是 <span id="todayDate"></span>，以下是系统概览</p>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCustomers">0</h3>
+                            <p>客户总数</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalReports">0</h3>
+                            <p>评估报告</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalKnowledge">0</h3>
+                            <p>知识库</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="bi bi-list-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalRules">0</h3>
+                            <p>评估规则</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUsers">0</h3>
+                            <p>注册用户</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>客户评分分布</h3>
+                        <div class="chart-container"><canvas id="scoreChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>风险等级分布</h3>
+                        <div class="chart-container"><canvas id="riskChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            const config = {
+                particleCount: 50,
+                particleRadius: 2,
+                lineDistance: 80,
+                particleColor: '0, 210, 255'
+            };
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.6;
+                    this.vy = (Math.random() - 0.5) * 0.6;
+                    this.radius = Math.random() * 2 + 1;
+                    this.glow = Math.random() * 8 + 5;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`;
+                    ctx.shadowBlur = this.glow;
+                    ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+
+            function resize() {
+                width = canvas.width = canvas.offsetWidth;
+                height = canvas.height = canvas.offsetHeight;
+            }
+
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < config.lineDistance) {
+                            const opacity = (1 - distance / config.lineDistance) * 0.3;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                drawConnections();
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            function init() {
+                resize();
+                particles = [];
+                for (let i = 0; i < config.particleCount; i++) {
+                    particles.push(new Particle());
+                }
+                animate();
+            }
+
+            window.addEventListener('resize', resize);
+            init();
+        })();
+
+        // 欢迎区域粒子动画
+        (function initWelcomeParticles() {
+            const canvas = document.getElementById('welcome-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 全局图表对象
+        let scoreChart = null;
+        let riskChart = null;
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 检查登录
+            const user = checkAuth();
+            if (!user) return;
+
+            // 显示用户信息
+            document.getElementById('welcomeName').textContent = user.username || '管理员';
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            // 显示日期
+            const today = new Date();
+            document.getElementById('todayDate').textContent = today.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+
+            // 加载数据
+            await loadDashboardData();
+        });
+
+        // 加载仪表盘数据
+        async function loadDashboardData() {
+            try {
+                const [customersRes, reportsRes, rulesRes, usersRes, knowledgeRes] = await Promise.all([
+                    apiGet('/customers').catch(() => []),
+                    apiGet('/reports').catch(() => []),
+                    apiGet('/rules').catch(() => ({data: []})),
+                    apiGet('/users').catch(() => ({data: []})),
+                    apiGet('/knowledge/stats').catch(() => ({total: 0}))
+                ]);
+
+                const customers = Array.isArray(customersRes) ? customersRes : (customersRes.data || []);
+                const reports = Array.isArray(reportsRes) ? reportsRes : (reportsRes.data || []);
+                const rules = Array.isArray(rulesRes) ? rulesRes : (rulesRes.data || []);
+                const users = Array.isArray(usersRes) ? usersRes : (usersRes.data || []);
+                const knowledge = knowledgeRes.total || 0;
+
+                // 更新统计卡片
+                document.getElementById('totalCustomers').textContent = customers.length;
+                document.getElementById('totalReports').textContent = reports.length;
+                document.getElementById('totalKnowledge').textContent = knowledge;
+                document.getElementById('totalRules').textContent = rules.length;
+                document.getElementById('totalUsers').textContent = users.length;
+
+                // 渲染图表
+                renderScoreChart(customers);
+                renderRiskChart(customers);
+
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                showMessage('加载数据失败: ' + error.message, 'error');
+            }
+        }
+
+        // 渲染评分分布图
+        function renderScoreChart(customers) {
+            const ctx = document.getElementById('scoreChart');
+            if (!ctx) return;
+
+            // 评分分布统计
+            const scoreRanges = {
+                '0-30': 0,
+                '31-50': 0,
+                '51-70': 0,
+                '71-90': 0,
+                '91-100': 0
+            };
+
+            customers.forEach(c => {
+                const score = c.avg_score || 0;
+                if (score <= 30) scoreRanges['0-30']++;
+                else if (score <= 50) scoreRanges['31-50']++;
+                else if (score <= 70) scoreRanges['51-70']++;
+                else if (score <= 90) scoreRanges['71-90']++;
+                else scoreRanges['91-100']++;
+            });
+
+            if (scoreChart) scoreChart.destroy();
+
+            scoreChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-30', '31-50', '51-70', '71-90', '91-100'],
+                    datasets: [{
+                        label: '客户数量',
+                        data: Object.values(scoreRanges),
+                        backgroundColor: 'rgba(27, 58, 87, 0.8)',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // 渲染风险分布图
+        function renderRiskChart(customers) {
+            const ctx = document.getElementById('riskChart');
+            if (!ctx) return;
+
+            // 风险等级统计
+            const riskLevels = { P0: 0, P1: 0, P2: 0 };
+            customers.forEach(c => {
+                const level = c.latest_risk_level || c.risk_level;
+                if (level === 'P0') riskLevels.P0++;
+                else if (level === 'P1') riskLevels.P1++;
+                else if (level === 'P2') riskLevels.P2++;
+            });
+
+            if (riskChart) riskChart.destroy();
+
+            riskChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['P0 高风险', 'P1 中风险', 'P2 低风险'],
+                    datasets: [{
+                        data: [riskLevels.P0, riskLevels.P1, riskLevels.P2],
+                        backgroundColor: ['#FF6B6B', '#FF9F43', '#2ECC71']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

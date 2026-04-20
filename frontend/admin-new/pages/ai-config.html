@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI配置 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item active">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-robot"></i> AI配置</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">AI模型配置</span>
+                        <button class="btn btn-success" onclick="openAddModelModal()">
+                            <i class="bi bi-plus-lg"></i> 添加模型
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>模型名称</th>
+                                        <th>类型</th>
+                                        <th>Temperature<br><small>随机性</small></th>
+                                        <th>Max Tokens<br><small>最大令牌</small></th>
+                                        <th>Top P<br><small>采样</small></th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modelTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 40px;">
+                                            <div class="loading-spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <span class="card-title">AI使用统计</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-label">今日调用次数</div>
+                                    <div class="stat-value" id="todayCalls">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-label">总调用次数</div>
+                                    <div class="stat-value" id="totalCalls">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-label">平均响应时间</div>
+                                    <div class="stat-value" id="avgResponseTime">0ms</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-label">失败率</div>
+                                    <div class="stat-value" id="failRate">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模板库弹窗 -->
+    <div class="modal-overlay" id="templateLibraryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">提示词模板库</h3>
+                <button class="modal-close" onclick="closeTemplateLibraryModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="templateList">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTemplateLibraryModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板管理弹窗 -->
+    <div class="modal-overlay" id="templateManagerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">模板管理</h3>
+                <button class="modal-close" onclick="closeTemplateManagerModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="openNewTemplateModal()">
+                        <i class="bi bi-plus"></i> 新建模板
+                    </button>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>类型</th>
+                            <th>描述</th>
+                            <th>默认</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="templateManagerTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTemplateManagerModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板内容预览弹窗 -->
+    <div class="modal-overlay" id="viewTemplateModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="viewTemplateTitle">模板内容</h3>
+                <button class="modal-close" onclick="closeViewTemplateModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="viewTemplateContent" class="form-control" rows="20" readonly style="min-height: 400px; font-size: 12px;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeViewTemplateModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板编辑弹窗 -->
+    <div class="modal-overlay" id="templateEditModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="templateEditTitle">编辑模板</h3>
+                <button class="modal-close" onclick="closeTemplateEditModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="templateEditId">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">模板名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="templateEditName" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">类型 <span class="text-danger">*</span></label>
+                            <select class="form-control" id="templateEditType" required>
+                                <option value="system">系统提示词</option>
+                                <option value="report">报告模板</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">描述</label>
+                    <input type="text" class="form-control" id="templateEditDescription">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">内容 <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="templateEditContent" rows="10"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="templateEditDefault">
+                        <span class="form-check-label">设为默认模板</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveTemplate()">保存</button>
+                <button class="btn btn-secondary" onclick="closeTemplateEditModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modelModalTitle">添加AI模型</h3>
+                <button class="modal-close" onclick="closeModelModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="modelForm">
+                    <input type="hidden" id="modelId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">模型名称 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="modelName" required placeholder="如：GPT-4、Claude-3">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">模型类型 <span class="text-danger">*</span></label>
+                                <select class="form-control" id="modelType" required>
+                                    <option value="">请选择</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="anthropic">Anthropic</option>
+                                    <option value="azure">Azure OpenAI</option>
+                                    <option value="zhipu">智谱AI</option>
+                                    <option value="qwen">通义千问</option>
+                                    <option value="deepseek">DeepSeek</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">API Key <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="apiKey" placeholder="输入API Key">
+                                <small class="text-muted" id="apiKeyHint">将加密存储</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">API地址 <span class="text-danger">*</span></label>
+                                <input type="url" class="form-control" id="apiUrl" required placeholder="https://api.openai.com/v1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">模型标识</label>
+                                <input type="text" class="form-control" id="modelIdentifier" placeholder="如：gpt-4、claude-3-opus">
+                                <small class="text-muted">实际调用的模型名称</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">描述</label>
+                                <textarea class="form-control" id="modelDescription" rows="2" placeholder="模型描述..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Temperature 随机性</label>
+                                <input type="number" class="form-control" id="temperature" min="0" max="2" step="0.1" value="0.7">
+                                <small class="text-muted">0-2，越高越随机</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Max Tokens 最大令牌</label>
+                                <input type="number" class="form-control" id="maxTokens" min="100" max="8000" value="2000">
+                                <small class="text-muted">100-8000</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Top P 采样多样性</label>
+                                <input type="number" class="form-control" id="topP" min="0" max="1" step="0.1" value="0.9">
+                                <small class="text-muted">0-1，越高越多样</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">系统提示词</label>
+                        <textarea class="form-control" id="systemPrompt" rows="3" placeholder="设置AI助手的系统提示词..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">超级Prompt（报告生成提示词）</label>
+                        <textarea class="form-control" id="reportPromptTemplate" rows="5" placeholder="设置报告生成的超级Prompt..."></textarea>
+                        <small class="text-muted">用于指导AI生成更详细的评估报告</small>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="openTemplateLibrary()">
+                            <i class="bi bi-collection"></i> 从模板库选择
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm ms-2" onclick="openTemplateManager()">
+                            <i class="bi bi-gear"></i> 管理模板
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" onclick="testCurrentModel()">
+                    <i class="bi bi-plug"></i> 测试连接
+                </button>
+                <button class="btn btn-secondary" onclick="closeModelModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveModel()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        // 侧边栏粒子动画
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        // 顶部栏粒子动画
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        let aiModels = [];
+        let modelTestStatus = {};
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            await loadAiModels();
+        });
+
+        async function loadAiModels() {
+            const tbody = document.getElementById('modelTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/ai');
+                const configs = Array.isArray(response) ? response : (response.data || []);
+                aiModels = configs.map(c => ({
+                    id: c.id,
+                    name: c.config_name,
+                    type: c.provider,
+                    model_id: c.model_name,
+                    api_key: c.api_key_masked,
+                    api_url: c.api_base_url,
+                    is_active: c.is_active,
+                    is_default: c.is_default,
+                    temperature: c.temperature,
+                    max_tokens: c.max_tokens,
+                    system_prompt: c.system_prompt,
+                    report_prompt_template: c.report_prompt_template
+                }));
+                renderModelTable();
+            } catch (error) {
+                console.error('加载AI模型失败:', error);
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function renderModelTable() {
+            const tbody = document.getElementById('modelTableBody');
+
+            if (aiModels.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding: 40px;">暂无AI模型配置</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = aiModels.map(model => {
+                return `
+                    <tr>
+                        <td>${model.id}</td>
+                        <td><strong>${model.name}</strong></td>
+                        <td><span class="badge badge-info">${getModelTypeLabel(model.type)}</span></td>
+                        <td>${model.temperature || 0.7}</td>
+                        <td>${model.max_tokens || 2000}</td>
+                        <td>
+                            <span class="status-badge ${model.is_active !== false ? 'active' : 'inactive'}">
+                                ${model.is_active !== false ? '启用' : '禁用'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm ${modelTestStatus[model.id] === 'success' ? 'btn-success' : 'btn-secondary'}" onclick="testModel(${model.id})" title="测试连接">
+                                    <i class="bi bi-plug"></i>
+                                </button>
+                                <button class="btn btn-sm btn-primary" onclick="editModel(${model.id})" title="编辑">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm ${model.is_active !== false ? 'btn-success' : 'btn-warning'}" onclick="toggleModelStatus(${model.id})" title="${model.is_active !== false ? '禁用' : '启用'}">
+                                    <i class="bi ${model.is_active !== false ? 'bi-x-circle' : 'bi-check-circle'}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteModel(${model.id})" title="删除">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getModelTypeLabel(type) {
+            const labels = {
+                'openai': 'OpenAI',
+                'anthropic': 'Anthropic',
+                'azure': 'Azure',
+                'local': '本地模型',
+                'other': '其他'
+            };
+            return labels[type] || type || '其他';
+        }
+
+        function maskString(str) {
+            if (!str) return '-';
+            if (str.length <= 8) return '********';
+            return str.substring(0, 4) + '****' + str.substring(str.length - 4);
+        }
+
+        function openAddModelModal() {
+            document.getElementById('modelModalTitle').textContent = '添加AI模型';
+            document.getElementById('modelForm').reset();
+            document.getElementById('modelId').value = '';
+            document.getElementById('apiKeyHint').textContent = '将加密存储';
+            const modal = document.getElementById('modelModal');
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99990; align-items: center; justify-content: center;';
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.style.cssText = 'background: white; width: 95%; max-width: 800px; max-height: 90vh; overflow-y: auto; z-index: 99991; position: relative; margin: auto; display: block !important; border-radius: 12px; padding: 20px;';
+                modalContent.onclick = function(e) { e.stopPropagation(); };
+            }
+            modal.onclick = function(e) {
+                if (e.target === modal) closeModelModal();
+            };
+        }
+
+        function editModel(id) {
+            const model = aiModels.find(m => m.id === id);
+            if (!model) return;
+
+            document.getElementById('modelModalTitle').textContent = '编辑AI模型';
+            document.getElementById('modelId').value = model.id;
+            document.getElementById('modelName').value = model.name || '';
+            document.getElementById('modelType').value = model.type || '';
+            document.getElementById('apiKey').value = '';
+            document.getElementById('apiKey').placeholder = '（不修改请留空）';
+            document.getElementById('apiKeyHint').textContent = '已加密存储，不修改请留空';
+            document.getElementById('apiUrl').value = model.api_url || '';
+            document.getElementById('modelIdentifier').value = model.model_id || '';
+            document.getElementById('temperature').value = model.temperature || 0.7;
+            document.getElementById('maxTokens').value = model.max_tokens || 2000;
+            document.getElementById('systemPrompt').value = model.system_prompt || '';
+            document.getElementById('reportPromptTemplate').value = model.report_prompt_template || '';
+            document.getElementById('modelDescription').value = model.description || '';
+
+            const modal = document.getElementById('modelModal');
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99990; align-items: center; justify-content: center;';
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.style.cssText = 'background: white; width: 95%; max-width: 800px; max-height: 90vh; overflow-y: auto; z-index: 99991; position: relative; margin: auto; display: block !important; border-radius: 12px; padding: 20px;';
+                modalContent.onclick = function(e) { e.stopPropagation(); };
+            }
+            modal.onclick = function(e) {
+                if (e.target === modal) closeModelModal();
+            };
+        }
+
+        function closeModelModal() {
+            const modal = document.getElementById('modelModal');
+            modal.style.cssText = 'display: none !important;';
+        }
+
+        async function saveModel() {
+            const id = document.getElementById('modelId').value;
+            const config_name = document.getElementById('modelName').value.trim();
+            const provider = document.getElementById('modelType').value;
+            const apiKey = document.getElementById('apiKey').value;
+            const api_base_url = document.getElementById('apiUrl').value.trim();
+            const model_name = document.getElementById('modelName').value.trim() || '';
+            const temperature = parseFloat(document.getElementById('temperature').value) || 0.7;
+            const max_tokens = parseInt(document.getElementById('maxTokens').value) || 2000;
+            const system_prompt = document.getElementById('systemPrompt').value.trim();
+            const report_prompt_template = document.getElementById('reportPromptTemplate').value.trim();
+            const description = document.getElementById('modelDescription').value.trim();
+
+            if (!config_name || !provider || !api_base_url) {
+                showMessage('请填写所有必填字段', 'error');
+                return;
+            }
+
+            if (!id && !apiKey) {
+                showMessage('API Key不能为空', 'error');
+                return;
+            }
+
+            const data = {
+                config_name,
+                provider,
+                api_base_url,
+                model_name: model_name || config_name,
+                temperature,
+                max_tokens,
+                system_prompt,
+                report_prompt_template,
+                description
+            };
+            if (apiKey) data.api_key = apiKey;
+
+            try {
+                if (id) {
+                    await apiPut(`/ai/${id}`, data);
+                    showMessage('模型更新成功', 'success');
+                } else {
+                    await apiPost('/ai', data);
+                    showMessage('模型创建成功', 'success');
+                }
+                closeModelModal();
+                await loadAiModels();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function testModel(id) {
+            const model = aiModels.find(m => m.id === id);
+            if (!model) return;
+
+            try {
+                showMessage('正在测试连接...', 'info');
+                await apiPost(`/ai/${id}/test`, {});
+                modelTestStatus[id] = 'success';
+                renderModelTable();
+                showMessage('连接测试成功', 'success');
+            } catch (error) {
+                modelTestStatus[id] = 'error';
+                renderModelTable();
+                showMessage('连接测试失败: ' + error.message, 'error');
+            }
+        }
+
+        async function testCurrentModel() {
+            const modelId = document.getElementById('modelId').value;
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const modelIdentifier = document.getElementById('modelIdentifier').value.trim() || document.getElementById('modelName').value.trim();
+            const provider = document.getElementById('modelType').value;
+
+            if (!apiUrl) {
+                showMessage('请先输入API地址', 'warning');
+                return;
+            }
+
+            try {
+                showMessage('正在测试连接...', 'info');
+
+                if (modelId) {
+                    await apiPost(`/ai/${modelId}/test`, {});
+                } else {
+                    if (!apiKey) {
+                        showMessage('新建模型测试需要填写API Key', 'warning');
+                        return;
+                    }
+                    await apiPost('/ai/test', {
+                        provider,
+                        api_key: apiKey,
+                        api_base_url: apiUrl,
+                        model_name: modelIdentifier
+                    });
+                }
+                showMessage('连接测试成功！', 'success');
+            } catch (error) {
+                showMessage('连接测试失败: ' + error.message, 'error');
+            }
+        }
+
+        async function toggleModelStatus(id) {
+            const model = aiModels.find(m => m.id === id);
+            if (!model) return;
+
+            const action = model.is_active !== false ? '禁用' : '启用';
+            if (!confirm(`确定要${action}该模型吗？`)) return;
+
+            try {
+                await apiPut(`/ai/${id}`, { is_active: model.is_active === false ? true : false });
+                showMessage(`模型${action}成功`, 'success');
+                await loadAiModels();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function deleteModel(id) {
+            if (!confirm('确定要删除该模型吗？')) return;
+
+            try {
+                await apiDelete(`/ai/${id}`);
+                showMessage('模型删除成功', 'success');
+                await loadAiModels();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        document.getElementById('modelModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModelModal();
+        });
+
+        async function openTemplateLibrary() {
+            const modal = document.getElementById('templateLibraryModal');
+            const listContainer = document.getElementById('templateList');
+            listContainer.innerHTML = '<div class="text-center p-3">加载中...</div>';
+
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99998; align-items: center; justify-content: center;';
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.style.cssText = 'background: white; width: 95%; max-width: 900px; max-height: 85vh; overflow-y: auto; z-index: 99999; position: relative; margin: auto; display: block !important; border-radius: 12px; padding: 20px;';
+            }
+
+            try {
+                const templates = await apiGet('/prompt-templates');
+                renderTemplateList(templates);
+            } catch (error) {
+                listContainer.innerHTML = `<div class="text-center text-danger p-3">加载失败: ${error.message}</div>`;
+            }
+        }
+
+        function renderTemplateList(templates) {
+            const listContainer = document.getElementById('templateList');
+            const systemTemplates = templates.filter(t => t.type === 'system');
+            const reportTemplates = templates.filter(t => t.type === 'report');
+
+            let html = '<div class="row">';
+
+            html += '<div class="col-12 mb-4"><h5>系统提示词模板</h5></div>';
+            if (systemTemplates.length === 0) {
+                html += '<div class="col-12 text-muted">暂无模板</div>';
+            } else {
+                systemTemplates.forEach(t => {
+                    html += `
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">${t.name} ${t.is_default ? '<span class="badge badge-primary">默认</span>' : ''}</h6>
+                                    <p class="card-text text-muted small">${t.description || '无描述'}</p>
+                                    <button class="btn btn-sm btn-primary" onclick="selectTemplate(${t.id}, 'system')">使用此模板</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '<div class="col-12 mb-4 mt-3"><h5>报告生成模板</h5></div>';
+            if (reportTemplates.length === 0) {
+                html += '<div class="col-12 text-muted">暂无模板</div>';
+            } else {
+                reportTemplates.forEach(t => {
+                    html += `
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">${t.name} ${t.is_default ? '<span class="badge badge-primary">默认</span>' : ''}</h6>
+                                    <p class="card-text text-muted small">${t.description || '无描述'}</p>
+                                    <button class="btn btn-sm btn-primary" onclick="selectTemplate(${t.id}, 'report')">使用此模板</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '</div>';
+            listContainer.innerHTML = html;
+        }
+
+        async function selectTemplate(id, type) {
+            try {
+                const template = await apiGet(`/prompt-templates/${id}`);
+                if (type === 'system') {
+                    document.getElementById('systemPrompt').value = template.content;
+                    showMessage('已应用系统提示词模板', 'success');
+                } else {
+                    document.getElementById('reportPromptTemplate').value = template.content;
+                    showMessage('已应用报告生成模板', 'success');
+                }
+                closeTemplateLibraryModal();
+            } catch (error) {
+                showMessage('应用模板失败: ' + error.message, 'error');
+            }
+        }
+
+        function closeTemplateLibraryModal() {
+            const modal = document.getElementById('templateLibraryModal');
+            modal.style.cssText = 'display: none !important;';
+        }
+
+        async function openTemplateManager() {
+            const modal = document.getElementById('templateManagerModal');
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99997; align-items: center; justify-content: center;';
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.style.cssText = 'background: white; width: 95%; max-width: 1100px; max-height: 90vh; overflow-y: auto; z-index: 99999; position: relative; margin: auto; display: block !important; border-radius: 12px; padding: 20px;';
+            }
+            await loadTemplatesForManager();
+        }
+
+        async function loadTemplatesForManager() {
+            const tbody = document.getElementById('templateManagerTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">加载中...</td></tr>';
+
+            try {
+                const templates = await apiGet('/prompt-templates');
+                renderTemplateManagerTable(templates);
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function renderTemplateManagerTable(templates) {
+            const tbody = document.getElementById('templateManagerTableBody');
+            if (templates.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无模板</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = templates.map(t => `
+                <tr>
+                    <td>${t.id}</td>
+                    <td><strong>${t.name}</strong></td>
+                    <td><span class="badge ${t.type === 'system' ? 'badge-info' : 'badge-success'}">${t.type === 'system' ? '系统提示词' : '报告模板'}</span></td>
+                    <td>${t.description || '-'}</td>
+                    <td>${t.is_default ? '<span class="badge badge-primary">默认</span>' : '<span class="badge badge-secondary">否</span>'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="viewTemplateContent(${t.id})">查看</button>
+                        <button class="btn btn-sm btn-primary" onclick="editTemplate(${t.id})">编辑</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTemplate(${t.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function viewTemplateContent(id) {
+            try {
+                const template = await apiGet(`/prompt-templates/${id}`);
+                document.getElementById('viewTemplateContent').value = template.content;
+                document.getElementById('viewTemplateTitle').textContent = template.name + ' - 内容预览';
+                const modal = document.getElementById('viewTemplateModal');
+                modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 99998; align-items: center; justify-content: center;';
+                const modalContent = modal.querySelector('.modal');
+                if (modalContent) {
+                    modalContent.style.cssText = 'background: white; width: 95%; max-width: 1000px; max-height: 90vh; overflow-y: auto; z-index: 99999; position: relative; margin: auto; display: block !important; border-radius: 12px; padding: 20px;';
+                }
+            } catch (error) {
+                showMessage('获取模板详情失败', 'error');
+            }
+        }
+
+        function closeViewTemplateModal() {
+            const modal = document.getElementById('viewTemplateModal');
+            modal.style.cssText = 'display: none !important;';
+        }
+
+        function closeTemplateManagerModal() {
+            const modal = document.getElementById('templateManagerModal');
+            modal.style.cssText = 'display: none !important;';
+        }
+
+        async function editTemplate(id) {
+            try {
+                const template = await apiGet(`/prompt-templates/${id}`);
+                document.getElementById('templateEditId').value = template.id;
+                document.getElementById('templateEditName').value = template.name;
+                document.getElementById('templateEditType').value = template.type;
+                document.getElementById('templateEditDescription').value = template.description || '';
+                document.getElementById('templateEditContent').value = template.content;
+                document.getElementById('templateEditDefault').checked = template.is_default;
+                openTemplateEditModal();
+            } catch (error) {
+                showMessage('获取模板详情失败', 'error');
+            }
+        }
+
+        function openTemplateEditModal() {
+            const modal = document.getElementById('templateEditModal');
+            modal.style.cssText = 'display: flex !important; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 99998; align-items: center; justify-content: center;';
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.style.cssText = 'background: white; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; z-index: 99999; position: relative; margin: auto; display: block !important; border-radius: 12px; padding: 20px;';
+            }
+        }
+
+        function closeTemplateEditModal() {
+            const modal = document.getElementById('templateEditModal');
+            modal.style.cssText = 'display: none !important;';
+        }
+
+        async function saveTemplate() {
+            const id = document.getElementById('templateEditId').value;
+            const name = document.getElementById('templateEditName').value.trim();
+            const type = document.getElementById('templateEditType').value;
+            const description = document.getElementById('templateEditDescription').value.trim();
+            const content = document.getElementById('templateEditContent').value.trim();
+            const is_default = document.getElementById('templateEditDefault').checked;
+
+            if (!name || !type || !content) {
+                showMessage('请填写所有必填字段', 'error');
+                return;
+            }
+
+            const data = { name, type, description, content, is_default };
+
+            try {
+                if (id) {
+                    await apiPut(`/prompt-templates/${id}`, data);
+                    showMessage('模板更新成功', 'success');
+                } else {
+                    await apiPost('/prompt-templates', data);
+                    showMessage('模板创建成功', 'success');
+                }
+                closeTemplateEditModal();
+                await loadTemplatesForManager();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function deleteTemplate(id) {
+            if (!confirm('确定要删除这个模板吗？')) return;
+
+            try {
+                await apiDelete(`/prompt-templates/${id}`);
+                showMessage('模板删除成功', 'success');
+                await loadTemplatesForManager();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        function openNewTemplateModal() {
+            document.getElementById('templateEditId').value = '';
+            document.getElementById('templateEditName').value = '';
+            document.getElementById('templateEditType').value = 'system';
+            document.getElementById('templateEditDescription').value = '';
+            document.getElementById('templateEditContent').value = '';
+            document.getElementById('templateEditDefault').checked = false;
+            openTemplateEditModal();
+        }
+    </script>
+</body>
+</html>

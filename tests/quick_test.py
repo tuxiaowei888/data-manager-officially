@@ -141,10 +141,10 @@ for dim, count in sorted(dimension_count.items()):
 all_manual = all(rule["source_type"] == "manual" for rule in rules)
 print(f"  所有规则 source_type='manual': {all_manual}")
 
-if len(rules) == 18 and all_manual:
+if len(rules) == 31 and all_manual:
     print("✓ 种子数据验证通过")
 else:
-    print("✗ 种子数据验证失败")
+    print(f"✗ 种子数据验证失败：期望31条，实际{len(rules)}条")
 
 # 总结
 print("\n" + "=" * 60)
@@ -154,6 +154,6 @@ print("✓ 所有核心功能模块测试通过")
 print("✓ 规则计算器工作正常")
 print("✓ 策略检索器包含 54 条建议")
 print("✓ 报告生成器可生成完整报告")
-print("✓ 种子数据包含 18 条规则")
+print("✓ 种子数据包含 31 条规则")
 print("\n下一步：配置数据库并运行 init_db.py 初始化数据")
 print("=" * 60)

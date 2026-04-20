@@ -4,7 +4,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from config.database import get_db
 from models.user import User
@@ -15,18 +15,19 @@ router = APIRouter(prefix="/api/v1/users", tags=["用户管理"])
 
 
 class UserCreate(BaseModel):
-    username: str
-    password: str
+    username: str = Field(..., min_length=3, max_length=50, description="用户名，3-50字符")
+    password: str = Field(..., min_length=6, max_length=100, description="密码，至少6字符")
     email: Optional[str] = None
     phone: Optional[str] = None
     user_type: str = "client"
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
     email: Optional[str] = None
     phone: Optional[str] = None
     user_type: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
 class UserResponse(BaseModel):
@@ -55,27 +56,46 @@ def check_admin(current_user: User = Depends(get_current_user)):
 
 @router.get("")
 async def get_users(
+    skip: int = 0,
+    limit: int = 100,
     db: Session = Depends(get_db),
     admin: User = Depends(check_admin)
 ):
-    """获取用户列表"""
-    users = db.query(User).order_by(User.id.desc()).all()
+    """
+    获取用户列表
     
-    return [
-        {
-            "id": u.id,
-            "username": u.username,
-            "email": u.email,
-            "phone": u.phone,
-            "user_type": u.user_type,
-            "is_vip": u.is_vip,
-            "vip_expire_date": u.vip_expire_date.strftime('%Y-%m-%d') if u.vip_expire_date else None,
-            "is_active": u.is_active,
-            "daily_eval_count": u.daily_eval_count or 0,
-            "created_at": u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else None
-        }
-        for u in users
-    ]
+    - **skip**: 跳过前N条记录（默认0）
+    - **limit**: 返回最大记录数（默认100，最大1000）
+    """
+    # 限制最大返回数量
+    limit = min(limit, 1000)
+    
+    # 获取总数
+    total = db.query(User).count()
+    
+    # 获取分页数据
+    users = db.query(User).order_by(User.id.asc()).offset(skip).limit(limit).all()
+    
+    return {
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "data": [
+            {
+                "id": u.id,
+                "username": u.username,
+                "email": u.email,
+                "phone": u.phone,
+                "user_type": u.user_type,
+                "is_vip": u.is_vip,
+                "vip_expire_date": u.vip_expire_date.strftime('%Y-%m-%d') if u.vip_expire_date else None,
+                "is_active": u.is_active,
+                "daily_eval_count": u.daily_eval_count or 0,
+                "created_at": u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else None
+            }
+            for u in users
+        ]
+    }
 
 
 @router.post("", response_model=UserResponse)
@@ -134,7 +154,9 @@ async def update_user(
         user.phone = user_data.phone
     if user_data.user_type:
         user.user_type = user_data.user_type
-    
+    if user_data.is_active is not None:
+        user.is_active = user_data.is_active
+
     db.commit()
     db.refresh(user)
     
@@ -190,7 +212,7 @@ async def delete_user(
     db.delete(user)
     db.commit()
     
-    return ResponseModel(code=200, message="用户已删除")
+    return ResponseModel(status="success", message="用户已删除")
 
 
 @router.post("/{user_id}/vip", response_model=ResponseModel)
@@ -210,7 +232,7 @@ async def set_user_vip(
     set_vip(user, data.days, db)
     
     return ResponseModel(
-        code=200,
+        status="success",
         message=f"已为用户 {user.username} 开通VIP {data.days} 天"
     )
 
@@ -222,15 +244,21 @@ async def revoke_user_vip(
     admin: User = Depends(check_admin)
 ):
     """取消用户VIP"""
-    from services.vip_service import revoke_user_vip as revoke_vip
-    
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="用户不存在")
-    
-    revoke_vip(user, db)
-    
-    return ResponseModel(
-        code=200,
-        message=f"已取消用户 {user.username} 的VIP"
-    )
+    try:
+        from services.vip_service import revoke_user_vip as revoke_vip_func
+
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="用户不存在")
+
+        revoke_vip_func(user, db)
+
+        return ResponseModel(
+            status="success",
+            message=f"已取消用户 {user.username} 的VIP"
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"取消VIP失败: {str(e)}")

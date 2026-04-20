@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家 - 首页UI测试V2</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1321;
+            --accent-cyan: #00f5ff;
+            --accent-blue: #0066ff;
+            --accent-purple: #7b2cff;
+            --accent-green: #00ff88;
+            --accent-orange: #ff6b35;
+            --text-primary: #e8f4f8;
+            --text-secondary: #8892a0;
+            --border-color: rgba(0, 245, 255, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-effect {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.1;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-1 { top: -150px; right: -50px; background: var(--accent-cyan); }
+        .glow-2 { bottom: -150px; left: -50px; background: var(--accent-blue); }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px 60px;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            margin-bottom: 40px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+        }
+
+        .brand-icon i { font-size: 24px; color: var(--bg-dark); }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .brand-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            background: rgba(0, 245, 255, 0.05);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--bg-dark);
+        }
+
+        .user-info { text-align: right; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .user-role { font-size: 12px; color: var(--accent-cyan); }
+
+        /* 页面标题 */
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .page-title span {
+            color: var(--accent-cyan);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            padding: 28px;
+            background: rgba(13, 19, 33, 0.8);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+        }
+
+        .stat-card:hover {
+            border-color: rgba(0, 245, 255, 0.4);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.cyan { background: rgba(0, 245, 255, 0.15); color: var(--accent-cyan); }
+        .stat-icon.green { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
+        .stat-icon.blue { background: rgba(0, 102, 255, 0.15); color: var(--accent-blue); }
+        .stat-icon.purple { background: rgba(123, 44, 255, 0.15); color: var(--accent-purple); }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .stat-trend.up { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
+        .stat-trend.down { background: rgba(255, 107, 53, 0.15); color: var(--accent-orange); }
+
+        .stat-value {
+            font-family: "Roboto Mono", monospace;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 内容网格 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            padding: 28px;
+            background: rgba(13, 19, 33, 0.8);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+            border-radius: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i { color: var(--accent-cyan); }
+
+        .card-action {
+            padding: 8px 16px;
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 8px;
+            color: var(--accent-cyan);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card-action:hover {
+            background: rgba(0, 245, 255, 0.2);
+        }
+
+        /* 快捷入口 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px;
+            background: rgba(0, 245, 255, 0.03);
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .quick-action:hover {
+            background: rgba(0, 245, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateX(4px);
+        }
+
+        .qa-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .qa-icon.cyan { background: rgba(0, 245, 255, 0.15); color: var(--accent-cyan); }
+        .qa-icon.green { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
+        .qa-icon.blue { background: rgba(0, 102, 255, 0.15); color: var(--accent-blue); }
+        .qa-icon.purple { background: rgba(123, 44, 255, 0.15); color: var(--accent-purple); }
+
+        .qa-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .qa-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 报告列表 */
+        .report-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .report-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(0, 245, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 245, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .report-item:hover {
+            background: rgba(0, 245, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.2);
+        }
+
+        .report-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .report-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 245, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+        }
+
+        .report-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .report-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .report-score {
+            font-family: "Roboto Mono", monospace;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 8px;
+        }
+
+        .report-score.high { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
+        .report-score.medium { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+        .report-score.low { background: rgba(255, 107, 53, 0.15); color: var(--accent-orange); }
+
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .main-wrapper { padding: 0 20px 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="glow-effect glow-1"></div>
+    <div class="glow-effect glow-2"></div>
+
+    <div class="main-wrapper">
+        <!-- 导航 -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-database-fill"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>数维数据管家</h1>
+                    <p>数据资产化智能管�?/p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">首页</a>
+                <a href="/survey" class="nav-link">调研</a>
+                <a href="/knowledge" class="nav-link">知识�?/a>
+                <a href="/history" class="nav-link">历史</a>
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <div class="user-name">张三</div>
+                    <div class="user-role">VIP会员</div>
+                </div>
+                <div class="user-avatar">Z</div>
+            </div>
+        </nav>
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">数据概览 <span>·</span> 实时监控</h1>
+            <p class="page-subtitle">企业数据资产健康状态实时监控面�?/p>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon cyan">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="bi bi-arrow-up"></i> 12%
+                    </div>
+                </div>
+                <div class="stat-value">156</div>
+                <div class="stat-label">已完成调�?/div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="bi bi-arrow-up"></i> 8%
+                    </div>
+                </div>
+                <div class="stat-value">89</div>
+                <div class="stat-label">合规规则</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <div class="stat-trend down">
+                        <i class="bi bi-arrow-down"></i> 3%
+                    </div>
+                </div>
+                <div class="stat-value">2,340</div>
+                <div class="stat-label">知识条目</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon purple">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="bi bi-arrow-up"></i> 5%
+                    </div>
+                </div>
+                <div class="stat-value">1,280</div>
+                <div class="stat-label">客户数据</div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-grid">
+            <!-- 快捷入口 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-lightning-charge"></i>
+                        快捷入口
+                    </h3>
+                </div>
+                <div class="quick-actions">
+                    <a href="/survey" class="quick-action">
+                        <div class="qa-icon cyan">
+                            <i class="bi bi-clipboard-plus"></i>
+                        </div>
+                        <div class="qa-text">
+                            <h4>新建调研</h4>
+                            <p>创建数据资产调研</p>
+                        </div>
+                    </a>
+                    <a href="/knowledge" class="quick-action">
+                        <div class="qa-icon green">
+                            <i class="bi bi-book-plus"></i>
+                        </div>
+                        <div class="qa-text">
+                            <h4>知识录入</h4>
+                            <p>添加知识条目</p>
+                        </div>
+                    </a>
+                    <a href="/reports" class="quick-action">
+                        <div class="qa-icon purple">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div class="qa-text">
+                            <h4>数据报表</h4>
+                            <p>查看数据报告</p>
+                        </div>
+                    </a>
+                    <a href="/customers" class="quick-action">
+                        <div class="qa-icon blue">
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                        <div class="qa-text">
+                            <h4>客户管理</h4>
+                            <p>管理客户数据</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 最近报�?-->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-clock-history"></i>
+                        最近报�?                    </h3>
+                    <button class="card-action">查看全部</button>
+                </div>
+                <div class="report-list">
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-icon">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <div>
+                                <div class="report-title">科技公司数据资产调研</div>
+                                <div class="report-date">2026-03-18</div>
+                            </div>
+                        </div>
+                        <div class="report-score high">92</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-icon">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <div>
+                                <div class="report-title">制造业数据治理评估</div>
+                                <div class="report-date">2026-03-15</div>
+                            </div>
+                        </div>
+                        <div class="report-score medium">78</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-icon">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <div>
+                                <div class="report-title">零售业数据合规检�?/div>
+                                <div class="report-date">2026-03-12</div>
+                            </div>
+                        </div>
+                        <div class="report-score low">65</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

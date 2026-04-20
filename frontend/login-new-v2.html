@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="ui-common-v2.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffffff 0%, #e8f4fc 100%);
+        }
+
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 左侧品牌�?*/
+        .brand-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+        }
+
+        .brand-content {
+            max-width: 520px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0066ff 0%, #00d4ff 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 102, 255, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 30px;
+            color: #ffffff;
+        }
+
+        .logo-text h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .brand-slogan {
+            margin-bottom: 48px;
+        }
+
+        .brand-slogan h2 {
+            font-size: 40px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .brand-slogan h2 span {
+            background: linear-gradient(90deg, #0066ff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-slogan p {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .data-stats {
+            display: flex;
+            gap: 48px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 32px;
+            font-weight: 700;
+            color: #0066ff;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* 装饰元素 */
+        .brand-decoration {
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.05) 0%, rgba(0, 212, 255, 0.05) 100%);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        /* 右侧登录�?*/
+        .login-panel {
+            width: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: #ffffff;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header h3 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .register-link a {
+            color: #0066ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* 底部 */
+        .bottom-decoration {
+            position: absolute;
+            bottom: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .decoration-text {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .decoration-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .decoration-links a {
+            font-size: 11px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .decoration-links a:hover {
+            color: #0066ff;
+        }
+
+        /* 响应�?*/
+        @media (max-width: 1024px) {
+            .brand-panel {
+                display: none;
+            }
+            .login-panel {
+                width: 100%;
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <div class="login-wrapper">
+        <div class="brand-panel">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <div class="logo-icon">
+                        <i class="bi bi-database-fill"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>数维数据管家</h1>
+                        <p>企业数据资产化智能管理平�?/p>
+                    </div>
+                </div>
+
+                <div class="brand-slogan">
+                    <h2>让数据资�?br><span>创造商业价�?/span></h2>
+                    <p>通过深度调研与智能分析，帮助企业实现数据资产标准化、合规化管理，提升数据治理能力与商业洞察力�?/p>
+                </div>
+
+                <div class="data-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">10K+</div>
+                        <div class="stat-label">数据资产</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">500+</div>
+                        <div class="stat-label">企业用户</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">99.9%</div>
+                        <div class="stat-label">服务可用�?/div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="brand-decoration"></div>
+
+            <div class="bottom-decoration">
+                <span class="decoration-text">© 2024 数维数据管家 v2.0</span>
+                <div class="decoration-links">
+                    <a href="#">关于我们</a>
+                    <a href="#">服务条款</a>
+                    <a href="#">隐私政策</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-panel">
+            <div class="login-card">
+                <div class="login-header">
+                    <h3>欢迎回来</h3>
+                    <p>请登录您的账号继�?/p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">用户�?/ 手机�?/label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-person"></i>
+                            <input type="text" id="username" class="form-input" placeholder="请输入用户名或手机号" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-lock"></i>
+                            <input type="password" id="password" class="form-input" placeholder="请输入密�? required>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-lg">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input">
+                            <span class="form-check-label">记住�?/span>
+                        </label>
+                        <a href="/forgot-password" class="text-accent text-sm">忘记密码�?/a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        �?�?                    </button>
+                </form>
+
+                <div class="register-link">
+                    还没有账号？<a href="/register">立即注册</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', result.data.access_token);
+                    localStorage.setItem('userInfo', JSON.stringify(result.data.user));
+                    window.location.href = '/home';
+                } else {
+                    alert(result.message || '登录失败');
+                }
+            } catch (error) {
+                alert('网络错误，请稍后重试');
+            }
+        });
+    </script>
+</body>
+</html>

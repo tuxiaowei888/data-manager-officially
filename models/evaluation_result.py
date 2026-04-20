@@ -26,6 +26,15 @@ class EvaluationResult(Base):
     # 用户 ID
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True, comment="用户 ID")
     
+    # 数据集关联（新增V2.0订阅体系）
+    dataset_id = Column(Integer, ForeignKey("datasets.id"), nullable=True, index=True, comment="数据集ID")
+    
+    # 企业画像关联（新增V2.0订阅体系）
+    org_profile_id = Column(Integer, ForeignKey("org_profiles.id"), nullable=True, index=True, comment="企业画像ID")
+    
+    # 评估时的订阅档位（新增V2.0订阅体系）
+    subscription_tier = Column(String(20), default='free', comment="评估时的订阅档位")
+    
     # 报告 ID（唯一标识）
     report_id = Column(String(100), nullable=False, default=generate_report_id, unique=True, index=True, comment="报告唯一ID")
     
@@ -72,8 +81,10 @@ class EvaluationResult(Base):
     # 创建时间
     created_at = Column(DateTime, server_default=func.now(), comment="创建时间")
     
-    # 关联用户
-    # user = relationship("User", back_populates="evaluation_results")
+    # 关联定义
+    user = relationship("User", backref="evaluation_results")
+    dataset = relationship("Dataset", back_populates="evaluation_results")
+    org_profile = relationship("OrgProfile", back_populates="evaluation_results")
     
     def __repr__(self):
         return f"<EvaluationResult(id={self.id}, report_id={self.report_id}, score={self.total_score})>"

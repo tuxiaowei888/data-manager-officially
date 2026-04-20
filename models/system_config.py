@@ -20,6 +20,7 @@ class SystemConfig(Base):
 
 
 DEFAULT_CONFIGS = {
+    # 旧版配置（保持兼容）
     "free_daily_eval_limit": {
         "value": "3",
         "description": "普通用户每日评估次数限制"
@@ -51,6 +52,107 @@ DEFAULT_CONFIGS = {
     "contact_email": {
         "value": "support@example.com",
         "description": "联系邮箱"
+    },
+    
+    # V2.0 订阅四档体系配置
+    # ======================= 体验版配置 =======================
+    "free_eval_limit": {
+        "value": "1",
+        "description": "体验版年度评估次数限制"
+    },
+    "free_report_depth": {
+        "value": "summary",
+        "description": "体验版报告深度：summary/diagnosis/action_plan/full"
+    },
+    "free_report_retention": {
+        "value": "7",
+        "description": "体验版报告保留天数"
+    },
+    
+    # ======================= 基础版配置 =======================
+    "basic_eval_limit": {
+        "value": "5",
+        "description": "基础版年度评估次数限制"
+    },
+    "basic_report_depth": {
+        "value": "diagnosis",
+        "description": "基础版报告深度"
+    },
+    "basic_report_retention": {
+        "value": "365",
+        "description": "基础版报告保留天数（1年）"
+    },
+    "basic_pdf_export": {
+        "value": "true",
+        "description": "基础版是否允许PDF导出"
+    },
+    "basic_knowledge_access": {
+        "value": "basic",
+        "description": "基础版知识库访问权限：basic/full"
+    },
+    
+    # ======================= 专业版配置 =======================
+    "pro_eval_limit": {
+        "value": "20",
+        "description": "专业版年度评估次数限制"
+    },
+    "pro_report_depth": {
+        "value": "action_plan",
+        "description": "专业版报告深度"
+    },
+    "pro_report_retention": {
+        "value": "730",
+        "description": "专业版报告保留天数（2年）"
+    },
+    "pro_pdf_export": {
+        "value": "true",
+        "description": "专业版是否允许PDF导出"
+    },
+    "pro_knowledge_access": {
+        "value": "full",
+        "description": "专业版知识库访问权限"
+    },
+    "pro_industry_benchmark": {
+        "value": "true",
+        "description": "专业版是否启用行业对标功能"
+    },
+    "pro_valuation": {
+        "value": "true",
+        "description": "专业版是否启用估值计算功能"
+    },
+    
+    # ======================= 企业版配置 =======================
+    "enterprise_eval_limit": {
+        "value": "-1",
+        "description": "企业版年度评估次数限制（-1表示不限量）"
+    },
+    "enterprise_report_depth": {
+        "value": "full",
+        "description": "企业版报告深度"
+    },
+    "enterprise_report_retention": {
+        "value": "-1",
+        "description": "企业版报告保留天数（-1表示永久）"
+    },
+    "enterprise_pdf_export": {
+        "value": "true",
+        "description": "企业版是否允许PDF导出"
+    },
+    "enterprise_knowledge_access": {
+        "value": "full",
+        "description": "企业版知识库访问权限"
+    },
+    "enterprise_brand_custom": {
+        "value": "true",
+        "description": "企业版是否启用品牌定制功能"
+    },
+    "enterprise_api_access": {
+        "value": "true",
+        "description": "企业版是否启用API访问"
+    },
+    "enterprise_multi_dataset_overview": {
+        "value": "true",
+        "description": "企业版是否启用多数据集概览功能"
     }
 }
 

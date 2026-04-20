@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP配置 - 数维数据管家</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/admin-new/css/common.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar">
+            <canvas id="sidebar-particles"></canvas>
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>数维·数据管家</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">主要功能</div>
+                <a href="/admin-new/index.html" class="nav-item">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="/admin-new/pages/customers.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>客户管理</span>
+                </a>
+                <a href="/admin-new/pages/reports.html" class="nav-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>报告管理</span>
+                </a>
+                <a href="/admin-new/pages/rules.html" class="nav-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>规则库管理</span>
+                </a>
+                <a href="/admin-new/pages/ai-config.html" class="nav-item">
+                    <i class="bi bi-robot"></i>
+                    <span>AI配置</span>
+                </a>
+                <a href="/admin-new/pages/knowledge.html" class="nav-item">
+                    <i class="bi bi-book"></i>
+                    <span>知识库管理</span>
+                </a>
+                <div class="nav-section-title">系统管理</div>
+                <a href="/admin-new/pages/users.html" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="/admin-new/pages/vip-config.html" class="nav-item active">
+                    <i class="bi bi-gem"></i>
+                    <span>VIP配置</span>
+                </a>
+                <a href="/admin-new/pages/history.html" class="nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>评估历史</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <canvas id="topbar-particles"></canvas>
+                <div class="topbar-left">
+                    <h1 class="topbar-title"><i class="bi bi-gem"></i> VIP配置</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span class="user-name" id="userName">管理员</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="bi bi-box-arrow-left"></i>
+                        退出
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="tab-container" style="margin-bottom: 20px;">
+                    <button class="tab-btn active" data-tab="user-permissions" onclick="switchTab('user-permissions')">
+                        <i class="bi bi-person"></i> 用户权限配置
+                    </button>
+                    <button class="tab-btn" data-tab="vip-permissions" onclick="switchTab('vip-permissions')">
+                        <i class="bi bi-gem"></i> VIP权限配置
+                    </button>
+                    <button class="tab-btn" data-tab="vip-users" onclick="switchTab('vip-users')">
+                        <i class="bi bi-people"></i> VIP用户管理
+                    </button>
+                </div>
+
+                <div id="user-permissions" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">普通用户权限</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="config-grid">
+                                <div class="config-item">
+                                    <label class="config-label">每月评估次数</label>
+                                    <input type="number" class="form-control config-input" id="user_eval_limit" value="3" min="1" onchange="autoSavePermission('user_eval_limit', this.value)">
+                                    <span class="config-unit">次/月</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">知识库查看</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="user_knowledge_view" onchange="autoSavePermission('user_knowledge_view', this.checked ? '1' : '0')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="user_knowledge_view_status">关闭</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">报告查看</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="user_report_view" checked onchange="autoSavePermission('user_report_view', this.checked ? '1' : '0')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="user_report_view_status">开启</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">报告下载</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="user_report_download" onchange="autoSavePermission('user_report_download', this.checked ? '1' : '0')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="user_report_download_status">关闭</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="vip-permissions" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">VIP用户额外权限</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="config-grid">
+                                <div class="config-item">
+                                    <label class="config-label">每月评估次数</label>
+                                    <input type="number" class="form-control config-input" id="vip_eval_limit" value="30" min="1" onchange="autoSavePermission('vip_eval_limit', this.value)">
+                                    <span class="config-unit">次/月</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">知识库查看</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="vip_knowledge_view" checked onchange="autoSavePermission('vip_knowledge_view', this.checked ? '1' : '0')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="vip_knowledge_view_status">开启</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">报告下载</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="vip_report_download" checked onchange="autoSavePermission('vip_report_download', this.checked ? '1' : '0')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="vip_report_download_status">开启</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">优先队列</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="vip_priority_queue" checked onchange="autoSavePermission('vip_priority_queue', this.checked ? '1' : '0')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="vip_priority_queue_status">开启</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">历史报告保存数</label>
+                                    <input type="number" class="form-control config-input" id="vip_report_save_limit" value="30" min="1" onchange="autoSavePermission('vip_report_save_limit', this.value)">
+                                    <span class="config-unit">份</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <span class="card-title">VIP默认设置</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="config-grid">
+                                <div class="config-item">
+                                    <label class="config-label">月度VIP默认时长</label>
+                                    <input type="number" class="form-control config-input" id="vip_default_monthly_days" value="30" min="1" onchange="autoSavePermission('vip_default_monthly_days', this.value)">
+                                    <span class="config-unit">天</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">年度VIP默认时长</label>
+                                    <input type="number" class="form-control config-input" id="vip_default_yearly_days" value="365" min="1" onchange="autoSavePermission('vip_default_yearly_days', this.value)">
+                                    <span class="config-unit">天</span>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">到期处理策略</label>
+                                    <select class="form-control config-select" id="vip_expire_action" onchange="autoSavePermission('vip_expire_action', this.value)">
+                                        <option value="keep">保留数据</option>
+                                        <option value="clear">清空数据</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">续费提醒</label>
+                                    <input type="number" class="form-control config-input" id="vip_renewal_reminder_days" value="3" min="1" onchange="autoSavePermission('vip_renewal_reminder_days', this.value)">
+                                    <span class="config-unit">天前</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="vip-users" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">VIP用户管理</span>
+                            <div class="filter-group">
+                                <input type="text" id="searchKeyword" class="form-control" placeholder="搜索用户名或邮箱..." style="width: 200px;">
+                                <select class="filter-select" id="filterVipStatus" style="width: 120px;">
+                                    <option value="">全部</option>
+                                    <option value="vip">VIP用户</option>
+                                    <option value="normal">普通用户</option>
+                                </select>
+                                <button class="btn btn-primary btn-sm" onclick="loadUsers()">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>用户名</th>
+                                            <th>邮箱</th>
+                                            <th>VIP状态</th>
+                                            <th>VIP到期时间</th>
+                                            <th>剩余评估次数</th>
+                                            <th>注册时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userTableBody">
+                                        <tr>
+                                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                                <div class="loading-spinner"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="pagination"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="vipModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">设置VIP</h3>
+                <button class="modal-close" onclick="closeVipModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="vipModalUser"></p>
+                <div class="form-group mt-3">
+                    <label class="form-label">VIP类型</label>
+                    <select class="form-control" id="vipType" onchange="updateVipDaysDefault()">
+                        <option value="monthly">月度VIP</option>
+                        <option value="yearly">年度VIP</option>
+                    </select>
+                </div>
+                <div class="form-group mt-3">
+                    <label class="form-label">VIP时长（天）</label>
+                    <input type="number" class="form-control" id="vipDays" value="30" min="1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeVipModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveVip()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin-new/js/common.js"></script>
+    <script>
+        (function initSidebarParticles() {
+            const canvas = document.getElementById('sidebar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 50, particleRadius: 2, lineDistance: 80, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } }
+            }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        (function initTopbarParticles() {
+            const canvas = document.getElementById('topbar-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+            const config = { particleCount: 60, particleRadius: 2, lineDistance: 100, particleColor: '0, 210, 255' };
+            class Particle {
+                constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4; this.radius = Math.random() * 2 + 1; this.glow = Math.random() * 8 + 5; }
+                update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(${config.particleColor}, 0.6)`; ctx.shadowBlur = this.glow; ctx.shadowColor = `rgba(${config.particleColor}, 0.5)`; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
+            function drawConnections() { for (let i = 0; i < particles.length; i++) { for (let j = i + 1; j < particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, distance = Math.sqrt(dx * dx + dy * dy); if (distance < config.lineDistance) { const opacity = (1 - distance / config.lineDistance) * 0.3; ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${config.particleColor}, ${opacity})`; ctx.lineWidth = 0.8; ctx.stroke(); } } } }
+            function animate() { ctx.clearRect(0, 0, width, height); drawConnections(); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            function init() { resize(); particles = []; for (let i = 0; i < config.particleCount; i++) particles.push(new Particle()); animate(); }
+            window.addEventListener('resize', resize); init();
+        })();
+
+        let allUsers = [];
+        let filteredUsers = [];
+        let pagination = null;
+        let currentUserId = null;
+        let permissionsData = {};
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = user.username || '管理员';
+            document.getElementById('userAvatar').textContent = (user.username || 'A').charAt(0).toUpperCase();
+
+            pagination = new Pagination({
+                pageSize: 10,
+                onPageChange: renderUserTable
+            });
+
+            document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loadUsers();
+            });
+
+            await loadPermissions();
+            initToggleStyles();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            if (tabId === 'vip-users') {
+                loadUsers();
+            }
+        }
+
+        function initToggleStyles() {
+            document.querySelectorAll('.toggle-switch input[type="checkbox"]').forEach(toggle => {
+                updateToggleStyle(toggle);
+            });
+        }
+
+        function updateToggleStyle(checkbox) {
+            const statusSpan = document.getElementById(checkbox.id + '_status');
+            if (statusSpan) {
+                statusSpan.textContent = checkbox.checked ? '开启' : '关闭';
+                statusSpan.style.color = checkbox.checked ? '#28a745' : '#999';
+            }
+        }
+
+        async function loadPermissions() {
+            try {
+                const response = await apiGet('/permissions');
+                permissionsData = response;
+
+                document.getElementById('user_eval_limit').value = permissionsData.user_permissions.eval_limit;
+                document.getElementById('user_knowledge_view').checked = permissionsData.user_permissions.knowledge_view;
+                document.getElementById('user_report_view').checked = permissionsData.user_permissions.report_view;
+                document.getElementById('user_report_download').checked = permissionsData.user_permissions.report_download;
+
+                document.getElementById('vip_eval_limit').value = permissionsData.vip_permissions.eval_limit;
+                document.getElementById('vip_knowledge_view').checked = permissionsData.vip_permissions.knowledge_view;
+                document.getElementById('vip_report_download').checked = permissionsData.vip_permissions.report_download;
+                document.getElementById('vip_priority_queue').checked = permissionsData.vip_permissions.priority_queue;
+                document.getElementById('vip_report_save_limit').value = permissionsData.vip_permissions.report_save_limit;
+
+                document.getElementById('vip_default_monthly_days').value = permissionsData.vip_defaults.monthly_days;
+                document.getElementById('vip_default_yearly_days').value = permissionsData.vip_defaults.yearly_days;
+                document.getElementById('vip_expire_action').value = permissionsData.vip_defaults.expire_action;
+                document.getElementById('vip_renewal_reminder_days').value = permissionsData.vip_defaults.renewal_reminder_days;
+
+                initToggleStyles();
+            } catch (error) {
+                console.error('加载权限配置失败:', error);
+                showMessage('加载权限配置失败', 'error');
+            }
+        }
+
+        async function saveAllPermissions() {
+            const configs = [
+                { config_key: 'user_eval_limit', config_value: document.getElementById('user_eval_limit').value },
+                { config_key: 'user_knowledge_view', config_value: document.getElementById('user_knowledge_view').checked ? '1' : '0' },
+                { config_key: 'user_report_view', config_value: document.getElementById('user_report_view').checked ? '1' : '0' },
+                { config_key: 'user_report_download', config_value: document.getElementById('user_report_download').checked ? '1' : '0' },
+                { config_key: 'vip_eval_limit', config_value: document.getElementById('vip_eval_limit').value },
+                { config_key: 'vip_knowledge_view', config_value: document.getElementById('vip_knowledge_view').checked ? '1' : '0' },
+                { config_key: 'vip_report_download', config_value: document.getElementById('vip_report_download').checked ? '1' : '0' },
+                { config_key: 'vip_priority_queue', config_value: document.getElementById('vip_priority_queue').checked ? '1' : '0' },
+                { config_key: 'vip_report_save_limit', config_value: document.getElementById('vip_report_save_limit').value },
+                { config_key: 'vip_default_monthly_days', config_value: document.getElementById('vip_default_monthly_days').value },
+                { config_key: 'vip_default_yearly_days', config_value: document.getElementById('vip_default_yearly_days').value },
+                { config_key: 'vip_expire_action', config_value: document.getElementById('vip_expire_action').value },
+                { config_key: 'vip_renewal_reminder_days', config_value: document.getElementById('vip_renewal_reminder_days').value },
+            ];
+
+            try {
+                await apiPut('/permissions/batch', { configs });
+                showMessage('配置保存成功', 'success');
+            } catch (error) {
+                showMessage('保存失败: ' + error.message, 'error');
+            }
+        }
+
+        async function autoSavePermission(key, value) {
+            try {
+                await apiPut(`/permissions/${key}`, { config_value: String(value) });
+                showMessage('配置已保存', 'success');
+            } catch (error) {
+                showMessage('保存失败: ' + error.message, 'error');
+            }
+        }
+
+        async function loadUsers() {
+            const tbody = document.getElementById('userTableBody');
+            showLoading(tbody);
+
+            try {
+                const response = await apiGet('/users');
+                allUsers = (response.data && Array.isArray(response.data)) ? response.data : [];
+                allUsers = allUsers.map(u => ({
+                    ...u,
+                    remaining_evaluations: u.daily_eval_count || 0
+                }));
+                filterUsers();
+            } catch (error) {
+                console.error('加载用户失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function filterUsers() {
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+            const vipStatus = document.getElementById('filterVipStatus').value;
+
+            filteredUsers = allUsers.filter(u => {
+                if (u.user_type === 'admin') return false;
+                if (keyword) {
+                    const matchUsername = (u.username || '').toLowerCase().includes(keyword);
+                    const matchEmail = (u.email || '').toLowerCase().includes(keyword);
+                    if (!matchUsername && !matchEmail) return false;
+                }
+                if (vipStatus === 'vip' && !u.is_vip) return false;
+                if (vipStatus === 'normal' && u.is_vip) return false;
+                return true;
+            });
+
+            pagination.setTotal(filteredUsers.length);
+            pagination.render('pagination');
+            renderUserTable(1);
+        }
+
+        function renderUserTable(page) {
+            const tbody = document.getElementById('userTableBody');
+            const start = (page - 1) * pagination.pageSize;
+            const end = start + pagination.pageSize;
+            const pageUsers = filteredUsers.slice(start, end);
+
+            if (pageUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding: 40px;">暂无用户数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageUsers.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td><strong>${u.username || '-'}</strong></td>
+                    <td>${u.email || '-'}</td>
+                    <td>
+                        ${u.is_vip
+                            ? '<span class="badge badge-warning">VIP</span>'
+                            : '<span class="badge badge-secondary">普通</span>'}
+                    </td>
+                    <td>${u.vip_expire_date || '-'}</td>
+                    <td>${u.remaining_evaluations ?? '-'}</td>
+                    <td>${formatDate(u.created_at)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            ${u.is_vip
+                                ? `<button class="btn btn-sm btn-warning" onclick="revokeVip(${u.id})" title="取消VIP">
+                                    <i class="bi bi-x-circle"></i>
+                                   </button>`
+                                : `<button class="btn btn-sm btn-success" onclick="openVipModal(${u.id})" title="开通VIP">
+                                    <i class="bi bi-gem"></i>
+                                   </button>`}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openVipModal(userId) {
+            currentUserId = userId;
+            const user = allUsers.find(u => u.id === userId);
+            document.getElementById('vipModalUser').textContent = `为用户 "${user?.username || userId}" 开通VIP`;
+            document.getElementById('vipType').value = 'monthly';
+            document.getElementById('vipDays').value = permissionsData.vip_defaults?.monthly_days || 30;
+            document.getElementById('vipModal').classList.add('active');
+        }
+
+        function updateVipDaysDefault() {
+            const vipType = document.getElementById('vipType').value;
+            if (vipType === 'monthly') {
+                document.getElementById('vipDays').value = permissionsData.vip_defaults?.monthly_days || 30;
+            } else {
+                document.getElementById('vipDays').value = permissionsData.vip_defaults?.yearly_days || 365;
+            }
+        }
+
+        function closeVipModal() {
+            document.getElementById('vipModal').classList.remove('active');
+            currentUserId = null;
+        }
+
+        async function saveVip() {
+            if (!currentUserId) return;
+
+            const days = parseInt(document.getElementById('vipDays').value);
+            if (!days || days < 1) {
+                showMessage('请输入有效的天数', 'error');
+                return;
+            }
+
+            try {
+                await apiPost(`/users/${currentUserId}/vip`, { days });
+                showMessage('VIP开通成功', 'success');
+                closeVipModal();
+                await loadUsers();
+            } catch (error) {
+                showMessage('操作失败: ' + error.message, 'error');
+            }
+        }
+
+        async function revokeVip(userId) {
+            if (!confirm('确定要取消该用户的VIP吗？')) return;
+
+            try {
+                await apiDelete(`/users/${userId}/vip`);
+                showMessage('VIP已取消', 'success');
+                await loadUsers();
+            } catch (error) {
+                showMessage('操作失败: ' + error.message, 'error');
+            }
+        }
+
+        document.getElementById('vipModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVipModal();
+        });
+    </script>
+</body>
+</html>

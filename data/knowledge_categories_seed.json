@@ -1,0 +1,315 @@
+{
+  "categories": [
+    {
+      "name": "政策法规",
+      "icon": "bi bi-bank",
+      "description": "国家及地方数据要素相关政策法规",
+      "sort_order": 1,
+      "children": [
+        {
+          "name": "国家法律",
+          "description": "全国人大制定的数据相关法律",
+          "sort_order": 1
+        },
+        {
+          "name": "行政法规",
+          "description": "国务院发布的数据相关行政法规",
+          "sort_order": 2
+        },
+        {
+          "name": "部门规章",
+          "description": "各部委发布的数据管理规定",
+          "sort_order": 3
+        },
+        {
+          "name": "地方性法规",
+          "description": "各省市发布的数据相关法规",
+          "sort_order": 4
+        },
+        {
+          "name": "政策文件",
+          "description": "政府发布的指导性政策文件",
+          "sort_order": 5
+        }
+      ]
+    },
+    {
+      "name": "标准规范",
+      "icon": "bi bi-file-earmark-text",
+      "description": "数据要素领域各类标准规范",
+      "sort_order": 2,
+      "children": [
+        {
+          "name": "国家标准",
+          "description": "GB系列数据相关国家标准",
+          "sort_order": 1
+        },
+        {
+          "name": "行业标准",
+          "description": "各行业数据管理标准",
+          "sort_order": 2
+        },
+        {
+          "name": "地方标准",
+          "description": "地方发布的数据标准",
+          "sort_order": 3
+        },
+        {
+          "name": "团体标准",
+          "description": "行业协会发布的数据标准",
+          "sort_order": 4
+        }
+      ]
+    },
+    {
+      "name": "数据确权",
+      "icon": "bi bi-shield-check",
+      "description": "数据权属确认与登记相关规范",
+      "sort_order": 3,
+      "children": [
+        {
+          "name": "确权指南",
+          "description": "数据权属确认操作指南",
+          "sort_order": 1
+        },
+        {
+          "name": "登记规范",
+          "description": "数据资产登记相关规范",
+          "sort_order": 2
+        },
+        {
+          "name": "知识产权",
+          "description": "数据知识产权保护相关文件",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "数据估值",
+      "icon": "bi bi-calculator",
+      "description": "数据资产评估与定价方法",
+      "sort_order": 4,
+      "children": [
+        {
+          "name": "评估方法",
+          "description": "数据资产评估方法论",
+          "sort_order": 1
+        },
+        {
+          "name": "定价模型",
+          "description": "数据定价模型与案例",
+          "sort_order": 2
+        },
+        {
+          "name": "成本核算",
+          "description": "数据成本归集与核算方法",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "数据交易",
+      "icon": "bi bi-arrow-left-right",
+      "description": "数据交易流通相关规范",
+      "sort_order": 5,
+      "children": [
+        {
+          "name": "交易规则",
+          "description": "数据交易所交易规则",
+          "sort_order": 1
+        },
+        {
+          "name": "合同范本",
+          "description": "数据交易合同模板",
+          "sort_order": 2
+        },
+        {
+          "name": "流通规范",
+          "description": "数据流通与共享规范",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "数据安全",
+      "icon": "bi bi-lock",
+      "description": "数据安全与隐私保护",
+      "sort_order": 6,
+      "children": [
+        {
+          "name": "安全标准",
+          "description": "数据安全相关标准",
+          "sort_order": 1
+        },
+        {
+          "name": "隐私保护",
+          "description": "隐私保护与合规指南",
+          "sort_order": 2
+        },
+        {
+          "name": "安全技术",
+          "description": "数据安全技术与工具",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "数据质量",
+      "icon": "bi bi-check-circle",
+      "description": "数据质量管理相关规范",
+      "sort_order": 7,
+      "children": [
+        {
+          "name": "质量标准",
+          "description": "数据质量评价标准",
+          "sort_order": 1
+        },
+        {
+          "name": "治理方法",
+          "description": "数据治理方法论",
+          "sort_order": 2
+        },
+        {
+          "name": "检测工具",
+          "description": "数据质量检测工具介绍",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "会计入表",
+      "icon": "bi bi-journal-bookmark",
+      "description": "数据资源会计入表相关规范",
+      "sort_order": 8,
+      "children": [
+        {
+          "name": "会计准则",
+          "description": "数据资源会计处理准则",
+          "sort_order": 1
+        },
+        {
+          "name": "操作指引",
+          "description": "数据资产入表操作指引",
+          "sort_order": 2
+        },
+        {
+          "name": "审计要求",
+          "description": "数据资产审计相关要求",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "行业应用",
+      "icon": "bi bi-building",
+      "description": "各行业数据要素应用案例",
+      "sort_order": 9,
+      "children": [
+        {
+          "name": "金融服务",
+          "description": "金融行业数据应用",
+          "sort_order": 1
+        },
+        {
+          "name": "医疗健康",
+          "description": "医疗健康数据应用",
+          "sort_order": 2
+        },
+        {
+          "name": "交通运输",
+          "description": "交通物流数据应用",
+          "sort_order": 3
+        },
+        {
+          "name": "工业制造",
+          "description": "工业制造数据应用",
+          "sort_order": 4
+        },
+        {
+          "name": "农业农村",
+          "description": "农业农村数据应用",
+          "sort_order": 5
+        },
+        {
+          "name": "政务服务",
+          "description": "政务数据开放共享",
+          "sort_order": 6
+        }
+      ]
+    },
+    {
+      "name": "典型案例",
+      "icon": "bi bi-journal-text",
+      "description": "数据要素典型案例分析",
+      "sort_order": 10,
+      "children": [
+        {
+          "name": "确权案例",
+          "description": "数据确权典型案例",
+          "sort_order": 1
+        },
+        {
+          "name": "估值案例",
+          "description": "数据估值典型案例",
+          "sort_order": 2
+        },
+        {
+          "name": "交易案例",
+          "description": "数据交易典型案例",
+          "sort_order": 3
+        },
+        {
+          "name": "入表案例",
+          "description": "数据资产入表典型案例",
+          "sort_order": 4
+        }
+      ]
+    },
+    {
+      "name": "操作指南",
+      "icon": "bi bi-book",
+      "description": "数据要素相关操作手册",
+      "sort_order": 11,
+      "children": [
+        {
+          "name": "评估指南",
+          "description": "数据资产评估操作指南",
+          "sort_order": 1
+        },
+        {
+          "name": "填报指南",
+          "description": "数据要素填报操作指南",
+          "sort_order": 2
+        },
+        {
+          "name": "系统使用",
+          "description": "系统功能使用说明",
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "name": "研究报告",
+      "icon": "bi bi-graph-up",
+      "description": "数据要素领域研究报告",
+      "sort_order": 12,
+      "children": [
+        {
+          "name": "市场研究",
+          "description": "数据要素市场研究报告",
+          "sort_order": 1
+        },
+        {
+          "name": "技术发展",
+          "description": "数据技术发展趋势报告",
+          "sort_order": 2
+        },
+        {
+          "name": "政策解读",
+          "description": "数据政策深度解读",
+          "sort_order": 3
+        }
+      ]
+    }
+  ]
+}

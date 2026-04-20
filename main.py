@@ -1,9 +1,15 @@
 """
 FastAPI 主应用 - 数维数据管家系统
 """
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+
+# 配置日志系统
+from config.logging_config import setup_logging, get_logger
+setup_logging()
+logger = get_logger(__name__)
 
 # 导入路由
 from api.rules import router as rules_router
@@ -18,6 +24,11 @@ from api.users import router as users_router
 from api.config import router as config_router
 from api.customers import router as customers_router
 from api.ai_config import router as ai_config_router
+from api.prompt_templates import router as prompt_templates_router
+from api.permissions import router as permissions_router
+from api.datasets import router as datasets_router
+from api.org_profiles import router as org_profiles_router
+from api.subscription import router as subscription_router
 
 # 创建应用
 app = FastAPI(
@@ -31,10 +42,18 @@ app = FastAPI(
     }
 )
 
-# 配置 CORS
+# 配置 CORS - 从环境变量读取允许的来源
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080,http://localhost:8000")
+allowed_origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",") if origin.strip()]
+
+# 开发环境允许所有来源，生产环境限制具体域名
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+if DEBUG:
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 开发环境允许所有来源
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,6 +73,11 @@ app.include_router(users_router)
 app.include_router(config_router)
 app.include_router(customers_router)
 app.include_router(ai_config_router)
+app.include_router(prompt_templates_router)
+app.include_router(permissions_router)
+app.include_router(datasets_router)
+app.include_router(org_profiles_router)
+app.include_router(subscription_router)
 
 
 @app.get("/")
@@ -86,12 +110,6 @@ def api_docs_chinese():
     return FileResponse("api_docs_chinese.html")
 
 
-@app.get("/survey")
-def survey_page():
-    """调研表单页面"""
-    return FileResponse("frontend/index.html")
-
-
 @app.get("/report")
 def report_page():
     """报告页面"""
@@ -100,6 +118,12 @@ def report_page():
 
 @app.get("/login")
 def login_page():
+    """登录页面"""
+    return FileResponse("frontend/login.html")
+
+
+@app.get("/login.html")
+def login_html_page():
     """登录页面"""
     return FileResponse("frontend/login.html")
 
@@ -116,62 +140,68 @@ def register_page():
     return FileResponse("frontend/register.html")
 
 
-@app.get("/history")
-def history_page():
-    """历史报告页面"""
+@app.get("/register.html")
+def register_html_page():
+    """注册页面"""
+    return FileResponse("frontend/register.html")
+
+
+@app.get("/history.html")
+def history_html_page():
+    """历史记录页面"""
     return FileResponse("frontend/history.html")
 
 
-@app.get("/admin")
-def admin_page():
-    """管理员首页"""
-    return FileResponse("frontend/admin.html")
+@app.get("/admin-new")
+def admin_new_page():
+    """新版管理后台首页"""
+    return FileResponse("frontend/admin-new/index.html")
 
 
-@app.get("/rules")
-def rules_page():
-    """规则库管理页面"""
-    return FileResponse("frontend/rules.html")
+@app.get("/admin-new/index.html")
+def admin_new_index_html_page():
+    """新版管理后台首页"""
+    return FileResponse("frontend/admin-new/index.html")
 
 
-@app.get("/knowledge")
-def knowledge_page():
-    """知识库管理页面"""
-    return FileResponse("frontend/knowledge.html")
+@app.get("/admin-new/pages/{page}")
+def admin_new_pages_page(page: str):
+    """新版管理后台子页面"""
+    return FileResponse(f"frontend/admin-new/pages/{page}")
 
 
-@app.get("/users")
-def users_page():
-    """用户管理页面"""
-    return FileResponse("frontend/users.html")
+@app.get("/admin-new/pages/{folder}/{page}")
+def admin_new_pages_folder_page(folder: str, page: str):
+    """新版管理后台子页面"""
+    return FileResponse(f"frontend/admin-new/pages/{folder}/{page}")
 
 
-@app.get("/config")
-def config_page():
-    """系统配置页面"""
-    return FileResponse("frontend/config.html")
+@app.get("/admin-new/pages/{page}.html")
+def admin_new_pages_html_page(page: str):
+    """新版管理后台子页面HTML"""
+    return FileResponse(f"frontend/admin-new/pages/{page}.html")
 
 
-@app.get("/customers")
-def customers_page():
-    """客户管理页面"""
-    return FileResponse("frontend/customers.html")
+@app.get("/admin-new/css/{file}")
+def admin_new_css_page(file: str):
+    """新版管理后台CSS文件"""
+    return FileResponse(f"frontend/admin-new/css/{file}")
 
 
-@app.get("/reports")
-def reports_page():
-    """报告管理页面"""
-    return FileResponse("frontend/reports.html")
-
-
-@app.get("/ai-config")
-def ai_config_page():
-    """AI配置管理页面"""
-    return FileResponse("frontend/ai_config.html")
+@app.get("/admin-new/js/{file}")
+def admin_new_js_page(file: str):
+    """新版管理后台JS文件"""
+    return FileResponse(f"frontend/admin-new/js/{file}")
 
 
 from fastapi.staticfiles import StaticFiles
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    """网站图标"""
+    return FileResponse("frontend/favicon.svg", media_type="image/svg+xml")
 
 
 if __name__ == "__main__":

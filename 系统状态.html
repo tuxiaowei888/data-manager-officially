@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数维数据管家系统 - 系统状态</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background-color: #0069d9;
+        }
+        .button.secondary {
+            background-color: #6c757d;
+        }
+        .button.secondary:hover {
+            background-color: #5a6268;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>数维数据管家系统 - 系统状态</h1>
+        
+        <div class="status success">
+            <strong>✅ Docker 运行状态：</strong>正常运行
+        </div>
+        
+        <div class="status success">
+            <strong>✅ MySQL 容器：</strong>已启动（my-mysql）
+        </div>
+        
+        <div class="status error">
+            <strong>❌ Python 依赖：</strong>未安装必要的包（fastapi, uvicorn, sqlalchemy等）
+        </div>
+        
+        <h2>系统功能清单</h2>
+        <ul class="feature-list">
+            <li>数据资产评价与分析</li>
+            <li>规则库管理与配置</li>
+            <li>知识库管理与检索</li>
+            <li>用户认证与授权</li>
+            <li>客户管理与渠道管理</li>
+            <li>报告生成与历史记录</li>
+            <li>AI配置与智能分析</li>
+            <li>系统配置与管理</li>
+        </ul>
+        
+        <h2>快速启动指南</h2>
+        <p><strong>步骤1：</strong>以管理员身份打开PowerShell</p>
+        <p><strong>步骤2：</strong>导航到项目目录</p>
+        <pre>cd "E:\数维创擎\代码库\数维数据管家系统"</pre>
+        <p><strong>步骤3：</strong>安装依赖</p>
+        <pre>pip install -r requirements.txt</pre>
+        <p><strong>步骤4：</strong>启动服务</p>
+        <pre>python main.py</pre>
+        
+        <h2>服务地址</h2>
+        <p>服务启动后可访问：</p>
+        <ul>
+            <li>主页：http://localhost:8000</li>
+            <li>健康检查：http://localhost:8000/health</li>
+            <li>API文档：http://localhost:8000/api-docs-cn</li>
+        </ul>
+        
+        <h2>解决权限问题</h2>
+        <p>如果遇到权限错误，请尝试以下方法：</p>
+        <ol>
+            <li>以管理员身份运行PowerShell</li>
+            <li>使用虚拟环境：
+                <pre>python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt</pre>
+            </li>
+            <li>使用--user参数：
+                <pre>pip install -r requirements.txt --user</pre>
+            </li>
+        </ol>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="#" class="button" onclick="window.location.reload()">刷新状态</a>
+            <a href="http://localhost:8000" class="button secondary" target="_blank">尝试访问服务</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
 import jwt
-from passlib.context import CryptContext
+import bcrypt
 
 from config.database import get_db
 from models.user import User
@@ -21,25 +21,43 @@ router = APIRouter(prefix="/api/v1/auth", tags=["用户认证"])
 
 # JWT 配置
 import os
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production-3x4mpl3-k3y")
+
+# 安全配置：SECRET_KEY必须从环境变量设置
+# 生产环境：必须设置强密码，建议使用 openssl rand -hex 32 生成
+# 开发环境：可以在 .env 文件中设置 SECRET_KEY
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    # 检查是否是开发环境（DEBUG模式）
+    DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+    if DEBUG:
+        # 开发环境：使用默认值但记录强烈警告
+        import warnings
+        warnings.warn(
+            "SECRET_KEY未设置，使用开发默认值。生产环境必须设置SECRET_KEY环境变量！",
+            UserWarning
+        )
+        SECRET_KEY = "dev-secret-key-please-change-in-production-12345678"
+    else:
+        # 生产环境：必须设置SECRET_KEY
+        raise ValueError(
+            "SECRET_KEY环境变量必须设置。请在.env文件中设置或使用环境变量。\n"
+            "生成命令: openssl rand -hex 32"
+        )
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7天
 
-# 密码加密
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """验证密码"""
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
 def get_password_hash(password: str) -> str:
     """生成密码哈希"""
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
